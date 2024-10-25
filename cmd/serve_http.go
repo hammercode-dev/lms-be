@@ -132,7 +132,7 @@ func registerHandler(app app.App) *mux.Router {
 	public := v1.PathPrefix("/public").Subrouter()
 	public.HandleFunc("/storage/{kind}/{path}", app.ImageHandler.GetStorage).Methods(http.MethodGet)
 	public.HandleFunc("/events", app.EventHandler.GetEvents).Methods(http.MethodGet)
-	public.HandleFunc("/events/{id}", app.EventHandler.GetEvents).Methods(http.MethodGet)
+	public.HandleFunc("/events/{id}", app.EventHandler.GetEventByID).Methods(http.MethodGet)
 	public.HandleFunc("/images", app.ImageHandler.UploadImage).Methods(http.MethodPost)
 	public.HandleFunc("/events/registrations", app.EventHandler.RegisterEvent).Methods(http.MethodPost)
 	public.HandleFunc("/events/registrations/{order_no}", app.EventHandler.RegistrationStatus).Methods(http.MethodGet)
