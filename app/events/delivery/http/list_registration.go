@@ -8,6 +8,22 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// ListRegistration
+// @Summary Get List Register user to event
+// @Description This endpoint use to get list of user that register on event
+// @Tags Event
+// @Accept json
+// @Produce json
+// @Param limit query string true "string"
+// @Param page query string true "string"
+// @Param event_id query string false "string"
+// @Param start_date query string false "string"
+// @Param end_date query string false "string"
+// @Param status query string false "string"
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Success 200 {object} []domain.RegistrationEvent
+// @Router /api/events/registrations [get]
 func (h Handler) ListRegistration(w http.ResponseWriter, r *http.Request) {
 	flterPagination, err := domain.GetPaginationFromCtx(r)
 	if err != nil {

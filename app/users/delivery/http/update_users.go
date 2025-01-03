@@ -12,6 +12,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// UpdateProfileUser
+// @Summary Update User
+// @Description This endpoint use to update profile user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param request body domain.UserUpdateProfile true "Body"
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Success 200 {object} domain.HttpResponse
+// @Router /api/users [put]
 func (h Handler) UpdateProfileUser(w http.ResponseWriter, r *http.Request) {
 	authorizationHeader := r.Header.Get("Authorization")
 	if authorizationHeader == "" {
@@ -22,16 +33,14 @@ func (h Handler) UpdateProfileUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	claims, err:=jwt.ParseToken(authorizationHeader, config.GetConfig().JWT_SECRET_KEY)
-	if err !=nil{
+	claims, err := jwt.ParseToken(authorizationHeader, config.GetConfig().JWT_SECRET_KEY)
+	if err != nil {
 		utils.Response(domain.HttpResponse{
 			Code:    500,
 			Message: err.Error(),
 		}, w)
 		return
 	}
-
-
 
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {

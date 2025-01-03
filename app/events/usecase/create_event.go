@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEvenPayload) error {
+func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPayload) error {
 	dataImage, err := uc.imageRepository.GetImage(ctx, payload.FileName)
 	if err != nil {
 		logrus.Error("failed to create event", dataImage)

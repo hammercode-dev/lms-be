@@ -10,6 +10,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// PayProcess
+// @Summary Pay Process
+// @Description This endpoint use to confirm payment
+// @Tags Event
+// @Accept json
+// @Produce json
+// @Param request body domain.PayProcessPayload true "Body"
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Success 200 {object} domain.HttpResponse
+// @Router /api/events/pays [post]
 func (h Handler) PayProcess(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {

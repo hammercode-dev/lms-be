@@ -11,6 +11,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// GetUsers
+// @Summary Get Users
+// @Description This endpoint use to get users by filter
+// @Tags User
+// @Accept json
+// @Produce json
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Success 200 {object} []domain.User
+// @Router /api/users [get]
 func (h Handler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := h.usecase.GetUsers(r.Context())
 

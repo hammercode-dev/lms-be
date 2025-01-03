@@ -9,6 +9,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// RegistrationStatus
+// @Summary Register Status
+// @Description This endpoint use to check registration status
+// @Tags Event
+// @Accept json
+// @Produce json
+// @Param order_no path string true "ABCXX"
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Success 200 {object} domain.RegisterStatusResponse
+// @Router /api/events/registartions/:order_no [get]
 func (h Handler) RegistrationStatus(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	order_no := vars["order_no"]

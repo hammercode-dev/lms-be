@@ -6,6 +6,17 @@ import (
 	"net/http"
 )
 
+// Logout
+// @Summary Logout
+// @Description This endpoint use to logout
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body domain.Login true "Body"
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Failure 200 {object} domain.HttpResponse
+// @Router /api/auth/logout [post]
 func (h Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	token := utils.ExtractBearerToken(r)
 

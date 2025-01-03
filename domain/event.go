@@ -29,7 +29,7 @@ type EventRepository interface {
 }
 
 type EventUsecase interface {
-	CreateEvent(ctx context.Context, payload CreateEvenPayload) error
+	CreateEvent(ctx context.Context, payload CreateEventPayload) error
 	GetEvents(ctx context.Context, filter EventFilter) (data []Event, pagination Pagination, err error)
 	CreateRegisterEvent(ctx context.Context, payload RegisterEventPayload) (RegisterEventResponse, error)
 	CreatePayEvent(ctx context.Context, payload EventPayPayload) error
@@ -56,6 +56,7 @@ type Event struct {
 	ID               uint           `json:"id" gorm:"primarykey"`
 	Title            string         `json:"title" `
 	Description      string         `json:"description"`
+	Slug             string         `json:"slug"`
 	Author           string         `json:"author"`
 	ImageEvent       string         `json:"image_event"`
 	DateEvent        null.Time      `json:"date_event"`
@@ -102,11 +103,12 @@ func (EventSpeaker) TableName() string {
 	return "event_speakers"
 }
 
-type CreateEvenPayload struct {
+type CreateEventPayload struct {
 	Title            string    `json:"title" validate:"required"`
 	Description      string    `json:"description" validate:"required"`
 	Author           string    `json:"author" validate:"required"`
 	FileName         string    `json:"file_name" validate:"required"`
+	Slug             string    `json:"slug" validate:"required"`
 	DateEvent        null.Time `json:"date_event" validate:"required"`
 	Type             string    `json:"type" validate:"required"`
 	Location         string    `json:"location" validate:"required"`
