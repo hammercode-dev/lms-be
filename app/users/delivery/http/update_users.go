@@ -22,7 +22,7 @@ import (
 // @Failure 400 {object} domain.HttpResponse
 // @Failure 500 {object} domain.HttpResponse
 // @Success 200 {object} domain.HttpResponse
-// @Router /api/users [put]
+// @Router /api/v1/users [put]
 func (h Handler) UpdateProfileUser(w http.ResponseWriter, r *http.Request) {
 	authorizationHeader := r.Header.Get("Authorization")
 	if authorizationHeader == "" {

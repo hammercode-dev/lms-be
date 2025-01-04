@@ -22,20 +22,21 @@ func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPay
 
 	err = uc.dbTX.StartTransaction(ctx, func(txCtx context.Context) error {
 		data := domain.Event{
-			Title:            payload.Title,
-			Description:      payload.Description,
-			Author:           payload.Author,
-			ImageEvent:       dataImage.FileName,
-			DateEvent:        payload.DateEvent,
-			Type:             payload.Type,
-			Location:         payload.Location,
-			Duration:         payload.Duration,
-			Capacity:         payload.Capacity,
-			RegistrationLink: payload.RegistrationLink,
-			BookingStart:     payload.BookingStart,
-			BookingEnd:       payload.BookingEnd,
-			Price:            payload.Price,
-			Status:           payload.Status,
+			Title:                payload.Title,
+			Description:          payload.Description,
+			Author:               payload.Author,
+			ImageEvent:           dataImage.FileName,
+			Date:                 payload.Date,
+			Slug:                 payload.Slug,
+			Type:                 payload.Type,
+			Location:             payload.Location,
+			Duration:             payload.Duration,
+			Capacity:             payload.Capacity,
+			RegistrationLink:     payload.RegistrationLink,
+			ReservationStartDate: payload.ReservationStartDate,
+			ReservationEndDate:   payload.ReservationStartDate,
+			Price:                payload.Price,
+			Status:               payload.Status,
 		}
 
 		eventID, err := uc.repository.CreateEvent(txCtx, data)

@@ -3,13 +3,9 @@ definitions:
     properties:
       author:
         type: string
-      booking_end:
-        type: string
-      booking_start:
-        type: string
       capacity:
         type: integer
-      date_event:
+      date:
         type: string
       description:
         type: string
@@ -17,11 +13,17 @@ definitions:
         type: string
       file_name:
         type: string
+      is_online:
+        type: string
       location:
         type: string
       price:
         type: number
       registration_link:
+        type: string
+      reservation_start_date:
+        type: string
+      reseveration_end_date:
         type: string
       slug:
         type: string
@@ -42,10 +44,11 @@ definitions:
     required:
     - author
     - capacity
-    - date_event
+    - date
     - description
     - duration
     - file_name
+    - is_online
     - location
     - slug
     - status
@@ -56,21 +59,17 @@ definitions:
     properties:
       author:
         type: string
-      booking_end:
-        type: string
-      booking_start:
-        type: string
       capacity:
         type: integer
       created_at:
         type: string
-      created_by_user_id:
+      created_by:
         type: integer
-      date_event:
+      date:
         type: string
       deleted_at:
         type: string
-      deleted_by_user_id:
+      deleted_by:
         type: integer
       description:
         type: string
@@ -86,6 +85,10 @@ definitions:
         description: 0 == free
         type: number
       registration_link:
+        type: string
+      reservation_start_date:
+        type: string
+      reseveration_end_date:
         type: string
       slug:
         type: string
@@ -108,7 +111,7 @@ definitions:
         type: string
       updated_at:
         type: string
-      updated_by_user_id:
+      updated_by:
         type: integer
     type: object
   domain.EventPay:
@@ -272,6 +275,62 @@ definitions:
         description: lock user
         type: string
     type: object
+  domain.UpdateEventPayload:
+    properties:
+      author:
+        type: string
+      capacity:
+        type: integer
+      date:
+        type: string
+      description:
+        type: string
+      duration:
+        type: string
+      file_name:
+        type: string
+      is_online:
+        type: string
+      location:
+        type: string
+      price:
+        type: number
+      registration_link:
+        type: string
+      reservation_start_date:
+        type: string
+      reseveration_end_date:
+        type: string
+      slug:
+        type: string
+      speakers:
+        items:
+          type: string
+        type: array
+      status:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      type:
+        type: string
+    required:
+    - author
+    - capacity
+    - date
+    - description
+    - duration
+    - file_name
+    - is_online
+    - location
+    - slug
+    - status
+    - title
+    - type
+    type: object
   domain.User:
     properties:
       address:
@@ -327,99 +386,18 @@ definitions:
         type: string
     type: object
 info:
-  contact: {}
+  contact:
+    email: hammercode.org
+    name: API Support
+    url: http://hammercode.org/support
+  description: This is the API documentation for this service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Golang API (LMS-BE)
+  version: "1.0"
 paths:
-  /api/auth/login:
-    post:
-      consumes:
-      - application/json
-      description: This endpoint use to login
-      parameters:
-      - description: Body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/domain.Login'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-      summary: Login
-      tags:
-      - Auth
-  /api/auth/logout:
-    post:
-      consumes:
-      - application/json
-      description: This endpoint use to logout
-      parameters:
-      - description: Body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/domain.Login'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-      summary: Logout
-      tags:
-      - Auth
-  /api/auth/register:
-    post:
-      consumes:
-      - application/json
-      description: This endpoint use to register
-      parameters:
-      - description: Body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/domain.Register'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.User'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-      summary: Register
-      tags:
-      - Auth
-  /api/events:
+  /api/v1/admin/events:
     get:
       consumes:
       - application/json
@@ -505,10 +483,252 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
       summary: Create Event
       tags:
       - Event
-  /api/events/:id:
+  /api/v1/admin/events/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This endpoint use to delete event by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete Event By Id
+      tags:
+      - Event
+    get:
+      consumes:
+      - application/json
+      description: This endpoint use to get detail event by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Event'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get Detail Event by ID
+      tags:
+      - Event
+    patch:
+      consumes:
+      - application/json
+      description: This endpoint update event
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateEventPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Update Event
+      tags:
+      - Event
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to login
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Login
+      tags:
+      - Auth
+  /api/v1/auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to logout
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Logout
+      tags:
+      - Auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to register
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Register'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Register
+      tags:
+      - Auth
+  /api/v1/events:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint use to get events by filter
+      parameters:
+      - description: string
+        in: query
+        name: limit
+        required: true
+        type: string
+      - description: string
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: string
+        in: query
+        name: orderBy
+        type: string
+      - description: string
+        in: query
+        name: start_date
+        type: string
+      - description: string
+        in: query
+        name: end_date
+        type: string
+      - description: string
+        in: query
+        name: title
+        type: string
+      - description: string
+        in: query
+        name: type
+        type: string
+      - description: string
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Event'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get List Available Event
+      tags:
+      - Event
+  /api/v1/events/{id}:
     get:
       consumes:
       - application/json
@@ -537,7 +757,7 @@ paths:
       summary: Get Detail Event by ID
       tags:
       - Event
-  /api/events/pay:
+  /api/v1/events/pay:
     post:
       consumes:
       - application/json
@@ -567,7 +787,7 @@ paths:
       summary: Pay Event
       tags:
       - Event
-  /api/events/pays:
+  /api/v1/events/pays:
     get:
       consumes:
       - application/json
@@ -648,7 +868,7 @@ paths:
       summary: Pay Process
       tags:
       - Event
-  /api/events/registartions/:order_no:
+  /api/v1/events/registartions/:order_no:
     get:
       consumes:
       - application/json
@@ -677,7 +897,7 @@ paths:
       summary: Register Status
       tags:
       - Event
-  /api/events/registrations:
+  /api/v1/events/registrations:
     get:
       consumes:
       - application/json
@@ -758,7 +978,7 @@ paths:
       summary: Register Event
       tags:
       - Event
-  /api/users:
+  /api/v1/users:
     delete:
       consumes:
       - application/json
@@ -789,16 +1009,14 @@ paths:
     get:
       consumes:
       - application/json
-      description: This endpoint use to get users by filter
+      description: This endpoint use to get current user
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/domain.User'
-            type: array
+            $ref: '#/definitions/domain.User'
         "400":
           description: Bad Request
           schema:
@@ -807,7 +1025,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/domain.HttpResponse'
-      summary: Get Users
+      summary: Get User Profile
       tags:
       - User
     put:
@@ -839,4 +1057,9 @@ paths:
       summary: Update User
       tags:
       - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

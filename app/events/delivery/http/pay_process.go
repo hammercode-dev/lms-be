@@ -20,7 +20,7 @@ import (
 // @Failure 400 {object} domain.HttpResponse
 // @Failure 500 {object} domain.HttpResponse
 // @Success 200 {object} domain.HttpResponse
-// @Router /api/events/pays [post]
+// @Router /api/v1/events/pays [post]
 func (h Handler) PayProcess(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {

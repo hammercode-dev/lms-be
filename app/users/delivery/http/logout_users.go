@@ -16,7 +16,7 @@ import (
 // @Failure 400 {object} domain.HttpResponse
 // @Failure 500 {object} domain.HttpResponse
 // @Failure 200 {object} domain.HttpResponse
-// @Router /api/auth/logout [post]
+// @Router /api/v1/auth/logout [post]
 func (h Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	token := utils.ExtractBearerToken(r)
 

@@ -23,7 +23,7 @@ import (
 // @Failure 400 {object} domain.HttpResponse
 // @Failure 500 {object} domain.HttpResponse
 // @Success 200 {object} []domain.RegistrationEvent
-// @Router /api/events/registrations [get]
+// @Router /api/v1/events/registrations [get]
 func (h Handler) ListRegistration(w http.ResponseWriter, r *http.Request) {
 	flterPagination, err := domain.GetPaginationFromCtx(r)
 	if err != nil {

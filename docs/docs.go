@@ -9,151 +9,21 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "API Support",
+            "url": "http://hammercode.org/support",
+            "email": "hammercode.org"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/auth/login": {
-            "post": {
-                "description": "This endpoint use to login",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Login",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Login"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/logout": {
-            "post": {
-                "description": "This endpoint use to logout",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Logout",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Login"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/auth/register": {
-            "post": {
-                "description": "This endpoint use to register",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Register",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Register"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.User"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/domain.HttpResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/events": {
+        "/api/v1/admin/events": {
             "get": {
                 "description": "This endpoint use to get events by filter",
                 "consumes": [
@@ -243,6 +113,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "This endpoint create event",
                 "consumes": [
                     "application/json"
@@ -287,9 +162,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/events/:id": {
+        "/api/v1/admin/events/{id}": {
             "get": {
-                "description": "This endpoint use to get event by id",
+                "description": "This endpoint use to get detail event by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -329,9 +204,333 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "This endpoint use to delete event by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Delete Event By Id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "This endpoint update event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Update Event",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.UpdateEventPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
             }
         },
-        "/api/events/pay": {
+        "/api/v1/auth/login": {
+            "post": {
+                "description": "This endpoint use to login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/logout": {
+            "post": {
+                "description": "This endpoint use to logout",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/register": {
+            "post": {
+                "description": "This endpoint use to register",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Register"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/events": {
+            "get": {
+                "description": "This endpoint use to get events by filter",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Get List Available Event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "string",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "string",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "string",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "string",
+                        "name": "end_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "string",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "string",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "string",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Event"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/events/pay": {
             "post": {
                 "description": "This endpoint pay the event",
                 "consumes": [
@@ -377,7 +576,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/events/pays": {
+        "/api/v1/events/pays": {
             "get": {
                 "description": "This endpoint use to get list of event pay",
                 "consumes": [
@@ -499,7 +698,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/events/registartions/:order_no": {
+        "/api/v1/events/registartions/:order_no": {
             "get": {
                 "description": "This endpoint use to check registration status",
                 "consumes": [
@@ -543,7 +742,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/events/registrations": {
+        "/api/v1/events/registrations": {
             "get": {
                 "description": "This endpoint use to get list of user that register on event",
                 "consumes": [
@@ -665,9 +864,53 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/users": {
+        "/api/v1/events/{id}": {
             "get": {
-                "description": "This endpoint use to get users by filter",
+                "description": "This endpoint use to get event by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Get Detail Event by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Event"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users": {
+            "get": {
+                "description": "This endpoint use to get current user",
                 "consumes": [
                     "application/json"
                 ],
@@ -677,15 +920,12 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Get Users",
+                "summary": "Get User Profile",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.User"
-                            }
+                            "$ref": "#/definitions/domain.User"
                         }
                     },
                     "400": {
@@ -795,10 +1035,11 @@ const docTemplate = `{
             "required": [
                 "author",
                 "capacity",
-                "date_event",
+                "date",
                 "description",
                 "duration",
                 "file_name",
+                "is_online",
                 "location",
                 "slug",
                 "status",
@@ -809,16 +1050,10 @@ const docTemplate = `{
                 "author": {
                     "type": "string"
                 },
-                "booking_end": {
-                    "type": "string"
-                },
-                "booking_start": {
-                    "type": "string"
-                },
                 "capacity": {
                     "type": "integer"
                 },
-                "date_event": {
+                "date": {
                     "type": "string"
                 },
                 "description": {
@@ -830,6 +1065,9 @@ const docTemplate = `{
                 "file_name": {
                     "type": "string"
                 },
+                "is_online": {
+                    "type": "string"
+                },
                 "location": {
                     "type": "string"
                 },
@@ -837,6 +1075,12 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "registration_link": {
+                    "type": "string"
+                },
+                "reservation_start_date": {
+                    "type": "string"
+                },
+                "reseveration_end_date": {
                     "type": "string"
                 },
                 "slug": {
@@ -871,28 +1115,22 @@ const docTemplate = `{
                 "author": {
                     "type": "string"
                 },
-                "booking_end": {
-                    "type": "string"
-                },
-                "booking_start": {
-                    "type": "string"
-                },
                 "capacity": {
                     "type": "integer"
                 },
                 "created_at": {
                     "type": "string"
                 },
-                "created_by_user_id": {
+                "created_by": {
                     "type": "integer"
                 },
-                "date_event": {
+                "date": {
                     "type": "string"
                 },
                 "deleted_at": {
                     "type": "string"
                 },
-                "deleted_by_user_id": {
+                "deleted_by": {
                     "type": "integer"
                 },
                 "description": {
@@ -915,6 +1153,12 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "registration_link": {
+                    "type": "string"
+                },
+                "reservation_start_date": {
+                    "type": "string"
+                },
+                "reseveration_end_date": {
                     "type": "string"
                 },
                 "slug": {
@@ -947,7 +1191,7 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "updated_by_user_id": {
+                "updated_by": {
                     "type": "integer"
                 }
             }
@@ -1195,6 +1439,85 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.UpdateEventPayload": {
+            "type": "object",
+            "required": [
+                "author",
+                "capacity",
+                "date",
+                "description",
+                "duration",
+                "file_name",
+                "is_online",
+                "location",
+                "slug",
+                "status",
+                "title",
+                "type"
+            ],
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "string"
+                },
+                "file_name": {
+                    "type": "string"
+                },
+                "is_online": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "registration_link": {
+                    "type": "string"
+                },
+                "reservation_start_date": {
+                    "type": "string"
+                },
+                "reseveration_end_date": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "speakers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.User": {
             "type": "object",
             "properties": {
@@ -1277,17 +1600,24 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Golang API (LMS-BE)",
+	Description:      "This is the API documentation for this service.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

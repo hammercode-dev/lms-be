@@ -19,7 +19,7 @@ import (
 // @Failure 400 {object} domain.HttpResponse
 // @Failure 500 {object} domain.HttpResponse
 // @Success 200 {object} domain.RegisterStatusResponse
-// @Router /api/events/registartions/:order_no [get]
+// @Router /api/v1/events/registartions/:order_no [get]
 func (h Handler) RegistrationStatus(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	order_no := vars["order_no"]
