@@ -20,7 +20,7 @@ import (
 // @Failure 400 {object} domain.HttpResponse
 // @Failure 500 {object} domain.HttpResponse
 // @Success 200 {object} domain.User
-// @Router /api/auth/register [post]
+// @Router /api/v1/auth/register [post]
 func (h Handler) Register(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {

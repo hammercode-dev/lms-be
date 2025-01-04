@@ -397,177 +397,6 @@ info:
   title: Golang API (LMS-BE)
   version: "1.0"
 paths:
-  /api/auth/login:
-    post:
-      consumes:
-      - application/json
-      description: This endpoint use to login
-      parameters:
-      - description: Body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/domain.Login'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-      summary: Login
-      tags:
-      - Auth
-  /api/auth/logout:
-    post:
-      consumes:
-      - application/json
-      description: This endpoint use to logout
-      parameters:
-      - description: Body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/domain.Login'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-      summary: Logout
-      tags:
-      - Auth
-  /api/auth/register:
-    post:
-      consumes:
-      - application/json
-      description: This endpoint use to register
-      parameters:
-      - description: Body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/domain.Register'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.User'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-      summary: Register
-      tags:
-      - Auth
-  /api/users:
-    delete:
-      consumes:
-      - application/json
-      description: This endpoint use to delete user
-      parameters:
-      - description: string
-        in: query
-        name: id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-      summary: Delete User
-      tags:
-      - User
-    get:
-      consumes:
-      - application/json
-      description: This endpoint use to get users by filter
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/domain.User'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-      summary: Get Users
-      tags:
-      - User
-    put:
-      consumes:
-      - application/json
-      description: This endpoint use to update profile user
-      parameters:
-      - description: Body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/domain.UserUpdateProfile'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/domain.HttpResponse'
-      summary: Update User
-      tags:
-      - User
   /api/v1/admin/events:
     get:
       consumes:
@@ -749,6 +578,96 @@ paths:
       summary: Update Event
       tags:
       - Event
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to login
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Login
+      tags:
+      - Auth
+  /api/v1/auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to logout
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Logout
+      tags:
+      - Auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to register
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Register'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Register
+      tags:
+      - Auth
   /api/v1/events:
     get:
       consumes:
@@ -1059,6 +978,85 @@ paths:
       summary: Register Event
       tags:
       - Event
+  /api/v1/users:
+    delete:
+      consumes:
+      - application/json
+      description: This endpoint use to delete user
+      parameters:
+      - description: string
+        in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Delete User
+      tags:
+      - User
+    get:
+      consumes:
+      - application/json
+      description: This endpoint use to get current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get User Profile
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      description: This endpoint use to update profile user
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UserUpdateProfile'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Update User
+      tags:
+      - User
 securityDefinitions:
   BearerAuth:
     in: header

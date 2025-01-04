@@ -19,7 +19,7 @@ import (
 // @Failure 400 {object} domain.HttpResponse
 // @Failure 500 {object} domain.HttpResponse
 // @Failure 200 {object} domain.HttpResponse
-// @Router /api/auth/login [post]
+// @Router /api/v1/auth/login [post]
 func (h Handler) Login(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
