@@ -20,20 +20,24 @@ type EventRepository interface {
 	CreatePayEvent(ctx context.Context, event EventPay) (uint, error)
 	CreateRegisterEvent(ctx context.Context, event RegistrationEvent) (uint, error)
 	GetEvent(ctx context.Context, eventID uint) (data Event, err error)
+	DeleteEvent(ctx context.Context, eventID uint) (err error)
 	GetRegistrationEvent(ctx context.Context, orderNo string) (data RegistrationEvent, err error)
 	ListRegistration(ctx context.Context, filter EventFilter) (tData int, data []RegistrationEvent, err error)
 	ListEventPay(ctx context.Context, filter EventFilter) (tData int, data []EventPay, err error)
 	UpdateEventPay(ctx context.Context, event EventPay) error
 	GetEventPay(ctx context.Context, orderNo string) (data EventPay, err error)
 	UpdateRegistrationEvent(ctx context.Context, event RegistrationEvent) error
+	UpdateEvent(ctx context.Context, event Event) error
 }
 
 type EventUsecase interface {
 	CreateEvent(ctx context.Context, payload CreateEventPayload) error
+	UpdateEvent(ctx context.Context, id uint, payload UpdateEventPayload) error
 	GetEvents(ctx context.Context, filter EventFilter) (data []Event, pagination Pagination, err error)
 	CreateRegisterEvent(ctx context.Context, payload RegisterEventPayload) (RegisterEventResponse, error)
 	CreatePayEvent(ctx context.Context, payload EventPayPayload) error
 	GetEventByID(ctx context.Context, id uint) (resp Event, err error)
+	DeleteEvent(ctx context.Context, id uint) (err error)
 	RegistrationStatus(ctx context.Context, orderNo string) (resp RegisterStatusResponse, err error)
 	ListRegistration(ctx context.Context, filter EventFilter) (resp []RegistrationEvent, pagination Pagination, err error)
 	ListEventPay(ctx context.Context, filter EventFilter) (data []EventPay, pagination Pagination, err error)
@@ -43,9 +47,12 @@ type EventUsecase interface {
 type EventHandler interface {
 	CreateEvent(w http.ResponseWriter, r *http.Request)
 	GetEvents(w http.ResponseWriter, r *http.Request)
+	List(w http.ResponseWriter, r *http.Request)
+	DeleteEvent(w http.ResponseWriter, r *http.Request)
 	RegisterEvent(w http.ResponseWriter, r *http.Request)
 	PayEvent(w http.ResponseWriter, r *http.Request)
 	GetEventByID(w http.ResponseWriter, r *http.Request)
+	GetDetail(w http.ResponseWriter, r *http.Request)
 	RegistrationStatus(w http.ResponseWriter, r *http.Request)
 	ListRegistration(w http.ResponseWriter, r *http.Request)
 	ListEventPay(w http.ResponseWriter, r *http.Request)
@@ -53,30 +60,30 @@ type EventHandler interface {
 }
 
 type Event struct {
-	ID               uint           `json:"id" gorm:"primarykey"`
-	Title            string         `json:"title" `
-	Description      string         `json:"description"`
-	Slug             string         `json:"slug"`
-	Author           string         `json:"author"`
-	ImageEvent       string         `json:"image_event"`
-	DateEvent        null.Time      `json:"date_event"`
-	Type             string         `json:"type"`
-	Location         string         `json:"location"`
-	Duration         string         `json:"duration"`
-	Capacity         int            `json:"capacity"`
-	Status           string         `json:"status"`                                          // comming soon
-	Tags             []EventTag     `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
-	Speakers         []EventSpeaker `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
-	RegistrationLink string         `json:"registration_link"`
-	Price            float64        `json:"price"` // 0 == free
-	CreatedByUserID  int            `json:"created_by_user_id"`
-	UpdatedByUserID  int            `json:"updated_by_user_id"`
-	DeletedByUserID  int            `json:"deleted_by_user_id"`
-	BookingStart     null.Time      `json:"booking_start"`
-	BookingEnd       null.Time      `json:"booking_end"`
-	CreatedAt        time.Time      `json:"created_at"`
-	UpdatedAt        null.Time      `json:"updated_at"`
-	DeletedAt        null.Time      `json:"deleted_at"`
+	ID                   uint           `json:"id" gorm:"primarykey"`
+	Title                string         `json:"title" `
+	Description          string         `json:"description"`
+	Slug                 string         `json:"slug"`
+	Author               string         `json:"author"`
+	ImageEvent           string         `json:"image_event"`
+	Date                 null.Time      `json:"date"`
+	Type                 string         `json:"type"`
+	Location             string         `json:"location"`
+	Duration             string         `json:"duration"`
+	Capacity             int            `json:"capacity"`
+	Status               string         `json:"status"`                                          // comming soon
+	Tags                 []EventTag     `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
+	Speakers             []EventSpeaker `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
+	RegistrationLink     string         `json:"registration_link"`
+	Price                float64        `json:"price"` // 0 == free
+	CreatedBy            int            `json:"created_by"`
+	UpdatedBy            int            `json:"updated_by"`
+	DeletedBy            int            `json:"deleted_by"`
+	ReservationStartDate null.Time      `json:"reservation_start_date"`
+	ReservationEndDate   null.Time      `json:"reseveration_end_date"`
+	CreatedAt            time.Time      `json:"created_at"`
+	UpdatedAt            null.Time      `json:"updated_at"`
+	DeletedAt            null.Time      `json:"deleted_at"`
 }
 
 func (Event) TableName() string {
@@ -104,23 +111,45 @@ func (EventSpeaker) TableName() string {
 }
 
 type CreateEventPayload struct {
-	Title            string    `json:"title" validate:"required"`
-	Description      string    `json:"description" validate:"required"`
-	Author           string    `json:"author" validate:"required"`
-	FileName         string    `json:"file_name" validate:"required"`
-	Slug             string    `json:"slug" validate:"required"`
-	DateEvent        null.Time `json:"date_event" validate:"required"`
-	Type             string    `json:"type" validate:"required"`
-	Location         string    `json:"location" validate:"required"`
-	Duration         string    `json:"duration" validate:"required"`
-	Status           string    `json:"status" validate:"required"`
-	Capacity         int       `json:"capacity" validate:"required"`
-	Price            float64   `json:"price"`
-	RegistrationLink string    `json:"registration_link"`
-	Tags             []string  `json:"tags"`
-	Speakers         []string  `json:"speakers"`
-	BookingStart     null.Time `json:"booking_start"`
-	BookingEnd       null.Time `json:"booking_end"`
+	Title                string    `json:"title" validate:"required"`
+	Description          string    `json:"description" validate:"required"`
+	Author               string    `json:"author" validate:"required"`
+	FileName             string    `json:"file_name" validate:"required"`
+	Slug                 string    `json:"slug" validate:"required"`
+	IsOnline             string    `json:"is_online" validate:"required"`
+	Date                 null.Time `json:"date" validate:"required"`
+	Type                 string    `json:"type" validate:"required"`
+	Location             string    `json:"location" validate:"required"`
+	Duration             string    `json:"duration" validate:"required"`
+	Status               string    `json:"status" validate:"required"`
+	Capacity             int       `json:"capacity" validate:"required"`
+	Price                float64   `json:"price"`
+	RegistrationLink     string    `json:"registration_link"`
+	Tags                 []string  `json:"tags"`
+	Speakers             []string  `json:"speakers"`
+	ReservationStartDate null.Time `json:"reservation_start_date"`
+	ReservationEndDate   null.Time `json:"reseveration_end_date"`
+}
+
+type UpdateEventPayload struct {
+	Title                string    `json:"title" validate:"required"`
+	Description          string    `json:"description" validate:"required"`
+	Author               string    `json:"author" validate:"required"`
+	FileName             string    `json:"file_name" validate:"required"`
+	Slug                 string    `json:"slug" validate:"required"`
+	IsOnline             string    `json:"is_online" validate:"required"`
+	Date                 null.Time `json:"date" validate:"required"`
+	Type                 string    `json:"type" validate:"required"`
+	Location             string    `json:"location" validate:"required"`
+	Duration             string    `json:"duration" validate:"required"`
+	Status               string    `json:"status" validate:"required"`
+	Capacity             int       `json:"capacity" validate:"required"`
+	Price                float64   `json:"price"`
+	RegistrationLink     string    `json:"registration_link"`
+	Tags                 []string  `json:"tags"`
+	Speakers             []string  `json:"speakers"`
+	ReservationStartDate null.Time `json:"reservation_start_date"`
+	ReservationEndDate   null.Time `json:"reseveration_end_date"`
 }
 
 type EventDTO struct {

@@ -24,12 +24,12 @@ func (uc usecase) CreateRegisterEvent(ctx context.Context, payload domain.Regist
 
 	tNow := time.Now()
 
-	if !event.BookingStart.Valid {
+	if !event.ReservationStartDate.Valid {
 		return domain.RegisterEventResponse{}, errors.New("event is not start to booking")
 	}
 
-	if event.BookingEnd.Valid {
-		if tNow.After(event.BookingEnd.Time) {
+	if event.ReservationEndDate.Valid {
+		if tNow.After(event.ReservationEndDate.Time) {
 			return domain.RegisterEventResponse{}, errors.New("priode booking has ended")
 		}
 	}

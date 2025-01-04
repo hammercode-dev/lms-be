@@ -24,7 +24,7 @@ import (
 // @Failure 400 {object} domain.HttpResponse
 // @Failure 500 {object} domain.HttpResponse
 // @Success 200 {object} []domain.EventPay
-// @Router /api/events/pays [get]
+// @Router /api/v1/events/pays [get]
 func (h Handler) ListEventPay(w http.ResponseWriter, r *http.Request) {
 	flterPagination, err := domain.GetPaginationFromCtx(r)
 	if err != nil {

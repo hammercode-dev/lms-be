@@ -23,15 +23,6 @@ import (
 	"github.com/swaggo/swag"
 )
 
-// @title Golang API (LMS-BE)
-// @version 1.0
-// @description This is the API documentation for this service.
-// @contact.name API Support
-// @contact.url http://hammercode.org/support
-// @contact.email hammercode.org
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @BasePath /api
 var serveHttpCmd = &cobra.Command{
 	Use:   "http",
 	Short: "launches an HTTP server",
@@ -127,11 +118,7 @@ func health(w http.ResponseWriter, _ *http.Request) {
 func registerHandler(app app.App) *mux.Router {
 
 	router := mux.NewRouter()
-
 	router.HandleFunc("/health", health)
-
-	// doc := router.PathPrefix("/user")
-	// doc.Handler(httpSwagger.WrapHandler)
 
 	router.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
 
@@ -144,7 +131,7 @@ func registerHandler(app app.App) *mux.Router {
 
 	public := v1.PathPrefix("/public").Subrouter()
 	public.HandleFunc("/storage/{kind}/{path}", app.ImageHandler.GetStorage).Methods(http.MethodGet)
-	public.HandleFunc("/events", app.EventHandler.GetEvents).Methods(http.MethodGet)
+	public.HandleFunc("/events", app.EventHandler.List).Methods(http.MethodGet)
 	public.HandleFunc("/events/{id}", app.EventHandler.GetEventByID).Methods(http.MethodGet)
 	public.HandleFunc("/images", app.ImageHandler.UploadImage).Methods(http.MethodPost)
 	public.HandleFunc("/events/registrations", app.EventHandler.RegisterEvent).Methods(http.MethodPost)
@@ -153,6 +140,9 @@ func registerHandler(app app.App) *mux.Router {
 
 	protectedV1Route := v1.NewRoute().Subrouter()
 	protectedV1Route.Use(app.Middleware.AuthMiddleware)
+
+	protectedV1AdminRoute := v1.PathPrefix("/admin").Subrouter()
+	protectedV1AdminRoute.Use(app.Middleware.AuthMiddleware)
 
 	protectedV1Route.HandleFunc("/users", app.UserHandler.GetUsers).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/user", app.UserHandler.GetUserProfile).Methods(http.MethodGet)
@@ -163,12 +153,16 @@ func registerHandler(app app.App) *mux.Router {
 	protectedV1Route.HandleFunc("/delete", app.UserHandler.DeleteUser).Methods(http.MethodDelete)
 
 	protectedV1Route.HandleFunc("/events", app.EventHandler.CreateEvent).Methods(http.MethodPost)
-	protectedV1Route.HandleFunc("/events", app.EventHandler.GetEvents).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/events/registrations", app.EventHandler.ListRegistration).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/events/pays", app.EventHandler.ListEventPay).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/events/pays", app.EventHandler.PayProcess).Methods(http.MethodPost)
 	protectedV1Route.HandleFunc("/events/{id}", app.EventHandler.GetEventByID).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/images", app.ImageHandler.UploadImage).Methods(http.MethodPost)
+
+	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.CreateEvent).Methods(http.MethodPost)
+	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.GetEvents).Methods(http.MethodGet)
+	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.DeleteEvent).Methods(http.MethodDelete)
+	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.GetDetail).Methods(http.MethodGet)
 
 	return router
 }
