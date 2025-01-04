@@ -13,14 +13,25 @@ import (
 
 	"github.com/hammer-code/lms-be/app"
 	"github.com/hammer-code/lms-be/config"
+	_ "github.com/hammer-code/lms-be/docs"
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/utils"
 	"github.com/sirupsen/logrus"
+	"github.com/swaggo/http-swagger"
+	// _ "swagger-mux/docs"
 	"github.com/spf13/cobra"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/swaggo/swag"
 )
 
+// @title Golang API (LMS-BE)
+// @version 1.0
+// @description This is the API documentation for this service.
+// @contact.name API Support
+// @contact.url http://hammercode.org/support
+// @contact.email hammercode.org
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @BasePath /api
 var serveHttpCmd = &cobra.Command{
 	Use:   "http",
 	Short: "launches an HTTP server",
@@ -100,7 +111,7 @@ func LoadSwagger() {
 }
 
 func init() {
-	LoadSwagger()
+	// LoadSwagger()
 	rootCmd.AddCommand(serveHttpCmd)
 
 }
@@ -119,8 +130,10 @@ func registerHandler(app app.App) *mux.Router {
 
 	router.HandleFunc("/health", health)
 
-	doc := router.PathPrefix("/user")
-	doc.Handler(httpSwagger.WrapHandler)
+	// doc := router.PathPrefix("/user")
+	// doc.Handler(httpSwagger.WrapHandler)
+
+	router.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
 
 	v1 := router.PathPrefix("/api/v1").Subrouter()
 	v1.HandleFunc("/newsletters/subscribe", app.NewLetterHandler.Subscribe).Methods(http.MethodPost)

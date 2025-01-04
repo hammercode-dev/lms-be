@@ -10,6 +10,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// RegisterEvent
+// @Summary Register Event
+// @Description This endpoint use to register event
+// @Tags Event
+// @Accept json
+// @Produce json
+// @Param request body domain.RegisterEventPayload true "Body"
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Success 200 {object} domain.HttpResponse
+// @Router /api/events/registrations [post]
 func (h Handler) RegisterEvent(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {

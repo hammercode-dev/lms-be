@@ -8,6 +8,24 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// GetEvents
+// @Summary Get Events
+// @Description This endpoint use to get events by filter
+// @Tags Event
+// @Accept json
+// @Produce json
+// @Param limit query string true "string"
+// @Param page query string true "string"
+// @Param orderBy query string false "string"
+// @Param start_date query string false "string"
+// @Param end_date query string false "string"
+// @Param title query string false "string"
+// @Param type query string false "string"
+// @Param status query string false "string"
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Success 200 {object} []domain.Event
+// @Router /api/events [get]
 func (h Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
 	flterPagination, err := domain.GetPaginationFromCtx(r)
 	if err != nil {

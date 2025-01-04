@@ -10,6 +10,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// GetEventByID
+// @Summary Get Detail Event by ID
+// @Description This endpoint use to get event by id
+// @Tags Event
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Success 200 {object} domain.Event
+// @Router /api/events/:id [get]
 func (h Handler) GetEventByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idString := vars["id"]
@@ -25,7 +36,6 @@ func (h Handler) GetEventByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := h.usecase.GetEventByID(r.Context(), uint(value))
-
 	if err != nil {
 		logrus.Error("failed to get event : ", err)
 		utils.Response(domain.HttpResponse{

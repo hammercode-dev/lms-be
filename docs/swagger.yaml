@@ -1,0 +1,842 @@
+definitions:
+  domain.CreateEventPayload:
+    properties:
+      author:
+        type: string
+      booking_end:
+        type: string
+      booking_start:
+        type: string
+      capacity:
+        type: integer
+      date_event:
+        type: string
+      description:
+        type: string
+      duration:
+        type: string
+      file_name:
+        type: string
+      location:
+        type: string
+      price:
+        type: number
+      registration_link:
+        type: string
+      slug:
+        type: string
+      speakers:
+        items:
+          type: string
+        type: array
+      status:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      type:
+        type: string
+    required:
+    - author
+    - capacity
+    - date_event
+    - description
+    - duration
+    - file_name
+    - location
+    - slug
+    - status
+    - title
+    - type
+    type: object
+  domain.Event:
+    properties:
+      author:
+        type: string
+      booking_end:
+        type: string
+      booking_start:
+        type: string
+      capacity:
+        type: integer
+      created_at:
+        type: string
+      created_by_user_id:
+        type: integer
+      date_event:
+        type: string
+      deleted_at:
+        type: string
+      deleted_by_user_id:
+        type: integer
+      description:
+        type: string
+      duration:
+        type: string
+      id:
+        type: integer
+      image_event:
+        type: string
+      location:
+        type: string
+      price:
+        description: 0 == free
+        type: number
+      registration_link:
+        type: string
+      slug:
+        type: string
+      speakers:
+        description: Ensure foreign key is correctly referenced
+        items:
+          $ref: '#/definitions/domain.EventSpeaker'
+        type: array
+      status:
+        description: comming soon
+        type: string
+      tags:
+        description: Ensure foreign key is correctly referenced
+        items:
+          $ref: '#/definitions/domain.EventTag'
+        type: array
+      title:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
+      updated_by_user_id:
+        type: integer
+    type: object
+  domain.EventPay:
+    properties:
+      event_id:
+        type: integer
+      id:
+        type: integer
+      image_proof_payment:
+        type: string
+      net_amount:
+        type: number
+      order_no:
+        type: string
+      registration_event:
+        $ref: '#/definitions/domain.RegistrationEvent'
+      registration_event_id:
+        type: integer
+      status:
+        type: string
+    type: object
+  domain.EventPayPayload:
+    properties:
+      image_proof_payment:
+        type: string
+      net_amount:
+        type: number
+      order_no:
+        type: string
+    type: object
+  domain.EventSpeaker:
+    properties:
+      event_id:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  domain.EventTag:
+    properties:
+      event_id:
+        type: integer
+      id:
+        type: integer
+      tags:
+        type: string
+    type: object
+  domain.HttpResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      limit:
+        type: integer
+      message:
+        type: string
+      page:
+        type: integer
+      total_count:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  domain.Login:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  domain.PayProcessPayload:
+    properties:
+      note:
+        type: string
+      order_no:
+        type: string
+      status:
+        type: string
+    type: object
+  domain.Register:
+    properties:
+      confirm_password:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - confirm_password
+    - email
+    - password
+    - username
+    type: object
+  domain.RegisterEventPayload:
+    properties:
+      email:
+        type: string
+      event_id:
+        type: integer
+      image_proof_payment:
+        type: string
+      name:
+        type: string
+      net_amount:
+        type: number
+      phone_number:
+        type: string
+      user_id:
+        type: string
+    type: object
+  domain.RegisterStatusResponse:
+    properties:
+      order_no:
+        type: string
+      string:
+        type: string
+    type: object
+  domain.RegistrationEvent:
+    properties:
+      created_at:
+        type: string
+      created_by_user_id:
+        type: integer
+      deleted_at:
+        type: string
+      deleted_by_user_id:
+        type: integer
+      email:
+        type: string
+      event_id:
+        description: lock event
+        type: integer
+      id:
+        type: integer
+      image_proof_payment:
+        type: string
+      name:
+        type: string
+      order_no:
+        type: string
+      payment_date:
+        type: string
+      phone_number:
+        type: string
+      status:
+        description: register, pay, approve/cancel/decline
+        type: string
+      up_to_you:
+        type: string
+      updated_at:
+        type: string
+      updated_by_user_id:
+        type: integer
+      user_id:
+        description: lock user
+        type: string
+    type: object
+  domain.User:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      fullname:
+        type: string
+      gender:
+        type: string
+      github:
+        type: string
+      id:
+        type: integer
+      linkedin:
+        type: string
+      password:
+        type: string
+      personal_web:
+        type: string
+      phone_number:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  domain.UserUpdateProfile:
+    properties:
+      address:
+        type: string
+      date_of_birth:
+        type: string
+      fullname:
+        type: string
+      gender:
+        type: string
+      github:
+        type: string
+      linkedin:
+        type: string
+      personal_web:
+        type: string
+      phone_number:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to login
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Login
+      tags:
+      - Auth
+  /api/auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to logout
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Logout
+      tags:
+      - Auth
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to register
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Register'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Register
+      tags:
+      - Auth
+  /api/events:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint use to get events by filter
+      parameters:
+      - description: string
+        in: query
+        name: limit
+        required: true
+        type: string
+      - description: string
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: string
+        in: query
+        name: orderBy
+        type: string
+      - description: string
+        in: query
+        name: start_date
+        type: string
+      - description: string
+        in: query
+        name: end_date
+        type: string
+      - description: string
+        in: query
+        name: title
+        type: string
+      - description: string
+        in: query
+        name: type
+        type: string
+      - description: string
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Event'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get Events
+      tags:
+      - Event
+    post:
+      consumes:
+      - application/json
+      description: This endpoint create event
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateEventPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Create Event
+      tags:
+      - Event
+  /api/events/:id:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint use to get event by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Event'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get Detail Event by ID
+      tags:
+      - Event
+  /api/events/pay:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint pay the event
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.EventPayPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Pay Event
+      tags:
+      - Event
+  /api/events/pays:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint use to get list of event pay
+      parameters:
+      - description: string
+        in: query
+        name: limit
+        required: true
+        type: string
+      - description: string
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: string
+        in: query
+        name: event_id
+        type: string
+      - description: string
+        in: query
+        name: start_date
+        type: string
+      - description: string
+        in: query
+        name: end_date
+        type: string
+      - description: string
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.EventPay'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get List event pay
+      tags:
+      - Event
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to confirm payment
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.PayProcessPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Pay Process
+      tags:
+      - Event
+  /api/events/registartions/:order_no:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint use to check registration status
+      parameters:
+      - description: ABCXX
+        in: path
+        name: order_no
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.RegisterStatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Register Status
+      tags:
+      - Event
+  /api/events/registrations:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint use to get list of user that register on event
+      parameters:
+      - description: string
+        in: query
+        name: limit
+        required: true
+        type: string
+      - description: string
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: string
+        in: query
+        name: event_id
+        type: string
+      - description: string
+        in: query
+        name: start_date
+        type: string
+      - description: string
+        in: query
+        name: end_date
+        type: string
+      - description: string
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.RegistrationEvent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get List Register user to event
+      tags:
+      - Event
+    post:
+      consumes:
+      - application/json
+      description: This endpoint use to register event
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RegisterEventPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Register Event
+      tags:
+      - Event
+  /api/users:
+    delete:
+      consumes:
+      - application/json
+      description: This endpoint use to delete user
+      parameters:
+      - description: string
+        in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Delete User
+      tags:
+      - User
+    get:
+      consumes:
+      - application/json
+      description: This endpoint use to get users by filter
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Get Users
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      description: This endpoint use to update profile user
+      parameters:
+      - description: Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UserUpdateProfile'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.HttpResponse'
+      summary: Update User
+      tags:
+      - User
+swagger: "2.0"

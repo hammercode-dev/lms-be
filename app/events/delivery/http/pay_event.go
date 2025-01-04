@@ -10,6 +10,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// PayEvent
+// @Summary Pay Event
+// @Description This endpoint pay the event
+// @Tags Event
+// @Accept json
+// @Produce json
+// @Param request body domain.EventPayPayload true "Body"
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Success 200 {object} domain.HttpResponse
+// @Router /api/events/pay [post]
 func (h Handler) PayEvent(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {

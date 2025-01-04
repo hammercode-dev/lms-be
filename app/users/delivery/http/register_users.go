@@ -10,6 +10,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Register
+// @Summary Register
+// @Description This endpoint use to register
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body domain.Register true "Body"
+// @Failure 400 {object} domain.HttpResponse
+// @Failure 500 {object} domain.HttpResponse
+// @Success 200 {object} domain.User
+// @Router /api/auth/register [post]
 func (h Handler) Register(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -46,7 +57,7 @@ func (h Handler) Register(w http.ResponseWriter, r *http.Request) {
 		utils.Response(resp, w)
 		return
 	}
-	
+
 	utils.Response(domain.HttpResponse{
 		Code:    200,
 		Message: "success",
