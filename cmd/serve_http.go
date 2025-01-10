@@ -40,10 +40,10 @@ var serveHttpCmd = &cobra.Command{
 
 		// build cors
 		muxCorsWithRouter := muxHandlers.CORS(
-			// muxHandlers.AllowCredentials(),
-			muxHandlers.AllowedHeaders([]string{"*"}),
-			muxHandlers.AllowedMethods([]string{"*"}),
-			muxHandlers.AllowedOrigins([]string{"*"}),
+			muxHandlers.AllowedHeaders(cfg.CORS_ALLOWED_HEADERS),
+			muxHandlers.AllowedMethods(cfg.CORS_ALLOWED_METHODS),
+			muxHandlers.AllowedOrigins(cfg.CORS_ALLOWED_ORIGINS),
+			muxHandlers.AllowCredentials(),
 		)(router)
 
 		srv := &http.Server{
