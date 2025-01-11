@@ -19,6 +19,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/swaggo/http-swagger"
 	// _ "swagger-mux/docs"
+	"github.com/rs/cors"
 	"github.com/spf13/cobra"
 	"github.com/swaggo/swag"
 )
@@ -39,11 +40,11 @@ var serveHttpCmd = &cobra.Command{
 		router := registerHandler(app)
 
 		// build cors
-		muxCorsWithRouter := muxHandlers.CORS(
-			muxHandlers.AllowedHeaders([]string{"*"}),
-			muxHandlers.AllowedMethods([]string{"*"}),
-			muxHandlers.AllowedOrigins([]string{"*"}),
-		)(router)
+		muxCorsWithRouter := cors.New(cors.Options{
+			AllowedOrigins: []string{"*"},
+			AllowedMethods: []string{"*"},
+			AllowedHeaders: []string{"*"},
+		}).Handler(router)
 
 		srv := &http.Server{
 			Addr:    cfg.APP_PORT,
