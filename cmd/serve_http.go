@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	muxHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
 	"github.com/hammer-code/lms-be/app"
