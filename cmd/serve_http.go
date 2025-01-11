@@ -37,10 +37,11 @@ var serveHttpCmd = &cobra.Command{
 
 		// route
 		router := registerHandler(app)
+		// router.Use(cors.Default().Handler)
 
 		// build cors
 		muxCorsWithRouter := cors.New(cors.Options{
-			AllowedOrigins: []string{"*"},
+			AllowedOrigins: []string{"*", "http://localhost:8000"},
 			AllowedMethods: []string{"*"},
 			AllowedHeaders: []string{"*"},
 		}).Handler(router)
