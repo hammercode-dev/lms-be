@@ -66,10 +66,6 @@ func GetConfig() Config {
 			methods = strings.Split(corsMethods, ",")
 		}
 
-		logrus.Info("cors_allow_origins :", origins)
-		logrus.Info("cors_allow_headers :", headers)
-		logrus.Info("cors_allow_methods :", methods)
-
 		c = &Config{
 			APP_ENV:              viper.GetString("APP_ENV"),
 			APP_NAME:             viper.GetString("APP_NAME"),

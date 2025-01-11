@@ -16,7 +16,8 @@ import (
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/utils"
 	"github.com/sirupsen/logrus"
-	"github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger"
+
 	// _ "swagger-mux/docs"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
@@ -37,14 +38,10 @@ var serveHttpCmd = &cobra.Command{
 
 		// route
 		router := registerHandler(app)
-		// router.Use(cors.Default().Handler)
+		router.Use(app.Middleware.LogMiddleware)
 
 		// build cors
-		muxCorsWithRouter := cors.New(cors.Options{
-			AllowedOrigins: []string{"*", "http://localhost:8000"},
-			AllowedMethods: []string{"*"},
-			AllowedHeaders: []string{"*"},
-		}).Handler(router)
+		muxCorsWithRouter := cors.AllowAll().Handler(router)
 
 		srv := &http.Server{
 			Addr:    cfg.APP_PORT,
