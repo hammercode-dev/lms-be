@@ -125,6 +125,8 @@ func registerHandler(app app.App) *mux.Router {
 	auth := v1.PathPrefix("/auth").Subrouter()
 	auth.HandleFunc("/register", app.UserHandler.Register).Methods(http.MethodPost)
 	auth.HandleFunc("/login", app.UserHandler.Login).Methods(http.MethodPost)
+	auth.HandleFunc("/forgot_password", app.UserHandler.ForgotPassword).Methods(http.MethodPost)
+	auth.HandleFunc("/forgot_password", app.UserHandler.ShowResetPasswordForm).Methods(http.MethodGet)
 
 	public := v1.PathPrefix("/public").Subrouter()
 	public.HandleFunc("/storage/{kind}/{path}", app.ImageHandler.GetStorage).Methods(http.MethodGet)
