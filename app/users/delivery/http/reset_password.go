@@ -10,13 +10,14 @@ import (
 )
 
 func (h Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
+
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		utils.Response(domain.HttpResponse{
 			Code:    500,
 			Message: err.Error(),
 		}, w)
-
+		return
 	}
 
 	forgotPasswordInstance := domain.ForgotPassword{}

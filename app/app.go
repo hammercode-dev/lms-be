@@ -44,7 +44,7 @@ func InitApp(
 	middleware := middlewares.InitMiddleware(jwtInstance, userRepo)
 
 	// usecase
-	userUsecase := users.InitUsecase(userRepo, dbTx, jwtInstance)
+	userUsecase := users.InitUsecase(cfg, userRepo, dbTx, jwtInstance)
 	newsletterUC := newsletters.InitUsecase(cfg, newsletterRepo, dbTx, jwt.NewJwt(cfg.JWT_SECRET_KEY))
 	eventUC := events.InitUsecase(eventRepo, imgRepo, dbTx)
 	imgUc := images.InitUsecase(imgRepo, dbTx)
