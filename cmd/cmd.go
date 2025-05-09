@@ -23,7 +23,7 @@ func Execute() {
 	config.LoadConfig()
 
 	// Adding child commands
-	rootCmd.AddCommand(dbMigrate, serveHttpCmd)
+	rootCmd.AddCommand(createMigration, serveHttpCmd, migrateUp, migrateUp)
 
 	// cmd execute
 	if err := rootCmd.Execute(); err != nil {
