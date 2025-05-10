@@ -16,6 +16,10 @@ func (us *usecase) Login(ctx context.Context, userReq domain.Login) (user domain
 		}
 		return nil
 	})
+	if err != nil {
+		logrus.Error("us.Login: failed to login. ", err)
+		return
+	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userReq.Password)); err != nil {
 		logrus.Error("us.Login: invalid password")
