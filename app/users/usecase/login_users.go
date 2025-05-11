@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
@@ -9,6 +10,11 @@ import (
 
 func (us *usecase) Login(ctx context.Context, userReq domain.Login) (user domain.User, token string, err error) {
 	err = us.dbTX.StartTransaction(ctx, func(txCtx context.Context) error {
+		if err = us.userRepo.CleanupLogoutToken(ctx); err != nil {
+			logrus.Error("us.LoginUser: failed to cleanup token", err)
+			return err
+		}
+		
 		user, err = us.userRepo.FindByEmail(ctx, userReq.Email)
 		if err != nil {
 			logrus.Error("us.LoginUser: failed to login", err)
