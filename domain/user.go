@@ -17,7 +17,8 @@ type (
 		LogoutUser(ctx context.Context, token string, expiredAt time.Time) error
 		ExpiredToken(ctx context.Context, token string) error
 		GetUsersGenericConditions(ctx context.Context, filter GetUserBy) (users []User, err error)
-		ResetPassword(ctx context.Context, email string, password string) error
+		ResetPassword(ctx context.Context, email, password, token string) error
+		ForgotPassword(ctx context.Context, token string, expiredAt time.Time, user User) error
 	}
 	UserUsecase interface {
 		GetUsers(ctx context.Context) (users []User, err error)

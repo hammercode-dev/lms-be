@@ -32,6 +32,19 @@ func (us *usecase) ForgotPassword(ctx context.Context, emailForgot domain.Forgot
 		logrus.Error("us.ForgotPassword: failed to generate token", err)
 		return
 	}
+
+	jwtData, err := us.jwt.VerifyToken(*resetToken)
+
+	if err != nil {
+		logrus.Error("us.ForgotPassword: failed to verify token", err)
+		return
+	}
+
+	if err = us.userRepo.ForgotPassword(ctx, *resetToken, jwtData.ExpiresAt.Time, user); err != nil {
+		logrus.Error("us.ForgotPassword: failed to save token", err)
+		return
+	}
+
 	// link to reset password
 	link := us.cfg.BASE_URL_FE + "/forgot_password?token=" + *resetToken
 

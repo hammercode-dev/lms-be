@@ -24,7 +24,7 @@ var createSeeder = &cobra.Command{
 		gooseCmd.Stderr = os.Stderr
 
 		if err := gooseCmd.Run(); err != nil {
-			logrus.Error("goose create migration error: ", err)
+			logrus.Error("goose create seed error: ", err)
 			return
 		}
 
@@ -43,27 +43,7 @@ var seedUp = &cobra.Command{
 		gooseCmd.Stderr = os.Stderr
 
 		if err := gooseCmd.Run(); err != nil {
-			logrus.Error("goose up migration error: ", err)
-			return
-		}
-
-	},
-}
-
-var seedDown = &cobra.Command{
-	Use:   "seed:down",
-	Short: "seed down",
-	Long:  "seed down",
-	Run: func(cmd *cobra.Command, args []string) {
-
-		cfg := config.GetConfig()
-
-		gooseCmd := exec.Command("goose", "down", "-dir", seederDir, cfg.DB_POSTGRES_DSN)
-		gooseCmd.Stdout = os.Stdout
-		gooseCmd.Stderr = os.Stderr
-
-		if err := gooseCmd.Run(); err != nil {
-			logrus.Error("goose down migration error: ", err)
+			logrus.Error("goose up seed error: ", err)
 			return
 		}
 

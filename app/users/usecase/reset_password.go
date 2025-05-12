@@ -21,7 +21,7 @@ func (us *usecase) ResetPassword(ctx context.Context, reqBodyInstance domain.For
 		return err
 	}
 
-	if err := us.userRepo.ResetPassword(ctx, jwtData.Email, string(hashPassword)); err != nil {
+	if err := us.userRepo.ResetPassword(ctx, jwtData.Email, string(hashPassword), reqBodyInstance.Token); err != nil {
 		logrus.Error("us.ResetPassword: failed to reset password", err)
 		return err
 	}
