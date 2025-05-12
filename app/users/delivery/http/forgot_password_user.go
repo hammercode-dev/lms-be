@@ -30,7 +30,7 @@ func (h Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, link, err := h.usecase.ForgotPassword(r.Context(), forgotPassword)
+	_, _, err = h.usecase.ForgotPassword(r.Context(), forgotPassword)
 
 	if err != nil {
 		utils.Response(domain.HttpResponse{
@@ -43,7 +43,7 @@ func (h Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	utils.Response(domain.HttpResponse{
 		Code:    200,
 		Message: "Request reset password success check your email",
-		Data:    link,
+		Data:    nil,
 	}, w)
 
 }

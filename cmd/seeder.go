@@ -38,7 +38,7 @@ var seedUp = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		cfg := config.GetConfig()
-		gooseCmd := exec.Command("goose", "up", "-dir", seederDir, cfg.DB_POSTGRES_DSN)
+		gooseCmd := exec.Command("goose", "postgres", cfg.DB_POSTGRES_DSN, "up", "-dir", seederDir)
 		gooseCmd.Stdout = os.Stdout
 		gooseCmd.Stderr = os.Stderr
 

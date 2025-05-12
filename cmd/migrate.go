@@ -43,7 +43,7 @@ var createMigration = &cobra.Command{
 	Long:  "migrate create",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		gooseCmd := exec.Command("goose", "create", "table"+args[0], "-dir", migrationDir, "sql")
+		gooseCmd := exec.Command("goose", "create", "table_"+args[0], "-dir", migrationDir, "sql")
 		gooseCmd.Stdout = os.Stdout
 		gooseCmd.Stderr = os.Stderr
 
@@ -62,7 +62,7 @@ var migrateUp = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		cfg := config.GetConfig()
-		gooseCmd := exec.Command("goose", "up", "-dir", migrationDir, cfg.DB_POSTGRES_DSN)
+		gooseCmd := exec.Command("goose", "postgres", cfg.DB_POSTGRES_DSN, "up", "-dir", migrationDir)
 		gooseCmd.Stdout = os.Stdout
 		gooseCmd.Stderr = os.Stderr
 
@@ -82,7 +82,7 @@ var migrateDown = &cobra.Command{
 
 		cfg := config.GetConfig()
 
-		gooseCmd := exec.Command("goose", "down", "-dir", migrationDir, cfg.DB_POSTGRES_DSN)
+		gooseCmd := exec.Command("goose", "postgres", cfg.DB_POSTGRES_DSN, "down", "-dir", migrationDir)
 		gooseCmd.Stdout = os.Stdout
 		gooseCmd.Stderr = os.Stderr
 
