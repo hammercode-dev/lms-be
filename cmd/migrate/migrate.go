@@ -1,9 +1,9 @@
-package migration
+package migrate
 
 import "github.com/spf13/cobra"
 
 var MigrateCmd = &cobra.Command{
-	Use:   "migration",
+	Use:   "migrate",
 	Short: "Migration commmands (create, up, down)",
 }
 

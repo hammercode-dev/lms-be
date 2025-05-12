@@ -1,4 +1,4 @@
-package migration
+package migrate
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 )
 
 var createCmd = &cobra.Command{
-	Use: "create:[name]",
+	Use: "create [name]",
 	Short: "create migration file",
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

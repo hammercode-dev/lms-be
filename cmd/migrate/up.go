@@ -1,4 +1,4 @@
-package migration
+package migrate
 
 import (
 	"context"
@@ -24,7 +24,7 @@ var upCmd = &cobra.Command{
 		}
 		defer conn.Close(context.Background())
 
-		files, _ := filepath.Glob("migrations/*.sql")
+		files, _ := filepath.Glob("database/migrations/*.sql")
 		for _, file := range files {
 			content, _ := os.ReadFile(file)
 			parts := strings.Split(string(content), "-- +migrate Down")

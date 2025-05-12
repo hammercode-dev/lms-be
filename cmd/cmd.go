@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/hammer-code/lms-be/cmd/migration"
+	"github.com/hammer-code/lms-be/cmd/migrate"
 	"github.com/hammer-code/lms-be/config"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -24,7 +24,7 @@ func Execute() {
 	config.LoadConfig()
 
 	// Adding child commands
-	rootCmd.AddCommand(dbMigrate, serveHttpCmd, migration.MigrateCmd)
+	rootCmd.AddCommand(serveHttpCmd, migrate.MigrateCmd)
 
 	// cmd execute
 	if err := rootCmd.Execute(); err != nil {

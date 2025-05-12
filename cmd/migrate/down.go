@@ -1,4 +1,4 @@
-package migration
+package migrate
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/hammer-code/lms-be/config"
 	"github.com/jackc/pgx/v5"
 	"github.com/spf13/cobra"
 )
@@ -15,14 +16,15 @@ var downCmd = &cobra.Command{
 	Use:   "down",
 	Short: "Revert all down migrations",
 	Run: func(cmd *cobra.Command, args []string) {
-		conn, err := pgx.Connect(context.Background(), "postgres://postgres:postgres@localhost:5432/lms-be")
+		cfg := config.GetConfig()
+		conn, err := pgx.Connect(context.Background(), cfg.DB_POSTGRES_DSN)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 			os.Exit(1)
 		}
 		defer conn.Close(context.Background())
 
-		files, _ := filepath.Glob("migrations/*.sql")
+		files, _ := filepath.Glob("database/migrations/*.sql")
 		// reverse order
 		for i := len(files) - 1; i >= 0; i-- {
 			file := files[i]
