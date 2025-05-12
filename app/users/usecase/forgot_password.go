@@ -27,15 +27,15 @@ func (us *usecase) ForgotPassword(ctx context.Context, emailForgot domain.Forgot
 		return
 	}
 
-	resetToken, err := us.jwt.GenerateAccessToken(ctx, &user)
+	resetToken, err := us.jwt.GenerateAccessToken(ctx, &user, 5)
 	if err != nil {
 		logrus.Error("us.ForgotPassword: failed to generate token", err)
 		return
 	}
 	// link to reset password
-	link := "http://localhost:8000/api/v1/auth/forgot_password?token=" + *resetToken
+	link := us.cfg.BASE_URL_FE + "/forgot_password?token=" + *resetToken
 
-	htmlTmpl, err := os.ReadFile("./assets/kirim-email.html")
+	htmlTmpl, err := os.ReadFile("./assets/reset_button_on_email.html")
 	if err != nil {
 		logrus.Error("us.ForgotPassword: failed to read template file", err)
 		return
@@ -44,6 +44,7 @@ func (us *usecase) ForgotPassword(ctx context.Context, emailForgot domain.Forgot
 	tmpl, err := template.New("reset_email").Parse(string(htmlTmpl))
 	if err != nil {
 		logrus.Error("us.ForgotPassword: failed to parse template", err)
+		return
 	}
 
 	var bodyBuffer bytes.Buffer

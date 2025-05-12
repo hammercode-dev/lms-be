@@ -8,8 +8,8 @@ import (
 	"github.com/hammer-code/lms-be/domain"
 )
 
-func (j *jwtConfig) GenerateAccessToken(c context.Context, user *domain.User) (*string, error) {
-	expiredTime := time.Now().Local().Add(60 * time.Minute)
+func (j *jwtConfig) GenerateAccessToken(c context.Context, user *domain.User, durationToken int) (*string, error) {
+	expiredTime := time.Now().Local().Add(time.Duration(durationToken) * time.Minute)
 
 	claims := JwtCustomClaims{
 		ID:       user.ID,

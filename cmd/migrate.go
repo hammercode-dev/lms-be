@@ -43,7 +43,7 @@ var createMigration = &cobra.Command{
 	Long:  "migrate create",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		gooseCmd := exec.Command("goose", "create", args[0], "-dir", migrationDir, "sql")
+		gooseCmd := exec.Command("goose", "create", "table"+args[0], "-dir", migrationDir, "sql")
 		gooseCmd.Stdout = os.Stdout
 		gooseCmd.Stderr = os.Stderr
 

@@ -21,7 +21,7 @@ type (
 	}
 
 	JWT interface {
-		GenerateAccessToken(c context.Context, user *domain.User) (*string, error)
+		GenerateAccessToken(c context.Context, user *domain.User, expiredTime int) (*string, error)
 		VerifyToken(token string) (*JwtCustomClaims, error)
 	}
 )

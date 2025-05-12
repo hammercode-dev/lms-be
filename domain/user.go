@@ -28,7 +28,6 @@ type (
 		DeleteUser(ctx context.Context, id int8) error
 		Logout(ctx context.Context, token string) error
 		ForgotPassword(ctx context.Context, emailForgot ForgotPassword) (user User, resetLink string, err error)
-		VerifyPasswordResetToken(ctx context.Context, token string) error
 		ResetPassword(ctx context.Context, requestUser ForgotPassword) error
 	}
 
@@ -42,7 +41,6 @@ type (
 		GetUserById(w http.ResponseWriter, r *http.Request)
 		GetUserProfile(w http.ResponseWriter, r *http.Request)
 		ForgotPassword(w http.ResponseWriter, r *http.Request)
-		ShowResetPasswordForm(w http.ResponseWriter, r *http.Request)
 		ResetPassword(w http.ResponseWriter, r *http.Request)
 	}
 	User struct {
@@ -95,9 +93,10 @@ type (
 	}
 
 	ForgotPassword struct {
-		Email    string `json:"email,omitempty"`
-		Token    string `json:"token,omitempty"`
-		Password string `json:"password,omitempty"`
+		Email           string `json:"email,omitempty"`
+		Token           string `json:"token,omitempty"`
+		Password        string `json:"password"`
+		ConfirmPassword string `json:"confirm_password"`
 	}
 )
 
