@@ -12,7 +12,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (us *usecase) ForgotPassword(ctx context.Context, emailForgot domain.ForgotPassword) (user domain.User, resetLink string, err error) {
+func (us *usecase) ForgotPassword(ctx context.Context, emailForgot domain.ForgotPassword) (err error) {
+	user := domain.User{}
 	err = us.dbTX.StartTransaction(ctx, func(txCtx context.Context) error {
 		user, err = us.userRepo.FindByEmail(ctx, emailForgot.Email)
 		if err != nil {
@@ -27,7 +28,7 @@ func (us *usecase) ForgotPassword(ctx context.Context, emailForgot domain.Forgot
 		return
 	}
 
-	resetToken, err := us.jwt.GenerateAccessToken(ctx, &user, 5)
+	resetToken, err := us.jwt.GenerateAccessToken(ctx, &user, 30)
 	if err != nil {
 		logrus.Error("us.ForgotPassword: failed to generate token", err)
 		return
@@ -77,8 +78,8 @@ func (us *usecase) ForgotPassword(ctx context.Context, emailForgot domain.Forgot
 
 	host := fmt.Sprintf("%s:%s", us.cfg.SMTP_HOST, us.cfg.SMTP_PORT)
 	if err := smtp.SendMail(host, auth, us.cfg.SMTP_EMAIL, []string{emailForgot.Email}, message); err != nil {
-		return domain.User{}, "", err
+		return err
 	}
 
-	return user, link, nil
+	return nil
 }

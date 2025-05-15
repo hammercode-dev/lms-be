@@ -12,14 +12,13 @@ import (
 
 func (h Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 
-	reEmail := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$`)
 	passwordRegex := regexp.MustCompile(`^[a-zA-Z\d]{8,}$`)
 
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		utils.Response(domain.HttpResponse{
 			Code:    500,
-			Message: err.Error(),
+			Message: "Failed to read request body :" + err.Error(),
 		}, w)
 		return
 	}
@@ -29,15 +28,7 @@ func (h Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	if err := json.Unmarshal(bodyBytes, &forgotPasswordInstance); err != nil {
 		utils.Response(domain.HttpResponse{
 			Code:    500,
-			Message: err.Error(),
-		}, w)
-		return
-	}
-
-	if isValidEmail := reEmail.MatchString(forgotPasswordInstance.Email); isValidEmail != true {
-		utils.Response(domain.HttpResponse{
-			Code:    400,
-			Message: "Email is not valid",
+			Message: "Failed to unmarshal request body :" + err.Error(),
 		}, w)
 		return
 	}
@@ -50,7 +41,7 @@ func (h Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if isValidPass := passwordRegex.MatchString(forgotPasswordInstance.Password); isValidPass != true {
+	if isValidPass := passwordRegex.MatchString(forgotPasswordInstance.Password); !isValidPass {
 		utils.Response(domain.HttpResponse{
 			Code:    400,
 			Message: "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number",
@@ -61,7 +52,7 @@ func (h Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	if err := h.usecase.ResetPassword(r.Context(), forgotPasswordInstance); err != nil {
 		utils.Response(domain.HttpResponse{
 			Code:    500,
-			Message: err.Error(),
+			Message: "Failed to reset password :" + err.Error(),
 		}, w)
 		return
 

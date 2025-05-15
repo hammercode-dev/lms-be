@@ -28,7 +28,7 @@ type (
 		UpdateProfileUser(ctx context.Context, userReq UserUpdateProfile, id int) error
 		DeleteUser(ctx context.Context, id int8) error
 		Logout(ctx context.Context, token string) error
-		ForgotPassword(ctx context.Context, emailForgot ForgotPassword) (user User, resetLink string, err error)
+		ForgotPassword(ctx context.Context, emailForgot ForgotPassword) error
 		ResetPassword(ctx context.Context, requestUser ForgotPassword) error
 	}
 

@@ -10,13 +10,13 @@ import (
 
 func (repo *repository) ResetPassword(ctx context.Context, email, password, token string) error {
 	if err := repo.db.StartTransaction(ctx, func(ctx context.Context) error {
-		ResetPasswordTokenInstance := domain.ResetPasswordToken{}
-		if err := repo.db.DB(ctx).Model(ResetPasswordTokenInstance).Where("token = ?", token).First(&ResetPasswordTokenInstance).Error; err != nil {
+		resetPasswordTokenInstance := domain.ResetPasswordToken{}
+		if err := repo.db.DB(ctx).Model(resetPasswordTokenInstance).Where("token = ?", token).First(&resetPasswordTokenInstance).Error; err != nil {
 			logrus.Error("repo.ResetPassword: failed to find token")
 			return err
 		}
 
-		if ResetPasswordTokenInstance.IsUsed {
+		if resetPasswordTokenInstance.IsUsed {
 			logrus.Error("repo.ResetPassword: token already used")
 			return errors.New("token already used")
 		}
