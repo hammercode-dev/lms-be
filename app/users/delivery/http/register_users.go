@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -50,17 +51,17 @@ func (h Handler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userInput := domain.RegistToUser(user)
-	resultUser, err := h.usecase.Register(r.Context(), userInput)
+	_, err = h.usecase.Register(r.Context(), userInput)
 	if err != nil {
 		logrus.Error("userUsecase: failed to register user")
 		resp := utils.CostumErr(err.Error())
 		utils.Response(resp, w)
 		return
 	}
+	message := fmt.Sprintf("User %s has been registered", user.Username)
 
 	utils.Response(domain.HttpResponse{
 		Code:    200,
-		Message: "success",
-		Data:    resultUser,
+		Message: message,
 	}, w)
 }
