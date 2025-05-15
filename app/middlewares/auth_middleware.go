@@ -15,7 +15,7 @@ func (m *Middleware) AuthMiddleware(allowedRole string) domain.MiddlewareFunc {
 			if len(*token) < 5 {
 				utils.Response(domain.HttpResponse{
 					Code:    401,
-					Message: "Forbidden",
+					Message: "Unauthorized",
 					Data:    nil,
 				}, writer)
 				return
@@ -25,7 +25,7 @@ func (m *Middleware) AuthMiddleware(allowedRole string) domain.MiddlewareFunc {
 			if err != nil {
 				utils.Response(domain.HttpResponse{
 					Code:    500,
-					Message: err.Error(),
+					Message: "failed to verify token",
 					Data:    nil,
 				}, writer)
 				return
@@ -45,7 +45,7 @@ func (m *Middleware) AuthMiddleware(allowedRole string) domain.MiddlewareFunc {
 			if err != nil {
 				utils.Response(domain.HttpResponse{
 					Code:    401,
-					Message: "Forbidden",
+					Message: "Unauthorized",
 					Data:    nil,
 				}, writer)
 				return
@@ -53,8 +53,8 @@ func (m *Middleware) AuthMiddleware(allowedRole string) domain.MiddlewareFunc {
 	
 			if user.Role != allowedRole {
 				utils.Response(domain.HttpResponse{
-					Code:    403,
-					Message: "Forbidden",
+					Code:    401,
+					Message: "Unauthorized",
 					Data:    nil,
 				}, writer)
 				return
