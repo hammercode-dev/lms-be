@@ -29,7 +29,8 @@ type (
 		CORS_ALLOWED_METHODS []string
 		CORS_ALLOWED_HEADERS []string
 
-		BaseURL string
+		BaseURL     string
+		BASE_URL_FE string
 	}
 )
 
@@ -80,6 +81,7 @@ func GetConfig() Config {
 			CORS_ALLOWED_METHODS: methods,
 			CORS_ALLOWED_HEADERS: headers,
 			BaseURL:              viper.GetString("BASE_URL"),
+			BASE_URL_FE:          viper.GetString("BASE_URL_FE"),
 		}
 	}
 

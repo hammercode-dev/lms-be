@@ -17,6 +17,8 @@ type (
 		LogoutUser(ctx context.Context, token string, expiredAt time.Time) error
 		ExpiredToken(ctx context.Context, token string) error
 		GetUsersGenericConditions(ctx context.Context, filter GetUserBy) (users []User, err error)
+		ResetPassword(ctx context.Context, email, password, token string) error
+		ForgotPassword(ctx context.Context, token string, expiredAt time.Time, user User) error
 	}
 	UserUsecase interface {
 		GetUsers(ctx context.Context) (users []User, err error)
@@ -26,6 +28,8 @@ type (
 		UpdateProfileUser(ctx context.Context, userReq UserUpdateProfile, id int) error
 		DeleteUser(ctx context.Context, id int8) error
 		Logout(ctx context.Context, token string) error
+		ForgotPassword(ctx context.Context, emailForgot ForgotPassword) error
+		ResetPassword(ctx context.Context, requestUser ForgotPassword) error
 	}
 
 	UserHandler interface {
@@ -37,6 +41,8 @@ type (
 		Register(w http.ResponseWriter, r *http.Request)
 		GetUserById(w http.ResponseWriter, r *http.Request)
 		GetUserProfile(w http.ResponseWriter, r *http.Request)
+		ForgotPassword(w http.ResponseWriter, r *http.Request)
+		ResetPassword(w http.ResponseWriter, r *http.Request)
 	}
 	User struct {
 		ID          int       `gorm:"primaryKey" json:"id"`
@@ -85,6 +91,13 @@ type (
 		Username string `json:"username"`
 		Email    string `json:"email" `
 		Role     string `json:"role"`
+	}
+
+	ForgotPassword struct {
+		Email           string `json:"email,omitempty"`
+		Token           string `json:"token,omitempty"`
+		Password        string `json:"password"`
+		ConfirmPassword string `json:"confirm_password"`
 	}
 )
 

@@ -27,7 +27,7 @@ func (us *usecase) Login(ctx context.Context, userReq domain.Login) (user domain
 		return
 	}
 
-	signToken, err := us.jwt.GenerateAccessToken(ctx, &user)
+	signToken, err := us.jwt.GenerateAccessToken(ctx, &user, 60)
 	if err != nil {
 		logrus.Error("us.Login: failed to login. ", err)
 		return
