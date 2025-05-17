@@ -12,6 +12,7 @@ import (
 
 	"github.com/hammer-code/lms-be/app"
 	"github.com/hammer-code/lms-be/config"
+	"github.com/hammer-code/lms-be/constants"
 	_ "github.com/hammer-code/lms-be/docs"
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/utils"
@@ -136,10 +137,10 @@ func registerHandler(app app.App) *mux.Router {
 	public.HandleFunc("/events/pay", app.EventHandler.PayEvent).Methods(http.MethodPost)
 
 	protectedV1Route := v1.NewRoute().Subrouter()
-	protectedV1Route.Use(app.Middleware.AuthMiddleware)
+	protectedV1Route.Use(app.Middleware.AuthMiddleware(constants.RoleUser))
 
 	protectedV1AdminRoute := v1.PathPrefix("/admin").Subrouter()
-	protectedV1AdminRoute.Use(app.Middleware.AuthMiddleware)
+	protectedV1AdminRoute.Use(app.Middleware.AuthMiddleware(constants.RoleAdmin))
 
 	protectedV1Route.HandleFunc("/users", app.UserHandler.GetUsers).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/user", app.UserHandler.GetUserProfile).Methods(http.MethodGet)
