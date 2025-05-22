@@ -9,7 +9,7 @@ import (
 )
 
 // JwtCustomClaims represents the custom claims for JWT with durationTime in Minuates
-func (j *jwtConfig) GenerateAccessToken(c context.Context, user *domain.User, durationTokenInMinuates int) (*string, error) {
+func (j *jwtConfig) GenerateAccessToken(c context.Context, user *domain.User, durationTokenInMinuates int) (*string, time.Time, error) {
 	expiredTime := time.Now().Local().Add(time.Duration(durationTokenInMinuates) * time.Minute)
 
 	claims := JwtCustomClaims{
@@ -24,8 +24,8 @@ func (j *jwtConfig) GenerateAccessToken(c context.Context, user *domain.User, du
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	if encodedToken, err := token.SignedString([]byte(j.SecretKey)); err != nil {
-		return nil, err
+		return nil, time.Time{}, err
 	} else {
-		return &encodedToken, err
+		return &encodedToken, expiredTime, err
 	}
 }
