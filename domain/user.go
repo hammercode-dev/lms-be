@@ -21,7 +21,7 @@ type (
 		ForgotPassword(ctx context.Context, token string, expiredAt time.Time, user User) error
 		StoreToken(ctx context.Context, token string, expiredAt time.Time, uid int) error
 		UnactivateTokenByUser(ctx context.Context, uid int) error
-		CheckActiveToken(ctx context.Context, token string) (logoutToken LogoutToken, err error)
+		GetToken(ctx context.Context, token string) (logoutToken LogoutToken, err error)
 	}
 	UserUsecase interface {
 		GetUsers(ctx context.Context) (users []User, err error)

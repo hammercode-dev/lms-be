@@ -31,7 +31,7 @@ func (m *Middleware) AuthMiddleware(allowedRole string) domain.MiddlewareFunc {
 				return
 			}
 	
-			logoutToken, err := m.UserRepo.CheckActiveToken(request.Context(), *token)
+			logoutToken, err := m.UserRepo.GetToken(request.Context(), *token)
 			if err != nil {
 				utils.Response(domain.HttpResponse{
 					Code:    401,
