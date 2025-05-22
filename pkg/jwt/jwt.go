@@ -21,7 +21,8 @@ type (
 	}
 
 	JWT interface {
-		GenerateAccessToken(c context.Context, user *domain.User) (*string, error)
+		//GenerateAccessToken generates a new access token for the user with the given expiration time in minutes
+		GenerateAccessToken(c context.Context, user *domain.User, expiredTimeInMinuate int) (*string, error)
 		VerifyToken(token string) (*JwtCustomClaims, error)
 	}
 )
