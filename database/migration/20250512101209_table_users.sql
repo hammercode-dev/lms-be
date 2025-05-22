@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     PRIMARY KEY ("id")
 );
 
-CREATE UNIQUE INDEX uni_users_email ON public.users USING btree (email);
-CREATE UNIQUE INDEX uni_users_username ON public.users USING btree (username);
+CREATE UNIQUE INDEX IF NOT EXISTS uni_users_email ON public.users USING btree (email);
+CREATE UNIQUE INDEX IF NOT EXISTS uni_users_username ON public.users USING btree (username);
 
 -- +goose StatementEnd
 -- +goose Down
