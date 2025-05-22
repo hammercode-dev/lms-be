@@ -15,10 +15,13 @@ type (
 		UpdateProfileUser(ctx context.Context, userReq UserUpdateProfile, id int) error
 		DeleteUser(ctx context.Context, id int8) error
 		LogoutUser(ctx context.Context, token string, expiredAt time.Time) error
-		ExpiredToken(ctx context.Context, token string) error
+		CleanupLogoutToken(ctx context.Context) error
 		GetUsersGenericConditions(ctx context.Context, filter GetUserBy) (users []User, err error)
 		ResetPassword(ctx context.Context, email, password, token string) error
 		ForgotPassword(ctx context.Context, token string, expiredAt time.Time, user User) error
+		StoreToken(ctx context.Context, token string, expiredAt time.Time, uid int) error
+		UnactivateTokenByUser(ctx context.Context, uid int) error
+		GetToken(ctx context.Context, token string) (logoutToken LogoutToken, err error)
 	}
 	UserUsecase interface {
 		GetUsers(ctx context.Context) (users []User, err error)

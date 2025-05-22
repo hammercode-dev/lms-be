@@ -31,15 +31,24 @@ func (m *Middleware) AuthMiddleware(allowedRole string) domain.MiddlewareFunc {
 				return
 			}
 	
-			// tokenLogoutErr := m.UserRepo.ExpiredToken(request.Context(), *token)
-			// if tokenLogoutErr == nil {
-			// 	utils.Response(domain.HttpResponse{
-			// 		Code:    401,
-			// 		Message: "Token expired",
-			// 		Data:    nil,
-			// 	}, writer)
-			// 	return
-			// }
+			logoutToken, err := m.UserRepo.GetToken(request.Context(), *token)
+			if err != nil {
+				utils.Response(domain.HttpResponse{
+					Code:    401,
+					Message: "Unauthorized",
+					Data:    nil,
+				}, writer)
+				return
+			}
+			if logoutToken.Status == 0 {
+				utils.Response(domain.HttpResponse{
+					Code:    401,
+					Message: "Unauthorized",
+					Data:    nil,
+				}, writer)
+				return
+			}
+
 	
 			user, err := m.UserRepo.FindByEmail(request.Context(), verifyToken.Email)
 			if err != nil {

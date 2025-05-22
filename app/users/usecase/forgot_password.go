@@ -28,7 +28,7 @@ func (us *usecase) ForgotPassword(ctx context.Context, emailForgot domain.Forgot
 		return
 	}
 
-	resetToken, err := us.jwt.GenerateAccessToken(ctx, &user, 30)
+	resetToken, _, err := us.jwt.GenerateAccessToken(ctx, &user, 30)
 	if err != nil {
 		logrus.Error("us.ForgotPassword: failed to generate token", err)
 		return

@@ -22,11 +22,8 @@ func (h Handler) Logout(w http.ResponseWriter, r *http.Request) {
 
 	err := h.usecase.Logout(r.Context(), *token)
 	if err != nil {
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-			Data:    nil,
-		}, w)
+		resp := utils.CostumErr(err.Error())
+		utils.Response(resp, w)
 		return
 	}
 
