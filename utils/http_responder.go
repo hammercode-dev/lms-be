@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
 )
 
 func Response(data domain.HttpResponse, w http.ResponseWriter) {
@@ -17,11 +16,6 @@ func Response(data domain.HttpResponse, w http.ResponseWriter) {
 		w.Write([]byte(`{"error": "Internal server error"}`))
 		return
 	}
-
-	go func() {
-		logResponse, _ := json.Marshal(data)
-		logrus.Info(string(logResponse))
-	}()
 
 	// Set Content-Type header to application/json
 	w.Header().Set("Content-Type", "application/json")

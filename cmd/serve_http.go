@@ -10,19 +10,25 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"google.golang.org/grpc"
+
 	"github.com/hammer-code/lms-be/app"
 	"github.com/hammer-code/lms-be/config"
 	"github.com/hammer-code/lms-be/constants"
 	_ "github.com/hammer-code/lms-be/docs"
 	"github.com/hammer-code/lms-be/domain"
+	"github.com/hammer-code/lms-be/pkg/ngelog"
 	"github.com/hammer-code/lms-be/utils"
-	"github.com/sirupsen/logrus"
 	httpSwagger "github.com/swaggo/http-swagger"
 
 	// _ "swagger-mux/docs"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
 	"github.com/swaggo/swag"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 var serveHttpCmd = &cobra.Command{
@@ -33,13 +39,25 @@ var serveHttpCmd = &cobra.Command{
 		// load add package serve http here
 		ctx := context.Background()
 
+		// Init OpenTelemetry
+		exporter := newOTLPTraceExporter(ctx, "localhost:4317")
+
+		tp := sdktrace.NewTracerProvider(
+			sdktrace.WithBatcher(exporter),
+			sdktrace.WithSampler(sdktrace.AlwaysSample()), // <--- force sampling
+		)
+
+		otel.SetTracerProvider(tp)
+
 		cfg := config.GetConfig()
+
+		ngelog.SetNameSpace(cfg.APP_NAME)
+		ngelog.SetNameSpace(cfg.APP_ENV)
 
 		app := app.InitApp(cfg)
 
 		// route
 		router := registerHandler(app)
-		router.Use(app.Middleware.LogMiddleware)
 
 		// build cors
 		muxCorsWithRouter := cors.AllowAll().Handler(router)
@@ -51,33 +69,20 @@ var serveHttpCmd = &cobra.Command{
 
 		go func() {
 			done := make(chan os.Signal, 1)
-
 			signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 			<-done
-			logrus.Info("svr.Shutdown: start shutdown")
+			ngelog.Info(ctx, "service shutdown")
 			if err := srv.Shutdown(ctx); err == context.DeadlineExceeded {
-				logrus.Error("svr.Shutdown: context deadline exceeded", err)
+				ngelog.Error(ctx, "svr.Shutdown: context deadline exceeded", err)
 			}
-			logrus.Info("svr.Shutdown: shutdown success")
 		}()
 
-		logrus.Info(fmt.Sprintf("server started, running on port %s", cfg.APP_PORT))
+		ngelog.Info(ctx, fmt.Sprintf("server started, running on port %s", cfg.APP_PORT))
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logrus.Fatal("starting server failed", err)
+			ngelog.Fatal(ctx, "starting server failed", err)
 		}
 	},
 }
-
-// func LoadJSON(path string) string {
-// 	jsonBytes, err := os.ReadFile(path)
-
-// 	// jsonBytes, err := os.ReadFile("documentation/users.json")
-// 	if err != nil {
-// 		fmt.Println("Error reading JSON file:", err)
-// 		return ""
-// 	}
-// 	return string(jsonBytes)
-// }
 
 func LoadJSON(path string) string {
 	jsonBytes, err := os.ReadFile(path)
@@ -105,7 +110,13 @@ func init() {
 
 }
 
-func health(w http.ResponseWriter, _ *http.Request) {
+func health(w http.ResponseWriter, r *http.Request) {
+	tracer := otel.Tracer("Test Trace")
+
+	ctx, span := tracer.Start(r.Context(), "health controller")
+	defer span.End()
+
+	ngelog.Info(ctx, "service health good")
 	utils.Response(domain.HttpResponse{
 		Code:    200,
 		Message: "good",
@@ -116,6 +127,7 @@ func health(w http.ResponseWriter, _ *http.Request) {
 func registerHandler(app app.App) *mux.Router {
 
 	router := mux.NewRouter()
+	router.Use(app.Middleware.LogMiddleware)
 	router.HandleFunc("/health", health)
 
 	router.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
@@ -167,4 +179,18 @@ func registerHandler(app app.App) *mux.Router {
 	protectedV1AdminRoute.HandleFunc("/users", app.UserHandler.GetUsers).Methods(http.MethodGet)
 
 	return router
+}
+
+func newOTLPTraceExporter(ctx context.Context, otlpEndpoint string) *otlptrace.Exporter {
+	traceClient := otlptracegrpc.NewClient(
+		otlptracegrpc.WithInsecure(),
+		otlptracegrpc.WithEndpoint(otlpEndpoint),
+		otlptracegrpc.WithDialOption(grpc.WithBlock()))
+	traceExp, err := otlptrace.New(ctx, traceClient)
+	if err != nil {
+		// ngelog.Fatal().Err(err).Msgf("Failed to create the collector trace exporter")
+		ngelog.FatalPanic(ctx, "Failed to create the collector trace exporter", err)
+	}
+
+	return traceExp
 }

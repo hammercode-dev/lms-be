@@ -11,6 +11,34 @@ services:
         volumes:
             - lms-be:/var/lib/postgresql/data
         restart: always
+    # loki:
+    #     image: grafana/loki:latest
+    #     ports:
+    #         - 3100:3100
+    #     volumes:
+    #         - ./loki-config.yml:/etc/loki/loki-config.yaml
+    # promtail:
+    #     image: grafana/promtail:latest
+    #     volumes:
+    #         - ./promtail-config.yml:/etc/promtail/promtail-config.yaml
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        environment:
+            COLLECTOR_ZIPKIN_HOST_PORT: 9411
+        expose:
+        - "16686"
+        ports:
+        - 16686:16686
+        - 4317:4317
+        - 4318:4318
+        command: 
+        - "--memory.max-traces"
+        - "1000"
+        - "--collector.otlp.grpc.host-port"
+        - ":4317"
+        - "--collector.otlp.http.host-port"
+        - ":4318"
+        restart: always
 
 volumes:
     lms-be:
