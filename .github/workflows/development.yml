@@ -25,7 +25,7 @@ jobs:
               run: go build -o main .
             
             - name: Archive Build Output
-              run: tar -czvf main.tar.gz main database
+              run: tar -czvf main.tar.gz main
 
             - name: Upload Artifact
               uses: actions/upload-artifact@v4
@@ -60,6 +60,5 @@ jobs:
                   ssh -o StrictHostKeyChecking=no -i vps_key.pem $VPS_USER@$VPS_IP "
                   cd /home/hmcroot/app/development/lms-be &&
                   rm -f main &&
-                  rm -rf database &&
                   tar -xzvf main.tar.gz && rm -f main.tar.gz
                   sudo systemctl restart lms-be-development.service"
