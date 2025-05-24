@@ -32,7 +32,7 @@ func (h handler) Subscribe(w http.ResponseWriter, r *http.Request) {
 
 	err = h.usecase.Subscribe(r.Context(), payload.Email)
 	if err != nil {
-		resp := utils.CostumErr(err.Error())
+		resp := utils.CustomErrorResponse(err)
 		utils.Response(resp, w)
 		return
 	}
