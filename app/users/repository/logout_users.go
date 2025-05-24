@@ -2,18 +2,13 @@ package repository
 
 import (
 	"context"
-	"github.com/hammer-code/lms-be/domain"
 	"time"
+
+	"github.com/hammer-code/lms-be/domain"
 )
 
 func (repo *repository) LogoutUser(ctx context.Context, token string, expiredAt time.Time) error {
-	err := repo.db.DB(ctx).Create(&domain.LogoutToken{
-		Token:     token,
-		ExpiredAt: expiredAt,
-		CreatedAt: time.Now(),
-	}).Error
-
-	if err != nil {
+	if err := repo.db.DB(ctx).Model(&domain.LogoutToken{}).Where("token = ?", token).Update("status", 0).Error; err != nil {
 		return err
 	}
 

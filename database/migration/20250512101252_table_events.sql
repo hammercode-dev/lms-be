@@ -30,7 +30,6 @@ CREATE TABLE IF NOT EXISTS "public"."events" (
 );
 -- +goose StatementEnd
 
-
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE IF EXISTS "public"."events";

@@ -19,7 +19,12 @@ func CheckError(err, sub, message string, code int) (domain.HttpResponse, bool) 
 
 func CostumErr(err string) domain.HttpResponse {
 
-	resp, ok := CheckError(err, "duplicate", "User already exist", 400)
+	resp, ok := CheckError(err, "\"uni_users_email\" (SQLSTATE 23505)", "User already exist", 400)
+	if ok {
+		return resp
+	}
+
+	resp, ok = CheckError(err, "\"uni_logout_token\" (SQLSTATE 23505)", "You have already logged out.", 400)
 	if ok {
 		return resp
 	}
