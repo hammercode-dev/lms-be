@@ -23,7 +23,7 @@ func Execute() {
 	config.LoadConfig()
 
 	// Adding child commands
-	rootCmd.AddCommand(createMigration, serveHttpCmd, migrateUp, migrateDown, createSeeder, seedUp)
+	rootCmd.AddCommand(createMigration, serveHttpCmd, migrateUp, migrateDown, migrateFresh, createSeeder, seedUp)
 
 	// cmd execute
 	if err := rootCmd.Execute(); err != nil {

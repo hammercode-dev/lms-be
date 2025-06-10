@@ -93,3 +93,55 @@ var migrateDown = &cobra.Command{
 
 	},
 }
+
+var migrateFresh = &cobra.Command{
+	Use:   "migrate:fresh",
+	Short: "migrate fresh",
+	Long:  "migrate fresh",
+	Run: func(cmd *cobra.Command, args []string) {
+		cfg := config.GetConfig()
+
+		// 1. Reset goose_db_version table first
+		resetCmd := exec.Command("psql", cfg.DB_POSTGRES_DSN, "-c", "DROP TABLE IF EXISTS goose_db_version;")
+		resetCmd.Stdout = os.Stdout
+		resetCmd.Stderr = os.Stderr
+
+		if err := resetCmd.Run(); err != nil {
+			logrus.Error("Error resetting goose_db_version: ", err)
+			// Continue anyway, as the table might not exist
+		}
+
+		// 2. Run migrations
+		upCmd := exec.Command("goose", "-dir", migrationDir, "postgres", cfg.DB_POSTGRES_DSN, "up")
+		upCmd.Stdout = os.Stdout
+		upCmd.Stderr = os.Stderr
+
+		if err := upCmd.Run(); err != nil {
+			logrus.Error("goose up migration error: ", err)
+			return
+		}
+
+		// 3. Reset seeders version table
+		resetSeedCmd := exec.Command("psql", cfg.DB_POSTGRES_DSN, "-c", "DROP TABLE IF EXISTS goose_db_version_seeder;")
+		resetSeedCmd.Stdout = os.Stdout
+		resetSeedCmd.Stderr = os.Stderr
+
+		if err := resetSeedCmd.Run(); err != nil {
+			logrus.Error("Error resetting goose_db_version_seeder: ", err)
+			// Continue anyway
+		}
+
+		// 4. Run seeders
+		seedDir := "database/seeder"
+		seedCmd := exec.Command("goose", "-dir", seedDir, "postgres", cfg.DB_POSTGRES_DSN, "up")
+		seedCmd.Stdout = os.Stdout
+		seedCmd.Stderr = os.Stderr
+
+		if err := seedCmd.Run(); err != nil {
+			logrus.Error("goose seed error: ", err)
+			return
+		}
+
+		logrus.Info("Database migration and seeding completed successfully")
+	},
+}

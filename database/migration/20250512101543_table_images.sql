@@ -20,5 +20,5 @@ CREATE TABLE IF NOT EXISTS "public"."images" (
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE IF EXISTS "public"."images";
-DROP SEQUENCE IF EXISTS images_id_seq;- +goose StatementEnd
+DROP SEQUENCE IF EXISTS images_id_seq;
 -- +goose StatementEnd

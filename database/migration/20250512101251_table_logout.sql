@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS "public"."logout" (
     "created_at" timestamptz,
     PRIMARY KEY ("id")
 );
+CREATE UNIQUE INDEX IF NOT EXISTS uni_logout_token ON public.logout USING btree (token);
 
 DO $$
 BEGIN

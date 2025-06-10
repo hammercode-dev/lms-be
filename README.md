@@ -30,6 +30,20 @@ To set up your environment variables:
 
     Make sure to replace placeholder values with actual data where necessary.
 
+### Running Migrations
+
+Before starting the service, you need to run the database migrations to set up the necessary tables and schema. The project uses `migrate` for managing database migrations.
+
+```bash
+    go run main.go migrate:up
+```
+Or if you want to run with seeder you can run this command
+
+```bash
+    go run main.go migrate:fresh
+```
+But it will be down your migration first
+
 ### Running the Service
 
 To run `lms-be` on your local machine, you have two options:
