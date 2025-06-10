@@ -1,11 +1,13 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/hammer-code/lms-be/domain"
+	"github.com/hammer-code/lms-be/pkg/ngelog"
 )
 
 const (
@@ -27,7 +29,8 @@ func (e *CustomHttpError) Error() string {
 	return e.Message
 }
 
-func NewBadRequestError(msg string, err error) *CustomHttpError {
+func NewBadRequestError(ctx context.Context, msg string, err error) *CustomHttpError {
+	ngelog.Error(ctx, msg, err)
 	return &CustomHttpError{
 		Code:    http.StatusBadRequest,
 		Message: msg,
@@ -35,7 +38,8 @@ func NewBadRequestError(msg string, err error) *CustomHttpError {
 	}
 }
 
-func NewUnauthorizedError(msg string, err error) *CustomHttpError {
+func NewUnauthorizedError(ctx context.Context, msg string, err error) *CustomHttpError {
+	ngelog.Error(ctx, msg, err)
 	return &CustomHttpError{
 		Code:    http.StatusUnauthorized,
 		Message: msg,
@@ -43,7 +47,8 @@ func NewUnauthorizedError(msg string, err error) *CustomHttpError {
 	}
 }
 
-func NewInternalServerError(err error) *CustomHttpError {
+func NewInternalServerError(ctx context.Context, err error) *CustomHttpError {
+	ngelog.Error(ctx, "Internal server error", err)
 	return &CustomHttpError{
 		Code:    http.StatusInternalServerError,
 		Message: "Internal server error",
@@ -62,18 +67,17 @@ func CheckError(errStr, containsStr, message string, code int) (domain.HttpRespo
 }
 
 func CustomErrorResponse(err error) domain.HttpResponse {
-	fmt.Println("YOW", err)
 	if customErr, ok := err.(*CustomHttpError); ok {
 		var errStr string
 		if customErr.OriginError != nil {
 			errStr = customErr.OriginError.Error()
 		}
-		resp, ok := CheckError(errStr, ErrDuplicateEmail, "User already exist", 400)
+		resp, ok := CheckError(errStr, ErrDuplicateEmail, "User already exist", http.StatusBadRequest)
 		if ok {
 			return resp
 		}
 
-		resp, ok = CheckError(errStr, ErrWrongPassword, "Sorry, your password is incorrect", 400)
+		resp, ok = CheckError(errStr, ErrWrongPassword, "Sorry, your password is incorrect", http.StatusBadRequest)
 		if ok {
 			return resp
 		}

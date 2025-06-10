@@ -38,7 +38,7 @@ func (h Handler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user.Password != user.ConfirmPassword {
-		err := utils.NewBadRequestError("Confirm password doesn't match", nil)
+		err := utils.NewBadRequestError(r.Context(), "Confirm password doesn't match", nil)
 		resp := utils.CustomErrorResponse(err)
 		utils.Response(resp, w)
 		return
