@@ -25,28 +25,22 @@ import (
 func (h Handler) Register(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	user := domain.Register{}
 	if err = json.Unmarshal(bodyBytes, &user); err != nil {
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	if user.Password != user.ConfirmPassword {
-		utils.Response(domain.HttpResponse{
-			Code:    400,
-			Message: "Confirm password doesnt match",
-			Data:    nil,
-		}, w)
+		err := utils.NewBadRequestError(r.Context(), "Confirm password doesn't match", nil)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
@@ -54,7 +48,7 @@ func (h Handler) Register(w http.ResponseWriter, r *http.Request) {
 	_, err = h.usecase.Register(r.Context(), userInput)
 	if err != nil {
 		logrus.Error("userUsecase: failed to register user")
-		resp := utils.CostumErr(err.Error())
+		resp := utils.CustomErrorResponse(err)
 		utils.Response(resp, w)
 		return
 	}

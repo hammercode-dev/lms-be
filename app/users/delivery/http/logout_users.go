@@ -22,7 +22,7 @@ func (h Handler) Logout(w http.ResponseWriter, r *http.Request) {
 
 	err := h.usecase.Logout(r.Context(), *token)
 	if err != nil {
-		resp := utils.CostumErr(err.Error())
+		resp := utils.CustomErrorResponse(err)
 		utils.Response(resp, w)
 		return
 	}

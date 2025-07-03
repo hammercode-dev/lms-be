@@ -23,25 +23,21 @@ import (
 func (h Handler) Login(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	loginInstance := domain.Login{}
 	if err := json.Unmarshal(bodyBytes, &loginInstance); err != nil {
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	_, token, err := h.usecase.Login(r.Context(), loginInstance)
 	if err != nil {
-		resp := utils.CostumErr(err.Error())
+		resp := utils.CustomErrorResponse(err)
 		utils.Response(resp, w)
 		return
 	}
