@@ -60,7 +60,12 @@ var serveHttpCmd = &cobra.Command{
 		router := registerHandler(app)
 
 		// build cors
-		muxCorsWithRouter := cors.AllowAll().Handler(router)
+		muxCorsWithRouter := cors.New(cors.Options{
+			AllowedOrigins:   cfg.CORS_ALLOWED_ORIGINS,
+			AllowedHeaders:   cfg.CORS_ALLOWED_HEADERS,
+			AllowedMethods:   cfg.CORS_ALLOWED_METHODS,
+			AllowCredentials: true,
+		}).Handler(router)
 
 		srv := &http.Server{
 			Addr:    cfg.APP_PORT,
