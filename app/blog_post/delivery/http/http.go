@@ -93,7 +93,19 @@ func (h Handler) DeleteBlogPost(w http.ResponseWriter, r *http.Request) {
 
 // GetAllBlogPosts implements domain.BlogPostHandler.
 func (h Handler) GetAllBlogPosts(w http.ResponseWriter, r *http.Request) {
-	resp, err := h.usecase.GetAllBlogPosts(r.Context())
+	// Ambil parameter pagination dari request
+	pagination, err := domain.GetPaginationFromCtx(r)
+	if err != nil {
+		logrus.Error("failed to parse pagination parameters: ", err)
+		utils.Response(domain.HttpResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Invalid pagination parameters",
+		}, w)
+		return
+	}
+
+	// Panggil usecase dengan parameter pagination
+	data, paginationResponse, err := h.usecase.GetAllBlogPosts(r.Context(), pagination)
 	if err != nil {
 		resp := utils.CustomErrorResponse(err)
 		utils.Response(resp, w)
@@ -101,11 +113,11 @@ func (h Handler) GetAllBlogPosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:    http.StatusOK,
-		Message: "Blog posts retrieved successfully",
-		Data:    resp,
+		Code:       http.StatusOK,
+		Message:    "Blog posts retrieved successfully",
+		Data:       data,
+		Pagination: paginationResponse,
 	}, w)
-
 }
 
 // GetDetailBlogPost implements domain.BlogPostHandler.

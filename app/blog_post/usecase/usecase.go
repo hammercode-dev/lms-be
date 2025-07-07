@@ -55,13 +55,15 @@ func (uc *usecase) DeleteBlogPost(ctx context.Context, id uint) error {
 }
 
 // GetAllBlogPosts implements domain.BlogPostUsecase.
-func (uc *usecase) GetAllBlogPosts(ctx context.Context) ([]domain.BlogPost, error) {
-	blogPosts, err := uc.repo.GetAllBlogPosts(ctx)
+func (uc *usecase) GetAllBlogPosts(ctx context.Context, pagination domain.FilterPagination) ([]domain.BlogPost, domain.Pagination, error) {
+	blogPosts, totalCount, err := uc.repo.GetAllBlogPosts(ctx, pagination)
 	if err != nil {
 		logrus.Error("failed to get all blog posts: ", err)
-		return nil, err
+		return nil, domain.Pagination{}, err
 	}
-	return blogPosts, nil
+	paginationResponse := domain.NewPagination(totalCount, pagination)
+
+	return blogPosts, paginationResponse, nil
 }
 
 // GetDetailBlogPost implements domain.BlogPostUsecase.

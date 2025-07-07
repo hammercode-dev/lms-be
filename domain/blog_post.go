@@ -19,7 +19,7 @@ type BlogPostUsecase interface {
 	CreateBlogPost(ctx context.Context, data BlogPost, token string) (BlogPost, error)
 	UpdateBlogPost(ctx context.Context, data BlogPost, id uint) error
 	DeleteBlogPost(ctx context.Context, id uint) error
-	GetAllBlogPosts(ctx context.Context) ([]BlogPost, error)
+	GetAllBlogPosts(ctx context.Context, pagination FilterPagination) ([]BlogPost, Pagination, error)
 	GetDetailBlogPost(ctx context.Context, slug string, id uint) (BlogPost, error)
 }
 
@@ -27,7 +27,7 @@ type BlogPostRepository interface {
 	CreateBlogPost(ctx context.Context, data BlogPost) (BlogPost, error)
 	UpdateBlogPost(ctx context.Context, data BlogPost, id uint) error
 	DeleteBlogPost(ctx context.Context, id uint) error
-	GetAllBlogPosts(ctx context.Context) ([]BlogPost, error)
+	GetAllBlogPosts(ctx context.Context, pagination FilterPagination) ([]BlogPost, int, error)
 	GetDetailBlogPost(ctx context.Context, slug, typeFind string, id uint) (BlogPost, error)
 }
 
