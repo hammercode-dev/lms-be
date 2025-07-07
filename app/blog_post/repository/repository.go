@@ -214,7 +214,9 @@ func (r *repository) GetAllBlogPosts(ctx context.Context, pagination domain.Filt
 		if err := r.db.DB(ctx).Table("blog_post_tags").
 			Select("tag").
 			Where("blog_post_id = ?", data[i].Id).
-			Pluck("tag", &tags).Error; err == nil {
+			Pluck("tag", &tags).Error; err != nil {
+			logrus.Error("failed to get tags for blog post ID ", data[i].Id, ": ", err)
+		} else {
 			data[i].Tags = tags
 		}
 	}
