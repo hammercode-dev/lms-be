@@ -154,6 +154,8 @@ func registerHandler(app app.App) *mux.Router {
 	public.HandleFunc("/events/registrations", app.EventHandler.RegisterEvent).Methods(http.MethodPost)
 	public.HandleFunc("/events/registrations/{order_no}", app.EventHandler.RegistrationStatus).Methods(http.MethodGet)
 	public.HandleFunc("/events/pay", app.EventHandler.PayEvent).Methods(http.MethodPost)
+	public.HandleFunc("/blogs", app.BlogPostHandler.GetAllBlogPosts).Methods(http.MethodGet)
+	public.HandleFunc("/blogs/{slug}", app.BlogPostHandler.GetDetailBlogPost).Methods(http.MethodGet)
 
 	protectedV1Route := v1.NewRoute().Subrouter()
 	protectedV1Route.Use(app.Middleware.AuthMiddleware(constants.RoleUser))
@@ -175,6 +177,10 @@ func registerHandler(app app.App) *mux.Router {
 	protectedV1Route.HandleFunc("/events/pays", app.EventHandler.PayProcess).Methods(http.MethodPost)
 	protectedV1Route.HandleFunc("/events/{id}", app.EventHandler.GetEventByID).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/images", app.ImageHandler.UploadImage).Methods(http.MethodPost)
+
+	protectedV1Route.HandleFunc("/blogs", app.BlogPostHandler.CreateBlogPost).Methods(http.MethodPost)
+	protectedV1Route.HandleFunc("/blogs/{id}", app.BlogPostHandler.UpdateBlogPost).Methods(http.MethodPatch)
+	protectedV1Route.HandleFunc("/blogs/{id}", app.BlogPostHandler.DeleteBlogPost).Methods(http.MethodDelete)
 
 	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.CreateEvent).Methods(http.MethodPost)
 	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.GetEvents).Methods(http.MethodGet)
