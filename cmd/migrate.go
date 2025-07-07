@@ -133,7 +133,7 @@ var migrateFresh = &cobra.Command{
 
 		// 4. Run seeders
 		seedDir := "database/seeder"
-		seedCmd := exec.Command("goose", "-dir", seedDir, "postgres", cfg.DB_POSTGRES_DSN, "up")
+		seedCmd := exec.Command("goose", "-dir", seedDir, "-table", "goose_db_version_seeder", "postgres", cfg.DB_POSTGRES_DSN, "up")
 		seedCmd.Stdout = os.Stdout
 		seedCmd.Stderr = os.Stderr
 
