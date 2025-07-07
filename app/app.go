@@ -1,6 +1,7 @@
 package app
 
 import (
+	blogPost "github.com/hammer-code/lms-be/app/blog_post"
 	"github.com/hammer-code/lms-be/app/middlewares"
 	newsletters "github.com/hammer-code/lms-be/app/newsletters"
 	users "github.com/hammer-code/lms-be/app/users"
@@ -20,6 +21,7 @@ type App struct {
 	NewLetterHandler domain.NewslettterHandler
 	EventHandler     domain.EventHandler
 	ImageHandler     domain.ImageHandler
+	BlogPostHandler  domain.BlogPostHandler
 }
 
 func InitApp(
@@ -39,6 +41,7 @@ func InitApp(
 	newsletterRepo := newsletters.InitRepository(dbTx)
 	eventRepo := events.InitRepository(dbTx)
 	imgRepo := images.InitRepository(dbTx)
+	blogPostRepo := blogPost.InitRepository(dbTx)
 
 	// Middlewares
 	middleware := middlewares.InitMiddleware(jwtInstance, userRepo)
@@ -48,12 +51,14 @@ func InitApp(
 	newsletterUC := newsletters.InitUsecase(cfg, newsletterRepo, dbTx, jwt.NewJwt(cfg.JWT_SECRET_KEY))
 	eventUC := events.InitUsecase(eventRepo, imgRepo, dbTx)
 	imgUc := images.InitUsecase(imgRepo, dbTx)
+	blogPostUc := blogPost.InitUseCase(blogPostRepo, jwtInstance)
 
 	// handler
 	userHandler := users.InitHandler(userUsecase)
 	newsletterHandler := newsletters.InitHandler(newsletterUC, middleware)
 	eventHandler := events.InitHandler(eventUC)
 	ImageHandler := images.InitHandler(imgUc)
+	blogPostHandler := blogPost.InitHandler(blogPostUc)
 
 	return App{
 		UserHandler:      userHandler,
@@ -61,5 +66,6 @@ func InitApp(
 		Middleware:       middleware,
 		EventHandler:     eventHandler,
 		ImageHandler:     ImageHandler,
+		BlogPostHandler:  blogPostHandler,
 	}
 }
