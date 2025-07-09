@@ -112,10 +112,42 @@ func (h Handler) GetAllBlogPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	type response struct {
+		Id          int           `json:"id" gorm:"primaryKey"`
+		Title       string        `json:"title"`
+		Excerpt     string        `json:"excerpt"`
+		Author      domain.Author `json:"author" gorm:"foreignKey:AuthorID;references:UserId"`
+		AuthorID    int           `json:"author_id" gorm:"column:author_id"`
+		PublishedAt time.Time     `json:"published_at"`
+		UpdatedAt   time.Time     `json:"updated_at"`
+		Tags        []string      `json:"tags" gorm:"-"`
+		Category    string        `json:"category"`
+		Status      string        `json:"status" gorm:"type:enum('draft', 'published', 'archived')"`
+		Slug        string        `json:"slug"`
+	}
+
+	responseDTO := []response{}
+	for _, post := range data {
+		resp := response{
+			Id:          post.Id,
+			Title:       post.Title,
+			Excerpt:     post.Excerpt,
+			Author:      post.Author,
+			AuthorID:    post.AuthorID,
+			PublishedAt: post.PublishedAt,
+			UpdatedAt:   post.PublishedAt,
+			Tags:        post.Tags,
+			Category:    post.Category,
+			Status:      post.Status,
+			Slug:        post.Slug,
+		}
+		responseDTO = append(responseDTO, resp)
+	}
+
 	utils.Response(domain.HttpResponse{
 		Code:       http.StatusOK,
 		Message:    "Blog posts retrieved successfully",
-		Data:       data,
+		Data:       responseDTO,
 		Pagination: paginationResponse,
 	}, w)
 }

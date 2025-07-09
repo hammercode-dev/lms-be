@@ -1,5 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
+Truncate Table "public"."images" Restart Identity Cascade;
+
 INSERT INTO "public"."images" (
     "file_name", "file_path", "format", "content_type", "is_used", "file_size"
 ) VALUES 
