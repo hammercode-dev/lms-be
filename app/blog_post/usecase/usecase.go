@@ -1,8 +1,7 @@
 package usecase
 
 import (
-	"crypto/rand"
-	"encoding/hex"
+	"time"
 
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/pkg/jwt"
@@ -16,31 +15,33 @@ type usecase struct {
 }
 
 // CreateBlogPost implements domain.BlogPostUsecase.
-func (uc *usecase) CreateBlogPost(ctx context.Context, data domain.BlogPost, token string) (domain.BlogPost, error) {
+func (uc *usecase) CreateBlogPost(ctx context.Context, data domain.BlogPost, token string) error {
 
 	jwtData, err := uc.jwt.VerifyToken(token)
 	if err != nil {
 		logrus.Error("failed to verify token: ", err)
-		return domain.BlogPost{}, err
-	}
-
-	slugBytes := make([]byte, 32)
-	if _, err := rand.Read(slugBytes); err != nil {
-		return domain.BlogPost{}, err
+		return err
 	}
 
 	data.Author.UserId = jwtData.ID
 	data.Author.Name = jwtData.UserName
-	data.Slug = hex.EncodeToString(slugBytes)
+	data.UpdatedAt = nil
 
-	blogPost, err := uc.repo.CreateBlogPost(ctx, data)
+	if data.Status == "published" {
+		timeNow := time.Now()
+		data.PublishedAt = &timeNow
+	} else {
+		data.PublishedAt = nil
+	}
+
+	err = uc.repo.CreateBlogPost(ctx, data)
 	if err != nil {
 		logrus.Error("failed to create blog post: ", err)
-		return domain.BlogPost{}, err
+		return err
 
 	}
 
-	return blogPost, nil
+	return nil
 
 }
 

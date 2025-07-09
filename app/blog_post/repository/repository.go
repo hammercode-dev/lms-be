@@ -15,23 +15,22 @@ type repository struct {
 
 // GetDetailBlogPost implements domain.BlogPostRepository.
 func (r *repository) GetDetailBlogPost(ctx context.Context, slug, typeFind string, id uint) (data domain.BlogPost, err error) {
-	db := r.db.DB(ctx).Preload("Author").Model(&domain.BlogPost{})
+	db := r.db.DB(ctx).Preload("Author").Model(&domain.BlogPost{}).Where("is_deleted = ?", false)
 
-	if typeFind == "slug" {
-		err = db.First(&data, "slug = ?", slug).
-			Error
+	switch typeFind {
+	case "slug":
+		err = db.First(&data, "slug = ?", slug).Error
 		if err != nil {
 			logrus.Error("failed to get blog post detail: ", err)
 			return data, err
 		}
-	} else if typeFind == "id" {
-		err = db.First(&data, "id = ?", id).
-			Error
+	case "id":
+		err = db.First(&data, "id = ?", id).Error
 		if err != nil {
 			logrus.Error("failed to get blog post detail: ", err)
 			return data, err
 		}
-	} else {
+	default:
 		return domain.BlogPost{}, errors.New("invalid typeFind parameter, must be 'slug' or 'id'")
 	}
 
@@ -106,12 +105,9 @@ func (r *repository) UpdateBlogPost(ctx context.Context, data domain.BlogPost, i
 }
 
 // CreateBlogPost implements domain.BlogPostRepository.
-func (r *repository) CreateBlogPost(ctx context.Context, data domain.BlogPost) (domain.BlogPost, error) {
-	var result domain.BlogPost
-	var err error
-
+func (r *repository) CreateBlogPost(ctx context.Context, data domain.BlogPost) error {
 	// Menggunakan StartTransaction yang sudah ada
-	err = r.db.StartTransaction(ctx, func(txCtx context.Context) error {
+	err := r.db.StartTransaction(ctx, func(txCtx context.Context) error {
 		// 1. Periksa/Buat Author jika belum ada
 		var authorExists int64
 		if err := r.db.DB(txCtx).Model(&domain.Author{}).
@@ -130,17 +126,15 @@ func (r *repository) CreateBlogPost(ctx context.Context, data domain.BlogPost) (
 			}
 		}
 
+		data.UpdatedAt = nil
 		// Set AuthorID untuk relasi
 		data.AuthorID = data.Author.UserId
 
 		// 2. Insert Blog Post
-		if err := r.db.DB(txCtx).Create(&data).Error; err != nil {
+		if err := r.db.DB(txCtx).Omit("updated_at").Create(&data).Error; err != nil {
 			logrus.Error("failed to create blog post: ", err)
 			return err
 		}
-
-		// Update result dengan data yang sudah memiliki ID
-		result = data
 
 		// 3. Insert Tags jika ada
 		if len(data.Tags) > 0 {
@@ -164,19 +158,29 @@ func (r *repository) CreateBlogPost(ctx context.Context, data domain.BlogPost) (
 	})
 
 	if err != nil {
-		return domain.BlogPost{}, err
+		return err
 	}
 
-	return result, nil
+	return nil
 }
 
 // DeleteBlogPost implements domain.BlogPostRepository.
 func (r *repository) DeleteBlogPost(ctx context.Context, id uint) error {
 	db := r.db.DB(ctx).Model(&domain.BlogPost{})
-	err := db.Delete(&domain.BlogPost{}, "id = ?", id).Error
-	if err != nil {
-		logrus.Error("failed to delete blog post: ", err)
-		return err
+
+	// Perform soft delete by updating is_deleted field
+	result := db.Where("id = ?", id).Updates(map[string]interface{}{
+		"is_deleted": true,
+	})
+
+	if result.Error != nil {
+		logrus.Error("failed to soft delete blog post: ", result.Error)
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		logrus.Warn("no blog post found to delete with id: ", id)
+		return errors.New("blog post not found")
 	}
 	return nil
 }
@@ -186,7 +190,7 @@ func (r *repository) GetAllBlogPosts(ctx context.Context, pagination domain.Filt
 	var data []domain.BlogPost
 	var totalCount int64
 
-	if err := r.db.DB(ctx).Model(&domain.BlogPost{}).Count(&totalCount).Error; err != nil {
+	if err := r.db.DB(ctx).Model(&domain.BlogPost{}).Where("is_deleted = ?", false).Count(&totalCount).Error; err != nil {
 		logrus.Error("failed to count blog posts: ", err)
 		return nil, 0, err
 	}
@@ -195,7 +199,7 @@ func (r *repository) GetAllBlogPosts(ctx context.Context, pagination domain.Filt
 	limit := pagination.GetLimit()
 	orderBy := pagination.GetOrderBy()
 
-	query := r.db.DB(ctx).Preload("Author")
+	query := r.db.DB(ctx).Preload("Author").Where("is_deleted = ?", false)
 
 	if orderBy != "" {
 		query = query.Order(orderBy)
