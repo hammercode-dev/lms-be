@@ -1,5 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
+TRUNCATE TABLE "public"."event_pays" RESTART IDENTITY CASCADE;
+
 INSERT INTO "public"."event_pays" (
     "order_no", "status", "registration_event_id", "event_id", 
     "image_proof_payment", "net_amount"

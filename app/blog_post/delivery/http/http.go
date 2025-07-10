@@ -44,7 +44,7 @@ func (h Handler) CreateBlogPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := h.usecase.CreateBlogPost(r.Context(), BlogPost, token)
+	err = h.usecase.CreateBlogPost(r.Context(), BlogPost, token)
 	if err != nil {
 		resp := utils.CustomErrorResponse(err)
 		utils.Response(resp, w)
@@ -54,7 +54,6 @@ func (h Handler) CreateBlogPost(w http.ResponseWriter, r *http.Request) {
 	utils.Response(domain.HttpResponse{
 		Code:    http.StatusCreated,
 		Message: "Blog post created successfully",
-		Data:    data,
 	}, w)
 
 }
@@ -93,19 +92,65 @@ func (h Handler) DeleteBlogPost(w http.ResponseWriter, r *http.Request) {
 
 // GetAllBlogPosts implements domain.BlogPostHandler.
 func (h Handler) GetAllBlogPosts(w http.ResponseWriter, r *http.Request) {
-	resp, err := h.usecase.GetAllBlogPosts(r.Context())
+	// Ambil parameter pagination dari request
+	pagination, err := domain.GetPaginationFromCtx(r)
+	if err != nil {
+		logrus.Error("failed to parse pagination parameters: ", err)
+		utils.Response(domain.HttpResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Invalid pagination parameters",
+		}, w)
+		return
+	}
+
+	// Panggil usecase dengan parameter pagination
+	data, paginationResponse, err := h.usecase.GetAllBlogPosts(r.Context(), pagination)
 	if err != nil {
 		resp := utils.CustomErrorResponse(err)
 		utils.Response(resp, w)
 		return
 	}
 
-	utils.Response(domain.HttpResponse{
-		Code:    http.StatusOK,
-		Message: "Blog posts retrieved successfully",
-		Data:    resp,
-	}, w)
+	type response struct {
+		Id          int           `json:"id" gorm:"primaryKey"`
+		Title       string        `json:"title"`
+		Excerpt     string        `json:"excerpt"`
+		Author      domain.Author `json:"author" gorm:"foreignKey:AuthorID;references:UserId"`
+		AuthorID    int           `json:"author_id" gorm:"column:author_id"`
+		Tags        []string      `json:"tags" gorm:"-"`
+		Category    string        `json:"category"`
+		Status      string        `json:"status" gorm:"type:enum('draft', 'published', 'archived')"`
+		Slug        string        `json:"slug"`
+		PublishedAt *time.Time    `json:"published_at"`
+		UpdatedAt   *time.Time    `json:"updated_at"`
+		CreatedAt   *time.Time    `json:"created_at"`
+	}
 
+	responseDTO := []response{}
+	for _, post := range data {
+		resp := response{
+			Id:          post.Id,
+			Title:       post.Title,
+			Excerpt:     post.Excerpt,
+			Author:      post.Author,
+			AuthorID:    post.AuthorID,
+			Tags:        post.Tags,
+			Category:    post.Category,
+			Status:      post.Status,
+			Slug:        post.Slug,
+			PublishedAt: post.PublishedAt,
+			UpdatedAt:   post.UpdatedAt,
+			CreatedAt:   post.CreatedAt,
+		}
+		responseDTO = append(responseDTO, resp)
+	}
+
+	utils.Response(domain.HttpResponse{
+		Code:       http.StatusOK,
+		Message:    "Blog posts retrieved successfully",
+		Data:       responseDTO,
+		Pagination: paginationResponse,
+	}, w)
 }
 
 // GetDetailBlogPost implements domain.BlogPostHandler.
@@ -192,6 +237,15 @@ func (h Handler) UpdateBlogPost(w http.ResponseWriter, r *http.Request) {
 	if status, ok := patchData["status"].(string); ok {
 		updatedPost.Status = status
 	}
+	if patchData["status"] == "published" {
+		if updatedPost.PublishedAt == nil {
+			timeNow := time.Now()
+			updatedPost.PublishedAt = &timeNow
+		}
+	} else {
+		updatedPost.PublishedAt = nil
+	}
+
 	if tags, ok := patchData["tags"].([]interface{}); ok {
 		updatedPost.Tags = make([]string, len(tags))
 		for i, tag := range tags {
@@ -205,7 +259,8 @@ func (h Handler) UpdateBlogPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	updatedPost.UpdatedAt = time.Now()
+	timeNow := time.Now()
+	updatedPost.UpdatedAt = &timeNow
 
 	err = h.usecase.UpdateBlogPost(r.Context(), updatedPost, uint(id))
 	if err != nil {
@@ -220,7 +275,6 @@ func (h Handler) UpdateBlogPost(w http.ResponseWriter, r *http.Request) {
 	utils.Response(domain.HttpResponse{
 		Code:    http.StatusOK,
 		Message: "Blog post updated successfully",
-		Data:    updatedPost,
 	}, w)
 }
 

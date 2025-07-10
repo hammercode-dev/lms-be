@@ -154,6 +154,8 @@ func registerHandler(app app.App) *mux.Router {
 	public.HandleFunc("/events/registrations", app.EventHandler.RegisterEvent).Methods(http.MethodPost)
 	public.HandleFunc("/events/registrations/{order_no}", app.EventHandler.RegistrationStatus).Methods(http.MethodGet)
 	public.HandleFunc("/events/pay", app.EventHandler.PayEvent).Methods(http.MethodPost)
+	public.HandleFunc("/blogs", app.BlogPostHandler.GetAllBlogPosts).Methods(http.MethodGet)
+	public.HandleFunc("/blogs/{slug}", app.BlogPostHandler.GetDetailBlogPost).Methods(http.MethodGet)
 
 	protectedV1Route := v1.NewRoute().Subrouter()
 	protectedV1Route.Use(app.Middleware.AuthMiddleware(constants.RoleUser))

@@ -1,5 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
+
+TRUNCATE TABLE "public"."users" RESTART IDENTITY CASCADE;
+
 INSERT INTO "public"."users" (
     "username", "email", "password", "role", "fullname", 
     "date_of_birth", "gender", "phone_number", "address",
