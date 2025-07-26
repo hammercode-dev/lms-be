@@ -84,6 +84,7 @@ type Event struct {
 	CreatedAt            time.Time      `json:"created_at"`
 	UpdatedAt            null.Time      `json:"updated_at"`
 	DeletedAt            null.Time      `json:"deleted_at"`
+	AdditionalLink       string         `json:"additional_link"`
 }
 
 func (Event) TableName() string {
@@ -129,6 +130,7 @@ type CreateEventPayload struct {
 	Speakers             []string  `json:"speakers"`
 	ReservationStartDate null.Time `json:"reservation_start_date"`
 	ReservationEndDate   null.Time `json:"reseveration_end_date"`
+	AdditionalLink       string    `json:"additional_link"`
 }
 
 type UpdateEventPayload struct {
@@ -150,6 +152,7 @@ type UpdateEventPayload struct {
 	Speakers             []string  `json:"speakers"`
 	ReservationStartDate null.Time `json:"reservation_start_date"`
 	ReservationEndDate   null.Time `json:"reseveration_end_date"`
+	AdditionalLink       string    `json:"additional_link"`
 }
 
 type EventDTO struct {
