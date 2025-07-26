@@ -41,7 +41,7 @@ func (h Handler) RegisterEvent(w http.ResponseWriter, r *http.Request) {
 		}, w)
 		return
 	}
-	data, err := h.usecase.CreateRegisterEvent(r.Context(), payload)
+	data, err := h.usecase.CreateRegistrationEvent(r.Context(), payload)
 	if err != nil {
 		logrus.Error("failed to Create event : ", err)
 		utils.Response(domain.HttpResponse{

@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (uc usecase) CreatePayEvent(ctx context.Context, payload domain.EventPayPayload) error {
+func (uc usecase) CreateEventPay(ctx context.Context, payload domain.EventPayPayload) error {
 	rEvent, err := uc.repository.GetRegistrationEvent(ctx, payload.OrderNo)
 	if err != nil {
 		logrus.Error("failed to get event")
@@ -31,7 +31,7 @@ func (uc usecase) CreatePayEvent(ctx context.Context, payload domain.EventPayPay
 	}
 
 	err = uc.dbTX.StartTransaction(ctx, func(txCtx context.Context) error {
-		_, err := uc.repository.CreatePayEvent(txCtx, domain.EventPay{
+		_, err := uc.repository.CreateEventPay(txCtx, domain.EventPay{
 			RegistrationEventID: rEvent.ID,
 			EventID:             rEvent.EventID,
 			ImageProofPayment:   payload.ImageProofPayment,

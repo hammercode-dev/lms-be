@@ -41,7 +41,7 @@ func (h Handler) PayEvent(w http.ResponseWriter, r *http.Request) {
 		}, w)
 		return
 	}
-	err = h.usecase.CreatePayEvent(r.Context(), payload)
+	err = h.usecase.CreateEventPay(r.Context(), payload)
 	if err != nil {
 		logrus.Error("failed to Create pay event : ", err)
 		utils.Response(domain.HttpResponse{
