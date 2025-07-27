@@ -160,10 +160,10 @@ func sendOrderConfirmation(ctx context.Context, orderID string) error {
 
 	// SMTP configuration
 	smtpConfig := SMTP{
-		Email:    "orders@company.com",
-		Password: os.Getenv("SMTP_PASSWORD"),
-		Host:     "smtp.gmail.com",
-		Port:     "587",
+		Email:    os.Getenv("SMTP_EMAIL"),    // e.g., "noreply@company.com"
+		Password: os.Getenv("SMTP_PASSWORD"), // e.g., "your-app-password"
+		Host:     os.Getenv("SMTP_HOST"),     // e.g., "smtp.gmail.com"
+		Port:     os.Getenv("SMTP_PORT"),     // e.g., "587"
 	}
 
 	// Create email payload
@@ -265,10 +265,10 @@ func sendNewsletter(ctx context.Context) error {
 
 	// SMTP configuration
 	smtpConfig := SMTP{
-		Email:    "newsletter@company.com",
-		Password: os.Getenv("SMTP_PASSWORD"),
-		Host:     "smtp.gmail.com",
-		Port:     "587",
+		Email:    os.Getenv("SMTP_EMAIL"),    // e.g., "noreply@company.com"
+		Password: os.Getenv("SMTP_PASSWORD"), // e.g., "your-app-password"
+		Host:     os.Getenv("SMTP_HOST"),     // e.g., "smtp.gmail.com"
+		Port:     os.Getenv("SMTP_PORT"),     // e.g., "587"
 	}
 
 	// Create email payload
@@ -377,10 +377,10 @@ func sendPasswordReset(ctx context.Context, userEmail, resetToken string) error 
 	}
 
 	smtpConfig := SMTP{
-		Email:    "security@company.com",
-		Password: os.Getenv("SMTP_PASSWORD"),
-		Host:     "smtp.gmail.com",
-		Port:     "587",
+		Email:    os.Getenv("SMTP_EMAIL"),    // e.g., "noreply@company.com"
+		Password: os.Getenv("SMTP_PASSWORD"), // e.g., "your-app-password"
+		Host:     os.Getenv("SMTP_HOST"),     // e.g., "smtp.gmail.com"
+		Port:     os.Getenv("SMTP_PORT"),     // e.g., "587"
 	}
 
 	emailPayload := NewSendEmail(
