@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/hammer-code/lms-be/domain"
+	"github.com/hammer-code/lms-be/pkg/ngelog"
 	"github.com/hammer-code/lms-be/utils"
-	"github.com/sirupsen/logrus"
 )
 
 // PayEvent
@@ -24,9 +24,9 @@ import (
 func (h Handler) PayEvent(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
-		logrus.Error("failed to read body : ", err)
+		ngelog.Error(r.Context(), "failed to read body", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -34,25 +34,23 @@ func (h Handler) PayEvent(w http.ResponseWriter, r *http.Request) {
 
 	var payload domain.EventPayPayload
 	if err := json.Unmarshal(bodyBytes, &payload); err != nil {
-		logrus.Error("failed to unmarshal : ", err)
+		ngelog.Error(r.Context(), "failed to unmarshal payload", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
 	}
 	err = h.usecase.CreateEventPay(r.Context(), payload)
 	if err != nil {
-		logrus.Error("failed to Create pay event : ", err)
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		ngelog.Error(r.Context(), "failed to create pay event", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:    201,
+		Code:    http.StatusCreated,
 		Message: "success",
 		Data:    nil,
 	}, w)

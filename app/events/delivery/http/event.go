@@ -8,8 +8,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/hammer-code/lms-be/domain"
+	"github.com/hammer-code/lms-be/pkg/ngelog"
 	"github.com/hammer-code/lms-be/utils"
-	"github.com/sirupsen/logrus"
 )
 
 // @Summary Create Event
@@ -26,9 +26,9 @@ import (
 func (h Handler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		logrus.Error("failed to read body : ", err)
+		ngelog.Error(r.Context(), "failed to read body", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -36,9 +36,9 @@ func (h Handler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 
 	var payload domain.CreateEventPayload
 	if err := json.Unmarshal(body, &payload); err != nil {
-		logrus.Error("failed to unmarshal : ", err)
+		ngelog.Error(r.Context(), "failed to unmarshal", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -46,16 +46,14 @@ func (h Handler) CreateEvent(w http.ResponseWriter, r *http.Request) {
 
 	err = h.usecase.CreateEvent(r.Context(), payload)
 	if err != nil {
-		logrus.Error("failed to Create event : ", err)
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		ngelog.Error(r.Context(), "failed to create event", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:    201,
+		Code:    http.StatusCreated,
 		Message: "success",
 		Data:    nil,
 	}, w)
@@ -76,9 +74,9 @@ func (h Handler) UpdateEvent(w http.ResponseWriter, r *http.Request) {
 	idS := mux.Vars(r)["id"]
 	id, err := strconv.ParseUint(idS, 10, 32)
 	if err != nil {
-		logrus.Error("failed to convert string to uint: ", err)
+		ngelog.Error(r.Context(), "failed to convert string to uint", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -86,9 +84,9 @@ func (h Handler) UpdateEvent(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		logrus.Error("failed to read body : ", err)
+		ngelog.Error(r.Context(), "failed to read body", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -96,9 +94,9 @@ func (h Handler) UpdateEvent(w http.ResponseWriter, r *http.Request) {
 
 	var payload domain.UpdateEventPayload
 	if err := json.Unmarshal(body, &payload); err != nil {
-		logrus.Error("failed to unmarshal : ", err)
+		ngelog.Error(r.Context(), "failed to unmarshal", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -106,16 +104,14 @@ func (h Handler) UpdateEvent(w http.ResponseWriter, r *http.Request) {
 
 	err = h.usecase.UpdateEvent(r.Context(), uint(id), payload)
 	if err != nil {
-		logrus.Error("failed to update event : ", err)
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		ngelog.Error(r.Context(), "failed to update event", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:    200,
+		Code:    http.StatusOK,
 		Message: "success",
 		Data:    nil,
 	}, w)
@@ -137,9 +133,9 @@ func (h Handler) GetEventByID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseUint(idString, 10, 32)
 	if err != nil {
-		logrus.Error("failed to convert string to uint: ", err)
+		ngelog.Error(r.Context(), "failed to convert string to uint", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -147,16 +143,14 @@ func (h Handler) GetEventByID(w http.ResponseWriter, r *http.Request) {
 
 	data, err := h.usecase.GetEventByID(r.Context(), uint(id))
 	if err != nil {
-		logrus.Error("failed to get event : ", err)
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		ngelog.Error(r.Context(), "failed to get event by id", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:    200,
+		Code:    http.StatusOK,
 		Message: "success",
 		Data:    data,
 	}, w)
@@ -178,9 +172,9 @@ func (h Handler) GetDetail(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseUint(idString, 10, 32)
 	if err != nil {
-		logrus.Error("failed to convert string to uint: ", err)
+		ngelog.Error(r.Context(), "failed to convert string to uint", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -188,16 +182,14 @@ func (h Handler) GetDetail(w http.ResponseWriter, r *http.Request) {
 
 	data, err := h.usecase.GetEventByID(r.Context(), uint(id))
 	if err != nil {
-		logrus.Error("failed to get event : ", err)
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		ngelog.Error(r.Context(), "failed to get event by id", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:    200,
+		Code:    http.StatusOK,
 		Message: "success",
 		Data:    data,
 	}, w)
@@ -220,9 +212,9 @@ func (h Handler) DeleteEvent(w http.ResponseWriter, r *http.Request) {
 
 	value, err := strconv.ParseUint(idString, 10, 32)
 	if err != nil {
-		logrus.Error("failed to convert string to uint: ", err)
+		ngelog.Error(r.Context(), "failed to convert string to uint", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -230,16 +222,14 @@ func (h Handler) DeleteEvent(w http.ResponseWriter, r *http.Request) {
 
 	err = h.usecase.DeleteEvent(r.Context(), uint(value))
 	if err != nil {
-		logrus.Error("failed to delete event : ", err)
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		ngelog.Error(r.Context(), "failed to delete event", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:    200,
+		Code:    http.StatusOK,
 		Message: "success",
 		Data:    nil,
 	}, w)
@@ -265,9 +255,9 @@ func (h Handler) DeleteEvent(w http.ResponseWriter, r *http.Request) {
 func (h Handler) List(w http.ResponseWriter, r *http.Request) {
 	flterPagination, err := domain.GetPaginationFromCtx(r)
 	if err != nil {
-		logrus.Error("failed to get pagination : ", err)
+		ngelog.Error(r.Context(), "failed to get pagination", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -286,16 +276,14 @@ func (h Handler) List(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		logrus.Error("failed to get event : ", err)
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		ngelog.Error(r.Context(), "failed to get events", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:       200,
+		Code:       http.StatusOK,
 		Message:    "success",
 		Data:       data,
 		Pagination: pagination,
@@ -323,9 +311,9 @@ func (h Handler) List(w http.ResponseWriter, r *http.Request) {
 func (h Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
 	flterPagination, err := domain.GetPaginationFromCtx(r)
 	if err != nil {
-		logrus.Error("failed to get pagination : ", err)
+		ngelog.Error(r.Context(), "failed to get pagination", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -343,16 +331,14 @@ func (h Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		logrus.Error("failed to get event : ", err)
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		ngelog.Error(r.Context(), "failed to get events", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:       200,
+		Code:       http.StatusOK,
 		Message:    "success",
 		Data:       data,
 		Pagination: pagination,
