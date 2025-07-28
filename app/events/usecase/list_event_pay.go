@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
+	"github.com/hammer-code/lms-be/utils"
 )
 
 func (uc usecase) ListEventPay(ctx context.Context, filter domain.EventFilter) (resp []domain.EventPay, pagination domain.Pagination, err error) {
 	tData, datas, err := uc.repository.ListEventPay(ctx, filter)
 	if err != nil {
-		logrus.Error("failed to list event pay")
+		err = utils.NewInternalServerError(ctx, err)
 		return
 	}
 

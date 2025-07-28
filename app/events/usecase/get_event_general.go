@@ -6,13 +6,13 @@ import (
 
 	"github.com/hammer-code/lms-be/config"
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
+	"github.com/hammer-code/lms-be/utils"
 )
 
 func (uc usecase) GetEventByID(ctx context.Context, id uint) (domain.Event, error) {
 	resp, err := uc.repository.GetEvent(ctx, id)
 	if err != nil {
-		logrus.Error("failed to get event by id: ", err)
+		err = utils.NewInternalServerError(ctx, err)
 		return resp, err
 	}
 	baseURL := config.GetConfig().BaseURL

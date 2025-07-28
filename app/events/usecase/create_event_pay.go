@@ -5,28 +5,29 @@ import (
 	"errors"
 
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
+	"github.com/hammer-code/lms-be/utils"
 )
 
 func (uc usecase) CreateEventPay(ctx context.Context, payload domain.EventPayPayload) error {
 	rEvent, err := uc.repository.GetRegistrationEvent(ctx, payload.OrderNo)
 	if err != nil {
-		logrus.Error("failed to get event")
+		err = utils.NewInternalServerError(ctx, err)
 		return err
 	}
 
 	if rEvent.ID == 0 {
-		return errors.New("registration order not found")
+		err = utils.NewNotFoundError(ctx, "registration order not found", errors.New("registration order not found"))
+		return err
 	}
 
 	dataImage, err := uc.imageRepository.GetImage(ctx, payload.ImageProofPayment)
 	if err != nil {
-		logrus.Error("failed to create event", dataImage)
+		err = utils.NewInternalServerError(ctx, err)
 		return err
 	}
 
 	if dataImage.IsUsed {
-		err = errors.New("image not exists")
+		err = utils.NewNotFoundError(ctx, "image not exists", errors.New("image not exists"))
 		return err
 	}
 
@@ -41,13 +42,13 @@ func (uc usecase) CreateEventPay(ctx context.Context, payload domain.EventPayPay
 		})
 
 		if err != nil {
-			logrus.Error("failed to create pay event")
+			err = utils.NewInternalServerError(txCtx, err)
 			return err
 		}
 
 		err = uc.imageRepository.UpdateUseImage(txCtx, dataImage.ID)
 		if err != nil {
-			logrus.Error("failed to update use image")
+			err = utils.NewInternalServerError(txCtx, err)
 			return err
 		}
 

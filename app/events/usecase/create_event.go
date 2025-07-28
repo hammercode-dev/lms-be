@@ -5,18 +5,18 @@ import (
 	"errors"
 
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
+	"github.com/hammer-code/lms-be/utils"
 )
 
 func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPayload) error {
 	dataImage, err := uc.imageRepository.GetImage(ctx, payload.FileName)
 	if err != nil {
-		logrus.Error("failed to create event", dataImage)
+		err = utils.NewInternalServerError(ctx, err)
 		return err
 	}
 
 	if dataImage.IsUsed {
-		err = errors.New("image not exists")
+		err = utils.NewNotFoundError(ctx, "image not exists", errors.New("image not exists"))
 		return err
 	}
 
@@ -41,13 +41,13 @@ func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPay
 
 		eventID, err := uc.repository.CreateEvent(txCtx, data)
 		if err != nil {
-			logrus.Error("failed to create event", data)
+			err = utils.NewInternalServerError(ctx, err)
 			return err
 		}
 
 		err = uc.imageRepository.UpdateUseImage(txCtx, dataImage.ID)
 		if err != nil {
-			logrus.Error("failed to update use image", data)
+			err = utils.NewInternalServerError(ctx, err)
 			return err
 		}
 
@@ -57,7 +57,7 @@ func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPay
 				Tag:     tag,
 			})
 			if err != nil {
-				logrus.Error("failed to create event tag", data)
+				err = utils.NewInternalServerError(ctx, err)
 				return err
 			}
 		}
@@ -68,7 +68,7 @@ func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPay
 				Name:    speaker,
 			})
 			if err != nil {
-				logrus.Error("failed to create event speaker", data)
+				err = utils.NewInternalServerError(ctx, err)
 				return err
 			}
 		}

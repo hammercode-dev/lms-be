@@ -5,18 +5,19 @@ import (
 	"errors"
 
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
+	"github.com/hammer-code/lms-be/utils"
 )
 
 func (uc usecase) PayProcess(ctx context.Context, payload domain.PayProcessPayload) error {
 	rEvent, err := uc.repository.GetRegistrationEvent(ctx, payload.OrderNo)
 	if err != nil {
-		logrus.Error("failed to get event")
+		err = utils.NewInternalServerError(ctx, err)
 		return err
 	}
 
 	if rEvent.ID == 0 {
-		return errors.New("registration order not found")
+		err = utils.NewNotFoundError(ctx, "registration order not found", errors.New("registration order not found"))
+		return err
 	}
 
 	if rEvent.Status == "SUCCESS" {
@@ -25,12 +26,13 @@ func (uc usecase) PayProcess(ctx context.Context, payload domain.PayProcessPaylo
 
 	eventPay, err := uc.repository.GetEventPay(ctx, payload.OrderNo)
 	if err != nil {
-		logrus.Error("failed to get event")
+		err = utils.NewInternalServerError(ctx, err)
 		return err
 	}
 
 	if eventPay.ID == 0 {
-		return errors.New("event pay order not found")
+		err = utils.NewNotFoundError(ctx, "event pay order not found", errors.New("event pay order not found"))
+		return err
 	}
 
 	if eventPay.Status == "SUCCESS" {
@@ -45,13 +47,13 @@ func (uc usecase) PayProcess(ctx context.Context, payload domain.PayProcessPaylo
 		err = uc.repository.UpdateEventPay(txCtx, eventPay)
 
 		if err != nil {
-			logrus.Error("failed to update event pay")
+			err = utils.NewInternalServerError(ctx, err)
 			return err
 		}
 
 		err = uc.repository.UpdateRegistrationEvent(txCtx, rEvent)
 		if err != nil {
-			logrus.Error("failed to update registration event pay")
+			err = utils.NewInternalServerError(ctx, err)
 			return err
 		}
 

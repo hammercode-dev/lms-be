@@ -8,29 +8,32 @@ import (
 
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/pkg/hash"
-	"github.com/sirupsen/logrus"
+	"github.com/hammer-code/lms-be/utils"
 )
 
 func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.RegisterEventPayload) (domain.RegisterEventResponse, error) {
 	event, err := uc.repository.GetEvent(ctx, payload.EventID)
 	if err != nil {
-		logrus.Error("failed to get event")
+		err = utils.NewInternalServerError(ctx, err)
 		return domain.RegisterEventResponse{}, err
 	}
 
 	if event.ID == 0 {
-		return domain.RegisterEventResponse{}, errors.New("event not found")
+		err = utils.NewNotFoundError(ctx, "event not found", errors.New("event not found"))
+		return domain.RegisterEventResponse{}, err
 	}
 
 	tNow := time.Now()
 
 	if !event.ReservationStartDate.Valid {
-		return domain.RegisterEventResponse{}, errors.New("event is not start to booking")
+		err = utils.NewBadRequestError(ctx, "event is not start to booking", errors.New("event is not start to booking"))
+		return domain.RegisterEventResponse{}, err
 	}
 
 	if event.ReservationEndDate.Valid {
 		if tNow.After(event.ReservationEndDate.Time) {
-			return domain.RegisterEventResponse{}, errors.New("priode booking has ended")
+			err = utils.NewBadRequestError(ctx, "priode booking has ended", errors.New("priode booking has ended"))
+			return domain.RegisterEventResponse{}, err
 		}
 	}
 
@@ -58,19 +61,19 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 		})
 
 		if err != nil {
-			logrus.Error("failed to get event")
+			err = utils.NewInternalServerError(ctx, err)
 			return err
 		}
 
 		if payload.ImageProofPayment != "" {
 			dataImage, err := uc.imageRepository.GetImage(ctx, payload.ImageProofPayment)
 			if err != nil {
-				logrus.Error("failed to create event", dataImage)
+				err = utils.NewInternalServerError(ctx, err)
 				return err
 			}
 
 			if dataImage.IsUsed {
-				err = errors.New("image not exists")
+				err = utils.NewNotFoundError(ctx, "image not exists", errors.New("image not exists"))
 				return err
 			}
 
@@ -82,13 +85,13 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 			})
 
 			if err != nil {
-				logrus.Error("failed to create pay event")
+				err = utils.NewInternalServerError(ctx, err)
 				return err
 			}
 
 			err = uc.imageRepository.UpdateUseImage(txCtx, dataImage.ID)
 			if err != nil {
-				logrus.Error("failed to update use image")
+				err = utils.NewInternalServerError(ctx, err)
 				return err
 			}
 		}
