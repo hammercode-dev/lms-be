@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
 )
 
 func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter) (tData int, data []domain.Event, err error) {
@@ -38,7 +37,6 @@ func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter
 		Offset(filter.FilterPagination.GetOffset()).
 		Preload("Tags").Preload("Speakers").Find(&data).Error
 	if err != nil {
-		logrus.Error("repo.GetEvents: failed to get events use generic conditions")
 		return
 	}
 

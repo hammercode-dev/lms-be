@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
 )
 
 func (repo *repository) ListEventPay(ctx context.Context, filter domain.EventFilter) (tData int, data []domain.EventPay, err error) {
@@ -34,7 +33,6 @@ func (repo *repository) ListEventPay(ctx context.Context, filter domain.EventFil
 		Offset(filter.FilterPagination.GetOffset()).
 		Preload("RegistrationEvent").Find(&data).Error
 	if err != nil {
-		logrus.Error("repo.GetEvents: failed to get event pays use generic conditions")
 		return
 	}
 
