@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration Confirmed</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    "
+  >
+    <table
+      role="presentation"
+      width="100%"
+      border="0"
+      cellspacing="0"
+      cellpadding="0"
+    >
+      <tr>
+        <td align="center" style="padding: 20px 0">
+          <table
+            role="presentation"
+            width="600"
+            border="0"
+            cellspacing="0"
+            cellpadding="0"
+            style="
+              background-color: #ffffff;
+              border-radius: 8px;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                style="
+                  padding: 40px 30px;
+                  text-align: center;
+                  background-color: #4a86e8;
+                  border-radius: 8px 8px 0 0;
+                "
+              >
+                <h1 style="color: #ffffff; margin: 0">
+                  Registration Confirmed!
+                </h1>
+              </td>
+            </tr>
+
+            <!-- Main Content -->
+            <tr>
+              <td style="padding: 30px 30px 20px 30px">
+                <table
+                  role="presentation"
+                  width="100%"
+                  border="0"
+                  cellspacing="0"
+                  cellpadding="0"
+                >
+                  <tr>
+                    <td style="padding-bottom: 20px">
+                      <h2 style="margin: 0; color: #333333">
+                        Hello {{.name}},
+                      </h2>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        padding-bottom: 20px;
+                        line-height: 24px;
+                        color: #555555;
+                      "
+                    >
+                      Thank you for registering for
+                      <strong>{{.title}}</strong>! Your registration has been
+                      successfully processed and confirmed. We're excited to
+                      have you join us!
+                    </td>
+                  </tr>
+
+                  <!-- Event Details -->
+                  <tr>
+                    <td
+                      style="
+                        padding: 20px;
+                        background-color: #f9f9f9;
+                        border-radius: 6px;
+                        margin-bottom: 20px;
+                      "
+                    >
+                      <table
+                        role="presentation"
+                        width="100%"
+                        border="0"
+                        cellspacing="0"
+                        cellpadding="0"
+                      >
+                        <tr>
+                          <td colspan="2" style="padding-bottom: 10px">
+                            <h3 style="margin: 0; color: #333333">
+                              Event Details
+                            </h3>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            width="30%"
+                            style="padding: 5px 0; color: #777777"
+                          >
+                            Date:
+                          </td>
+                          <td
+                            width="70%"
+                            style="padding: 5px 0; font-weight: bold"
+                          >
+                            {{.date}}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            width="30%"
+                            style="padding: 5px 0; color: #777777"
+                          >
+                            Time:
+                          </td>
+                          <td
+                            width="70%"
+                            style="padding: 5px 0; font-weight: bold"
+                          >
+                            {{.duration}}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            width="30%"
+                            style="padding: 5px 0; color: #777777"
+                          >
+                            Location:
+                          </td>
+                          <td
+                            width="70%"
+                            style="padding: 5px 0; font-weight: bold"
+                          >
+                            {{.location}}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            width="30%"
+                            style="padding: 5px 0; color: #777777"
+                          >
+                            Registration ID:
+                          </td>
+                          <td
+                            width="70%"
+                            style="padding: 5px 0; font-weight: bold"
+                          >
+                            {{.order_no}}
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+
+                  <!-- Next Steps -->
+                  <tr>
+                    <td style="padding: 20px 0">
+                      <h3 style="margin: 0 0 15px 0; color: #333333">
+                        What's Next?
+                      </h3>
+                      <ul
+                        style="
+                          margin: 0;
+                          padding: 0 0 0 20px;
+                          line-height: 24px;
+                          color: #555555;
+                        "
+                      >
+                        <li>Save the date in your calendar</li>
+                        <li>
+                          We'll send a reminder email as the event date
+                          approaches
+                        </li>
+                        <li>
+                          Prepare any necessary materials mentioned in the event
+                          description
+                        </li>
+                        <li>
+                          If you have special requirements, please let us know
+                          as soon as possible
+                        </li>
+                      </ul>
+                    </td>
+                  </tr>
+
+                  <!-- Additional Information -->
+                  <!-- <tr> -->
+                  <!--   <td -->
+                  <!--     style="padding: 20px 0; line-height: 24px; color: #555555" -->
+                  <!--   > -->
+                  <!--     If you need to modify your registration or have any -->
+                  <!--     questions, please contact us at -->
+                  <!--     <a href="mailto:[Contact Email]" style="color: #4caf50" -->
+                  <!--       >[Contact Email]</a -->
+                  <!--     > -->
+                  <!--     or call us at <strong>[Contact Phone]</strong>. -->
+                  <!--   </td> -->
+                  <!-- </tr> -->
+
+                  <!-- CTA Button -->
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td
+          style="
+            padding: 20px;
+            text-align: center;
+            color: #999999;
+            font-size: 12px;
+          "
+        >
+          © {{.year}} HammerCode Palu. All rights reserved.
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
