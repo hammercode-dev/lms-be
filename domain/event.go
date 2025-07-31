@@ -65,7 +65,7 @@ type Event struct {
 	Description          string         `json:"description"`
 	Slug                 string         `json:"slug"`
 	Author               string         `json:"author"`
-	ImageEvent           string         `json:"image_event"`
+	Image                string         `json:"image"`
 	Date                 null.Time      `json:"date"`
 	Type                 string         `json:"type"`
 	Location             string         `json:"location"`
@@ -80,7 +80,7 @@ type Event struct {
 	UpdatedBy            int            `json:"updated_by"`
 	DeletedBy            int            `json:"deleted_by"`
 	ReservationStartDate null.Time      `json:"reservation_start_date"`
-	ReservationEndDate   null.Time      `json:"reseveration_end_date"`
+	ReservationEndDate   null.Time      `json:"reservation_end_date"`
 	CreatedAt            time.Time      `json:"created_at"`
 	UpdatedAt            null.Time      `json:"updated_at"`
 	DeletedAt            null.Time      `json:"deleted_at"`
@@ -128,7 +128,7 @@ type CreateEventPayload struct {
 	Tags                 []string  `json:"tags"`
 	Speakers             []string  `json:"speakers"`
 	ReservationStartDate null.Time `json:"reservation_start_date"`
-	ReservationEndDate   null.Time `json:"reseveration_end_date"`
+	ReservationEndDate   null.Time `json:"reservation_end_date"`
 }
 
 type UpdateEventPayload struct {
@@ -149,7 +149,7 @@ type UpdateEventPayload struct {
 	Tags                 []string  `json:"tags"`
 	Speakers             []string  `json:"speakers"`
 	ReservationStartDate null.Time `json:"reservation_start_date"`
-	ReservationEndDate   null.Time `json:"reseveration_end_date"`
+	ReservationEndDate   null.Time `json:"reservation_end_date"`
 }
 
 type EventDTO struct {
