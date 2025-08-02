@@ -5,19 +5,9 @@ import (
 	"time"
 
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
+	"github.com/hammer-code/lms-be/utils"
 	"gopkg.in/guregu/null.v4"
 )
-
-func (uc usecase) DeleteEvent(ctx context.Context, id uint) error {
-	err := uc.repository.DeleteEvent(ctx, id)
-	if err != nil {
-		logrus.Error("failed to delete event by id: ", err)
-		return err
-	}
-
-	return err
-}
 
 func (uc usecase) UpdateEvent(ctx context.Context, id uint, payload domain.UpdateEventPayload) error {
 	err := uc.repository.UpdateEvent(ctx, domain.Event{
@@ -40,7 +30,7 @@ func (uc usecase) UpdateEvent(ctx context.Context, id uint, payload domain.Updat
 		UpdatedAt:            null.TimeFrom(time.Now()),
 	})
 	if err != nil {
-		logrus.Error("failed to update event by id: ", err)
+		err = utils.NewInternalServerError(ctx, err)
 		return err
 	}
 

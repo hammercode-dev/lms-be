@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/hammer-code/lms-be/domain"
+	"github.com/hammer-code/lms-be/pkg/ngelog"
 	"github.com/hammer-code/lms-be/utils"
-	"github.com/sirupsen/logrus"
 )
 
 // ListRegistration
@@ -27,9 +27,9 @@ import (
 func (h Handler) ListRegistration(w http.ResponseWriter, r *http.Request) {
 	flterPagination, err := domain.GetPaginationFromCtx(r)
 	if err != nil {
-		logrus.Error("failed to get pagination : ", err)
+		ngelog.Error(r.Context(), "failed to get pagination", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -46,16 +46,14 @@ func (h Handler) ListRegistration(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		logrus.Error("failed to get registration event : ", err)
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		ngelog.Error(r.Context(), "failed to list registration event", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:       200,
+		Code:       http.StatusOK,
 		Message:    "success",
 		Data:       data,
 		Pagination: pagination,

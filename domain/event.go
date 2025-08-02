@@ -17,8 +17,8 @@ type EventRepository interface {
 	CreateEventTag(ctx context.Context, data EventTag) (uint, error)
 	CreateEventSpeaker(ctx context.Context, data EventSpeaker) (uint, error)
 	GetEvents(ctx context.Context, filter EventFilter) (tData int, data []Event, err error)
-	CreatePayEvent(ctx context.Context, event EventPay) (uint, error)
-	CreateRegisterEvent(ctx context.Context, event RegistrationEvent) (uint, error)
+	CreateEventPay(ctx context.Context, event EventPay) (uint, error)
+	CreateRegistrationEvent(ctx context.Context, event RegistrationEvent) (uint, error)
 	GetEvent(ctx context.Context, eventID uint) (data Event, err error)
 	DeleteEvent(ctx context.Context, eventID uint) (err error)
 	GetRegistrationEvent(ctx context.Context, orderNo string) (data RegistrationEvent, err error)
@@ -34,8 +34,8 @@ type EventUsecase interface {
 	CreateEvent(ctx context.Context, payload CreateEventPayload) error
 	UpdateEvent(ctx context.Context, id uint, payload UpdateEventPayload) error
 	GetEvents(ctx context.Context, filter EventFilter) (data []Event, pagination Pagination, err error)
-	CreateRegisterEvent(ctx context.Context, payload RegisterEventPayload) (RegisterEventResponse, error)
-	CreatePayEvent(ctx context.Context, payload EventPayPayload) error
+	CreateRegistrationEvent(ctx context.Context, payload RegisterEventPayload) (RegisterEventResponse, error)
+	CreateEventPay(ctx context.Context, payload EventPayPayload) error
 	GetEventByID(ctx context.Context, id uint) (resp Event, err error)
 	DeleteEvent(ctx context.Context, id uint) (err error)
 	RegistrationStatus(ctx context.Context, orderNo string) (resp RegisterStatusResponse, err error)
@@ -84,6 +84,7 @@ type Event struct {
 	CreatedAt            time.Time      `json:"created_at"`
 	UpdatedAt            null.Time      `json:"updated_at"`
 	DeletedAt            null.Time      `json:"deleted_at"`
+	AdditionalLink       string         `json:"additional_link"`
 }
 
 func (Event) TableName() string {
@@ -128,7 +129,8 @@ type CreateEventPayload struct {
 	Tags                 []string  `json:"tags"`
 	Speakers             []string  `json:"speakers"`
 	ReservationStartDate null.Time `json:"reservation_start_date"`
-	ReservationEndDate   null.Time `json:"reservation_end_date"`
+	ReservationEndDate   null.Time `json:"reseveration_end_date"`
+	AdditionalLink       string    `json:"additional_link"`
 }
 
 type UpdateEventPayload struct {
@@ -149,7 +151,8 @@ type UpdateEventPayload struct {
 	Tags                 []string  `json:"tags"`
 	Speakers             []string  `json:"speakers"`
 	ReservationStartDate null.Time `json:"reservation_start_date"`
-	ReservationEndDate   null.Time `json:"reservation_end_date"`
+	ReservationEndDate   null.Time `json:"reseveration_end_date"`
+	AdditionalLink       string    `json:"additional_link"`
 }
 
 type EventDTO struct {
