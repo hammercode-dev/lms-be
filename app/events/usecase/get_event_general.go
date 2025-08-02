@@ -17,6 +17,6 @@ func (uc usecase) GetEventByID(ctx context.Context, id uint) (domain.Event, erro
 	}
 	baseURL := config.GetConfig().BaseURL
 
-	resp.ImageEvent = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, resp.ImageEvent)
+	resp.Image = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, resp.Image)
 	return resp, err
 }

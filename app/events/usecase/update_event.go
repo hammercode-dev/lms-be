@@ -16,7 +16,7 @@ func (uc usecase) UpdateEvent(ctx context.Context, id uint, payload domain.Updat
 		Description:          payload.Description,
 		Slug:                 payload.Slug,
 		Author:               payload.Author,
-		ImageEvent:           payload.FileName,
+		Image:                payload.FileName,
 		Date:                 payload.Date,
 		Type:                 payload.Type,
 		Location:             payload.Location,

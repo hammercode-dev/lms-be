@@ -25,7 +25,7 @@ func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPay
 			Title:                payload.Title,
 			Description:          payload.Description,
 			Author:               payload.Author,
-			ImageEvent:           dataImage.FileName,
+			Image:                dataImage.FileName,
 			Date:                 payload.Date,
 			Slug:                 payload.Slug,
 			Type:                 payload.Type,
@@ -34,7 +34,7 @@ func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPay
 			Capacity:             payload.Capacity,
 			RegistrationLink:     payload.RegistrationLink,
 			ReservationStartDate: payload.ReservationStartDate,
-			ReservationEndDate:   payload.ReservationStartDate,
+			ReservationEndDate:   payload.ReservationEndDate,
 			Price:                payload.Price,
 			Status:               payload.Status,
 		}
