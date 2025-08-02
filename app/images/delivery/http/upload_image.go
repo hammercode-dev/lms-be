@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
@@ -19,7 +20,7 @@ func (h Handler) UploadImage(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the file from the form-data
 	file, header, err := r.FormFile("image")
 	if err != nil {
-		http.Error(w, "Error Retrieving the File", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error retrieving file: %v", err), http.StatusBadRequest)
 		return
 	}
 	defer file.Close()

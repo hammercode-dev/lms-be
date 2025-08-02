@@ -19,7 +19,7 @@ func (uc usecase) GetEvents(ctx context.Context, filter domain.EventFilter) (res
 	baseURL := config.GetConfig().BaseURL
 
 	for i, data := range datas {
-		datas[i].ImageEvent = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, data.ImageEvent)
+		datas[i].Image = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, data.Image)
 	}
 
 	return datas, domain.NewPagination(tData, filter.FilterPagination), err

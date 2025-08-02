@@ -78,6 +78,15 @@ func NewSendEmailWithSender(ctx context.Context, smtp SMTP, mime string, subject
 	}
 }
 
+func (p *PayloadEmail) ChangeTemplate(ctx context.Context, newTemplate *template.Template) error {
+	if newTemplate == nil {
+		ngelog.Error(ctx, "new template cannot be nil", nil)
+		return errors.New("new template cannot be nil")
+	}
+	p.HtmlTemplate = newTemplate
+	return nil
+}
+
 func (p *PayloadEmail) AddReceiver(ctx context.Context, receiver Receiver) error {
 	if receiver.Email == "" {
 		ngelog.Error(ctx, "email cannot be null", nil)
@@ -129,17 +138,17 @@ func (p PayloadEmail) SendEmail(ctx context.Context) {
 		}
 
 		bodyContent = bodyBuffer.String()
-		
+
 		// Build message headers
 		headers := fmt.Sprintf("To: %s\r\n", receiver.Email)
-		
+
 		// Add CC header if there are CC recipients
 		if len(p.CC) > 0 {
 			headers += fmt.Sprintf("Cc: %s\r\n", strings.Join(p.CC, ", "))
 		}
-		
+
 		headers += fmt.Sprintf("Subject: %s\r\n%s\r\n", p.Subject, p.Mime)
-		
+
 		message := []byte(headers + bodyContent + "\r\n")
 
 		auth := smtp.PlainAuth("", p.Sender.Email, p.Sender.Password, p.Sender.Host)
@@ -149,7 +158,7 @@ func (p PayloadEmail) SendEmail(ctx context.Context) {
 		allRecipients = append(allRecipients, p.CC...)
 
 		host := fmt.Sprintf("%s:%s", p.Sender.Host, p.Sender.Port)
-		
+
 		// Use the injected SMTP sender
 		if err := p.smtpSender.SendMail(host, auth, p.Sender.Email, allRecipients, message); err != nil {
 			ngelog.Error(ctx, fmt.Sprintf("failed to send to %s", receiver.Email), err)
