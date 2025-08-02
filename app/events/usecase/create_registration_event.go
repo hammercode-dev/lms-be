@@ -12,6 +12,7 @@ import (
 	"github.com/hammer-code/lms-be/pkg/email"
 	"github.com/hammer-code/lms-be/pkg/hash"
 	"github.com/hammer-code/lms-be/utils"
+	"github.com/sirupsen/logrus"
 )
 
 func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.RegisterEventPayload) (domain.RegisterEventResponse, error) {
