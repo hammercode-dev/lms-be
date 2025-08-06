@@ -1,10 +1,12 @@
 package middlewares
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
 	"github.com/hammer-code/lms-be/domain"
+	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
 	"github.com/hammer-code/lms-be/pkg/ngelog"
 	"github.com/hammer-code/lms-be/utils"
 )
@@ -80,6 +82,9 @@ func (m *Middleware) AuthMiddleware(allowedRole string) domain.MiddlewareFunc {
 
 			writer.Header().Set("x-user-id", strconv.Itoa(user.ID))
 			writer.Header().Set("x-username", user.Username)
+			
+			ctxUser := context.WithValue(request.Context(), contextkey.UserKey, user.ID)
+			request = request.WithContext(ctxUser)
 
 			next.ServeHTTP(writer, request)
 		})
