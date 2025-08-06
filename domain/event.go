@@ -22,7 +22,7 @@ type EventRepository interface {
 	GetEvent(ctx context.Context, eventID uint) (data Event, err error)
 	DeleteEvent(ctx context.Context, eventID uint) (err error)
 	GetRegistrationEvent(ctx context.Context, orderNo string) (data RegistrationEvent, err error)
-	ListRegistration(ctx context.Context, filter EventFilter) (tData int, data []RegistrationEvent, err error)
+	ListRegistration(ctx context.Context, filter EventFilter, email string) (tData int, data []RegistrationEvent, err error)
 	ListEventPay(ctx context.Context, filter EventFilter) (tData int, data []EventPay, err error)
 	UpdateEventPay(ctx context.Context, event EventPay) error
 	GetEventPay(ctx context.Context, orderNo string) (data EventPay, err error)
@@ -34,12 +34,12 @@ type EventUsecase interface {
 	CreateEvent(ctx context.Context, payload CreateEventPayload) error
 	UpdateEvent(ctx context.Context, id uint, payload UpdateEventPayload) error
 	GetEvents(ctx context.Context, filter EventFilter) (data []Event, pagination Pagination, err error)
-	CreateRegistrationEvent(ctx context.Context, payload RegisterEventPayload) (RegisterEventResponse, error)
+	CreateRegistrationEvent(ctx context.Context, payload RegisterEventPayload, token string) (RegisterEventResponse, error)
 	CreateEventPay(ctx context.Context, payload EventPayPayload) error
 	GetEventByID(ctx context.Context, id uint) (resp Event, err error)
 	DeleteEvent(ctx context.Context, id uint) (err error)
 	RegistrationStatus(ctx context.Context, orderNo string) (resp RegisterStatusResponse, err error)
-	ListRegistration(ctx context.Context, filter EventFilter) (resp []RegistrationEvent, pagination Pagination, err error)
+	ListRegistration(ctx context.Context, filter EventFilter, token string) (resp []RegistrationEvent, pagination Pagination, err error)
 	ListEventPay(ctx context.Context, filter EventFilter) (data []EventPay, pagination Pagination, err error)
 	PayProcess(ctx context.Context, payload PayProcessPayload) error
 }
