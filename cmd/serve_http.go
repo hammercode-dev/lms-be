@@ -150,28 +150,28 @@ func registerHandler(app app.App) *mux.Router {
 	public.HandleFunc("/storage/{kind}/{path}", app.ImageHandler.GetStorage).Methods(http.MethodGet)
 	public.HandleFunc("/events", app.EventHandler.List).Methods(http.MethodGet)
 	public.HandleFunc("/events/{id}", app.EventHandler.GetEventByID).Methods(http.MethodGet)
+	// public.HandleFunc("/events/registrations/{order_no}", app.EventHandler.RegistrationStatus).Methods(http.MethodGet)
+	// public.HandleFunc("/events/pay", app.EventHandler.PayEvent).Methods(http.MethodPost)
 	public.HandleFunc("/images", app.ImageHandler.UploadImage).Methods(http.MethodPost)
-	public.HandleFunc("/events/registrations", app.EventHandler.RegisterEvent).Methods(http.MethodPost)
-	public.HandleFunc("/events/registrations/{order_no}", app.EventHandler.RegistrationStatus).Methods(http.MethodGet)
-	public.HandleFunc("/events/pay", app.EventHandler.PayEvent).Methods(http.MethodPost)
 	public.HandleFunc("/blogs", app.BlogPostHandler.GetAllBlogPosts).Methods(http.MethodGet)
 	public.HandleFunc("/blogs/{slug}", app.BlogPostHandler.GetDetailBlogPost).Methods(http.MethodGet)
-
+	
 	protectedV1Route := v1.NewRoute().Subrouter()
 	protectedV1Route.Use(app.Middleware.AuthMiddleware(constants.RoleUser))
-
+	
 	protectedV1AdminRoute := v1.PathPrefix("/admin").Subrouter()
 	protectedV1AdminRoute.Use(app.Middleware.AuthMiddleware(constants.RoleAdmin))
-
+	
 	protectedV1Route.HandleFunc("/users", app.UserHandler.GetUsers).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/user", app.UserHandler.GetUserProfile).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/logout", app.UserHandler.Logout).Methods(http.MethodPost)
-
+	
 	protectedV1Route.HandleFunc("/", app.UserHandler.GetUserById).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/update", app.UserHandler.UpdateProfileUser).Methods(http.MethodPut)
 	protectedV1Route.HandleFunc("/delete", app.UserHandler.DeleteUser).Methods(http.MethodDelete)
-
+	
 	protectedV1Route.HandleFunc("/events", app.EventHandler.CreateEvent).Methods(http.MethodPost)
+	protectedV1Route.HandleFunc("/events/registrations", app.EventHandler.RegisterEvent).Methods(http.MethodPost)
 	protectedV1Route.HandleFunc("/events/registrations", app.EventHandler.ListRegistration).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/events/pays", app.EventHandler.ListEventPay).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/events/pays", app.EventHandler.PayProcess).Methods(http.MethodPost)
