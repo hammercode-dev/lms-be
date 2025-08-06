@@ -6,13 +6,16 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/hammer-code/lms-be/domain"
+	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
 	"github.com/hammer-code/lms-be/pkg/email"
 	"github.com/hammer-code/lms-be/pkg/hash"
 	"github.com/hammer-code/lms-be/utils"
 	"github.com/sirupsen/logrus"
+	"gopkg.in/guregu/null.v4"
 )
 
 func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.RegisterEventPayload) (domain.RegisterEventResponse, error) {
@@ -41,6 +44,23 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 		}
 	}
 
+	// check image proof payment
+	dataImage := domain.Image{}
+	if payload.ImageProofPayment != "" {
+		dataImage, err = uc.imageRepository.GetImage(ctx, payload.ImageProofPayment)
+		if err != nil {
+			err = utils.NewInternalServerError(ctx, err)
+			return domain.RegisterEventResponse{}, err
+		}
+	
+		if dataImage.IsUsed {
+			err = utils.NewNotFoundError(ctx, "image not exists", errors.New("image not exists"))
+			return domain.RegisterEventResponse{}, err
+		}
+	}
+
+	// generate order number
+	// format: TXE-<event_id>-<year><month><day><hash
 	hash := hash.GenerateHash(time.Now().Format("2006-01-02 15:04:05"))
 
 	orderNo := fmt.Sprintf("TXE-%d-%s%s%s%s", event.ID, time.Now().Format("06"), time.Now().Format("01"), time.Now().Format("02"), hash[0:4])
@@ -128,14 +148,20 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 	}
 
 	err = uc.dbTX.StartTransaction(ctx, func(txCtx context.Context) error {
+		uid := ctx.Value(contextkey.UserKey).(int)
+		strUid := strconv.Itoa(uid)
+
 		rId, err := uc.repository.CreateRegistrationEvent(txCtx, domain.RegistrationEvent{
 			OrderNo:     orderNo,
+			UserID: 	 strUid,
 			EventID:     event.ID,
 			Name:        payload.Name,
 			Email:       payload.Email,
 			PhoneNumber: payload.PhoneNumber,
 			Status:      status,
 			UpToYou:     upToYou,
+			ImageProofPayment: dataImage.FileName,
+			PaymentDate: null.NewTime(time.Now(), true),
 		})
 
 		if err != nil {
@@ -143,22 +169,12 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 			return err
 		}
 
-		if payload.ImageProofPayment != "" {
-			dataImage, err := uc.imageRepository.GetImage(ctx, payload.ImageProofPayment)
-			if err != nil {
-				err = utils.NewInternalServerError(ctx, err)
-				return err
-			}
-
-			if dataImage.IsUsed {
-				err = utils.NewNotFoundError(ctx, "image not exists", errors.New("image not exists"))
-				return err
-			}
-
+		if dataImage.FileName != "" {
 			_, err = uc.repository.CreateEventPay(txCtx, domain.EventPay{
 				RegistrationEventID: rId,
 				EventID:             event.ID,
-				ImageProofPayment:   payload.ImageProofPayment,
+				OrderNO: 		     orderNo,
+				ImageProofPayment:   dataImage.FileName,
 				NetAmount:           payload.NetAmount,
 			})
 
@@ -166,12 +182,12 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 				err = utils.NewInternalServerError(ctx, err)
 				return err
 			}
+		}
 
-			err = uc.imageRepository.UpdateUseImage(txCtx, dataImage.ID)
-			if err != nil {
-				err = utils.NewInternalServerError(ctx, err)
-				return err
-			}
+		err = uc.imageRepository.UpdateUseImage(txCtx, dataImage.ID)
+		if err != nil {
+			err = utils.NewInternalServerError(ctx, err)
+			return err
 		}
 		return nil
 	})
