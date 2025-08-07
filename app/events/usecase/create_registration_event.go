@@ -15,7 +15,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.RegisterEventPayload) (domain.RegisterEventResponse, error) {
+func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.RegisterEventPayload, token string) (domain.RegisterEventResponse, error) {
 	event, err := uc.repository.GetEvent(ctx, payload.EventID)
 	if err != nil {
 		err = utils.NewInternalServerError(ctx, err)
@@ -39,6 +39,11 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 			err = utils.NewBadRequestError(ctx, "priode booking has ended", errors.New("priode booking has ended"))
 			return domain.RegisterEventResponse{}, err
 		}
+	}
+
+	userData, err := uc.jwt.VerifyToken(token)
+	if err != nil {
+		return domain.RegisterEventResponse{}, fmt.Errorf("failed to verify token: %w", err)
 	}
 
 	hash := hash.GenerateHash(time.Now().Format("2006-01-02 15:04:05"))
@@ -84,12 +89,12 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 	if err := emailPayload.AddReceiver(
 		ctx,
 		email.Receiver{
-			Email: payload.Email,
+			Email: userData.Email,
 			Data: map[string]interface{}{
-				"name":     payload.Name,
+				"name":     userData.UserName,
 				"title":    event.Title,
 				"price":    event.Price,
-				"email":    payload.Email,
+				"email":    userData.Email,
 				"order_no": orderNo,
 				"year":     time.Now().Format("2006"),
 				"date":     formattedDate,
@@ -131,8 +136,8 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 		rId, err := uc.repository.CreateRegistrationEvent(txCtx, domain.RegistrationEvent{
 			OrderNo:     orderNo,
 			EventID:     event.ID,
-			Name:        payload.Name,
-			Email:       payload.Email,
+			Name:        userData.UserName,
+			Email:       userData.Email,
 			PhoneNumber: payload.PhoneNumber,
 			Status:      status,
 			UpToYou:     upToYou,

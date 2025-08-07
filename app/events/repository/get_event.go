@@ -9,10 +9,7 @@ import (
 func (repo *repository) GetEvent(ctx context.Context, eventID uint) (data domain.Event, err error) {
 	db := repo.db.DB(ctx).Model(&domain.Event{})
 
-	err = db.Where("id = ?", eventID).Find(&data).Error
-	if err != nil {
-		return
-	}
+	err = db.Where("id = ?", eventID).First(&data).Error
 
 	return data, err
 }
