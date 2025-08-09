@@ -24,8 +24,8 @@ jobs:
             - name: Build
               run: go build -o main .
             
-            - name: Archive Build Output
-              run: tar -czvf main.tar.gz main
+            - name: Archive Build Output and Assets
+              run: tar -czvf main.tar.gz main assets/
 
             - name: Upload Artifact
               uses: actions/upload-artifact@v4
@@ -53,12 +53,12 @@ jobs:
                   VPS_KEY: ${{ secrets.VPS_KEY }}
               run: |
                   echo "$VPS_KEY" > vps_key.pem
-
                   chmod 600 vps_key.pem
-
                   scp -o StrictHostKeyChecking=no -i vps_key.pem main.tar.gz $VPS_USER@$VPS_IP:/home/hmcroot/app/development/lms-be/
                   ssh -o StrictHostKeyChecking=no -i vps_key.pem $VPS_USER@$VPS_IP "
-                  cd /home/hmcroot/app/development/lms-be &&
-                  rm -f main &&
-                  tar -xzvf main.tar.gz && rm -f main.tar.gz
-                  sudo systemctl restart lms-be-development.service"
+                    cd /home/hmcroot/app/development/lms-be &&
+                    rm -f main &&
+                    rm -rf assets &&
+                    tar -xzvf main.tar.gz && rm -f main.tar.gz
+                    sudo systemctl restart lms-be-development.service
+                  "

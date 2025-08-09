@@ -18,7 +18,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.RegisterEventPayload) (domain.RegisterEventResponse, error) {
+func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.RegisterEventPayload, token string) (domain.RegisterEventResponse, error) {
 	event, err := uc.repository.GetEvent(ctx, payload.EventID)
 	if err != nil {
 		err = utils.NewInternalServerError(ctx, err)
@@ -61,6 +61,11 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 
 	// generate order number
 	// format: TXE-<event_id>-<year><month><day><hash
+	userData, err := uc.jwt.VerifyToken(token)
+	if err != nil {
+		return domain.RegisterEventResponse{}, fmt.Errorf("failed to verify token: %w", err)
+	}
+
 	hash := hash.GenerateHash(time.Now().Format("2006-01-02 15:04:05"))
 
 	orderNo := fmt.Sprintf("TXE-%d-%s%s%s%s", event.ID, time.Now().Format("06"), time.Now().Format("01"), time.Now().Format("02"), hash[0:4])
@@ -104,12 +109,12 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 	if err := emailPayload.AddReceiver(
 		ctx,
 		email.Receiver{
-			Email: payload.Email,
+			Email: userData.Email,
 			Data: map[string]interface{}{
-				"name":     payload.Name,
+				"name":     userData.UserName,
 				"title":    event.Title,
 				"price":    event.Price,
-				"email":    payload.Email,
+				"email":    userData.Email,
 				"order_no": orderNo,
 				"year":     time.Now().Format("2006"),
 				"date":     formattedDate,
@@ -155,8 +160,8 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 			OrderNo:     orderNo,
 			UserID: 	 strUid,
 			EventID:     event.ID,
-			Name:        payload.Name,
-			Email:       payload.Email,
+			Name:        userData.UserName,
+			Email:       userData.Email,
 			PhoneNumber: payload.PhoneNumber,
 			Status:      status,
 			UpToYou:     upToYou,

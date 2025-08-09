@@ -176,6 +176,8 @@ func registerHandler(app app.App) *mux.Router {
 	protectedV1Route.HandleFunc("/events/pays", app.EventHandler.ListEventPay).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/events/pays", app.EventHandler.PayProcess).Methods(http.MethodPost)
 	protectedV1Route.HandleFunc("/events/{id}", app.EventHandler.GetEventByID).Methods(http.MethodGet)
+	protectedV1Route.HandleFunc("/events/registrations", app.EventHandler.RegisterEvent).Methods(http.MethodPost)
+
 	protectedV1Route.HandleFunc("/images", app.ImageHandler.UploadImage).Methods(http.MethodPost)
 
 	protectedV1Route.HandleFunc("/blogs", app.BlogPostHandler.CreateBlogPost).Methods(http.MethodPost)
