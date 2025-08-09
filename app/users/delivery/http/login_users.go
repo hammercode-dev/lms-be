@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
 
+	"github.com/hammer-code/lms-be/config"
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/utils"
 )
@@ -41,6 +43,20 @@ func (h Handler) Login(w http.ResponseWriter, r *http.Request) {
 		utils.Response(resp, w)
 		return
 	}
+
+	expiredTime := time.Now().Local().Add(time.Duration(60) * time.Minute)
+
+	cookie := http.Cookie{
+		Name:    "token",
+		Value:   token,
+		Expires: expiredTime,
+		Path:    "/",
+		HttpOnly: true,
+		Secure:   config.GetConfig().APP_ENV != "development",
+	}
+
+	// Atur cookie pada response writer.
+	http.SetCookie(w, &cookie)
 
 	utils.Response(domain.HttpResponse{
 		Code:    200,
