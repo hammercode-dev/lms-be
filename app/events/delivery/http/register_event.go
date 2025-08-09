@@ -32,17 +32,6 @@ func (h Handler) RegisterEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := utils.ExtractBearerToken(r)
-
-	if err != nil {
-		ngelog.Error(r.Context(), "failed to verify token", err)
-		utils.Response(domain.HttpResponse{
-			Code:    http.StatusUnauthorized,
-			Message: "Unauthorized",
-		}, w)
-		return
-	}
-
 	var payload domain.RegisterEventPayload
 	if err := json.Unmarshal(bodyBytes, &payload); err != nil {
 		ngelog.Error(r.Context(), "failed to unmarshal payload", err)
@@ -52,7 +41,7 @@ func (h Handler) RegisterEvent(w http.ResponseWriter, r *http.Request) {
 		}, w)
 		return
 	}
-	data, err := h.usecase.CreateRegistrationEvent(r.Context(), payload, *token)
+	data, err := h.usecase.CreateRegistrationEvent(r.Context(), payload)
 	if err != nil {
 		ngelog.Error(r.Context(), "failed to create registration event", err)
 		resp := utils.CustomErrorResponse(err)

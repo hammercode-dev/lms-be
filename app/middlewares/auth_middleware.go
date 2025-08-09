@@ -83,7 +83,7 @@ func (m *Middleware) AuthMiddleware(allowedRole string) domain.MiddlewareFunc {
 			writer.Header().Set("x-user-id", strconv.Itoa(user.ID))
 			writer.Header().Set("x-username", user.Username)
 			
-			ctxUser := context.WithValue(request.Context(), contextkey.UserKey, user.ID)
+			ctxUser := context.WithValue(request.Context(), contextkey.UserKey, user)
 			request = request.WithContext(ctxUser)
 
 			next.ServeHTTP(writer, request)

@@ -34,12 +34,12 @@ type EventUsecase interface {
 	CreateEvent(ctx context.Context, payload CreateEventPayload) error
 	UpdateEvent(ctx context.Context, id uint, payload UpdateEventPayload) error
 	GetEvents(ctx context.Context, filter EventFilter) (data []Event, pagination Pagination, err error)
-	CreateRegistrationEvent(ctx context.Context, payload RegisterEventPayload, token string) (RegisterEventResponse, error)
+	CreateRegistrationEvent(ctx context.Context, payload RegisterEventPayload) (RegisterEventResponse, error)
 	CreateEventPay(ctx context.Context, payload EventPayPayload) error
 	GetEventByID(ctx context.Context, id uint) (resp Event, err error)
 	DeleteEvent(ctx context.Context, id uint) (err error)
 	RegistrationStatus(ctx context.Context, orderNo string) (resp RegisterStatusResponse, err error)
-	ListRegistration(ctx context.Context, filter EventFilter, token string) (resp []RegistrationEvent, pagination Pagination, err error)
+	ListRegistration(ctx context.Context, filter EventFilter) (resp []RegistrationEvent, pagination Pagination, err error)
 	ListEventPay(ctx context.Context, filter EventFilter) (data []EventPay, pagination Pagination, err error)
 	PayProcess(ctx context.Context, payload PayProcessPayload) error
 }

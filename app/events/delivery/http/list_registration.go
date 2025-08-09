@@ -34,8 +34,6 @@ func (h Handler) ListRegistration(w http.ResponseWriter, r *http.Request) {
 		}, w)
 		return
 	}
-	token := utils.ExtractBearerToken(r)
-
 	startDate, _ := utils.ParseDate(r.URL.Query().Get("start_date"))
 	endDate, _ := utils.ParseDate(r.URL.Query().Get("end_date"))
 
@@ -44,7 +42,7 @@ func (h Handler) ListRegistration(w http.ResponseWriter, r *http.Request) {
 		StartDate:        startDate,
 		EndDate:          endDate,
 		FilterPagination: flterPagination,
-	}, *token)
+	})
 
 	if err != nil {
 		ngelog.Error(r.Context(), "failed to list registration event", err)

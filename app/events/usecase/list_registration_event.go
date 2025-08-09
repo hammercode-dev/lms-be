@@ -6,15 +6,12 @@ import (
 
 	"github.com/hammer-code/lms-be/config"
 	"github.com/hammer-code/lms-be/domain"
+	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
 	"github.com/hammer-code/lms-be/utils"
 )
 
-func (uc usecase) ListRegistration(ctx context.Context, filter domain.EventFilter, token string) (resp []domain.RegistrationEvent, pagination domain.Pagination, err error) {
-
-	userData, err := uc.jwt.VerifyToken(token)
-	if err != nil {
-		return nil, domain.Pagination{}, utils.NewUnauthorizedError(ctx, "unauthorized", err)
-	}
+func (uc usecase) ListRegistration(ctx context.Context, filter domain.EventFilter) (resp []domain.RegistrationEvent, pagination domain.Pagination, err error) {
+	userData := ctx.Value(contextkey.UserKey).(domain.User)
 
 	tData, datas, err := uc.repository.ListRegistration(ctx, filter, userData.Email)
 	if err != nil {
