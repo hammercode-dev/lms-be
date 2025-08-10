@@ -17,38 +17,17 @@ func (m *Middleware) AuthMiddleware(allowedRole string) domain.MiddlewareFunc {
 			ctx, span := tracer.Start(request.Context(), "auth middleware")
 			defer span.End()
 
-			// token := utils.ExtractBearerToken(request)
-			// if len(*token) < 5 {
-			// 	ngelog.Error(ctx, "failed to extract bearer token", nil)
-			// 	utils.Response(domain.HttpResponse{
-			// 		Code:    401,
-			// 		Message: "Unauthorized",
-			// 		Data:    nil,
-			// 	}, writer)
-			// 	return
-			// }
-
-			tokenRaw, err := request.Cookie("token")
-			if err != nil {
-				if err == http.ErrNoCookie {
-					ngelog.Error(ctx, "failed to get token from cookie", nil)
-					utils.Response(domain.HttpResponse{
-						Code:    401,
-						Message: "Unauthorized",
-						Data:    nil,
-					}, writer)
-					return
-				} else {
-					utils.Response(domain.HttpResponse{
-						Code:    401,
-						Message: "Unauthorized",
-						Data:    nil,
-					}, writer)
-					return
-				}
+			token := utils.ExtractBearerToken(request)
+			if len(*token) < 5 {
+				ngelog.Error(ctx, "failed to extract bearer token", nil)
+				utils.Response(domain.HttpResponse{
+					Code:    401,
+					Message: "Unauthorized",
+					Data:    nil,
+				}, writer)
+				return
 			}
-			token := &tokenRaw.Value
-			
+
 			verifyToken, err := m.Jwt.VerifyToken(*token)
 			if err != nil {
 				ngelog.Error(ctx, "failed to verify token", err)
