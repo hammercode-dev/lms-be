@@ -48,7 +48,7 @@ func GetConfig() Config {
 
 	if c == nil {
 		// default cors
-		origins := []string{"*"}
+		origins := []string{"http://localhost:3000", "https://stg.hammercode.org", "https://hammercode.org"}
 		methods := []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
 		headers := []string{"Accept", "Authorization", "Content-Type"}
 

@@ -286,7 +286,7 @@ func (h Handler) List(w http.ResponseWriter, r *http.Request) {
 		Code:       http.StatusOK,
 		Message:    "success",
 		Data:       data,
-		Pagination: pagination,
+		Pagination: &pagination,
 	}, w)
 }
 
@@ -341,6 +341,6 @@ func (h Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
 		Code:       http.StatusOK,
 		Message:    "success",
 		Data:       data,
-		Pagination: pagination,
+		Pagination: &pagination,
 	}, w)
 }

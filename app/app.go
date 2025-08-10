@@ -49,7 +49,7 @@ func InitApp(
 	// usecase
 	userUsecase := users.InitUsecase(cfg, userRepo, dbTx, jwtInstance)
 	newsletterUC := newsletters.InitUsecase(cfg, newsletterRepo, dbTx, jwt.NewJwt(cfg.JWT_SECRET_KEY))
-	eventUC := events.InitUsecase(cfg, eventRepo, imgRepo, dbTx, jwtInstance)
+	eventUC := events.InitUsecase(cfg, eventRepo, imgRepo, dbTx)
 	imgUc := images.InitUsecase(imgRepo, dbTx)
 	blogPostUc := blogPost.InitUseCase(blogPostRepo, jwtInstance)
 

@@ -1,9 +1,10 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/utils"
-	"net/http"
 )
 
 // Logout
@@ -19,7 +20,7 @@ import (
 // @Router /api/v1/auth/logout [post]
 func (h Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	token := utils.ExtractBearerToken(r)
-
+	
 	err := h.usecase.Logout(r.Context(), *token)
 	if err != nil {
 		resp := utils.CustomErrorResponse(err)
