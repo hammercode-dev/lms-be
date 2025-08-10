@@ -149,7 +149,7 @@ func (h Handler) GetAllBlogPosts(w http.ResponseWriter, r *http.Request) {
 		Code:       http.StatusOK,
 		Message:    "Blog posts retrieved successfully",
 		Data:       responseDTO,
-		Pagination: paginationResponse,
+		Pagination: &paginationResponse,
 	}, w)
 }
 

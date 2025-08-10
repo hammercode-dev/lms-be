@@ -55,6 +55,6 @@ func (h Handler) ListRegistration(w http.ResponseWriter, r *http.Request) {
 		Code:       http.StatusOK,
 		Message:    "success",
 		Data:       data,
-		Pagination: pagination,
+		Pagination: &pagination,
 	}, w)
 }

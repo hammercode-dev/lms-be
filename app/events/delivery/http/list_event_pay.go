@@ -73,6 +73,6 @@ func (h Handler) ListEventPay(w http.ResponseWriter, r *http.Request) {
 		Code:       http.StatusOK,
 		Message:    "success",
 		Data:       data,
-		Pagination: pagination,
+		Pagination: &pagination,
 	}, w)
 }
