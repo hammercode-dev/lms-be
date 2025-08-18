@@ -9,7 +9,7 @@ import (
 	"github.com/hammer-code/lms-be/utils"
 )
 
-func (uc usecase) GetEventByID(ctx context.Context, id uint) (domain.Event, error) {
+func (uc usecase) GetEventByID(ctx context.Context, id uint) (domain.EventDTO, error) {
 	resp, err := uc.repository.GetEvent(ctx, id)
 	if err != nil {
 		err = utils.NewInternalServerError(ctx, err)

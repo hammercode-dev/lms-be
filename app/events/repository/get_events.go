@@ -42,3 +42,4 @@ func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter
 
 	return int(totalData), data, err
 }
+

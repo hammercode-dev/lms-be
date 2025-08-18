@@ -48,33 +48,33 @@ type (
 		ResetPassword(w http.ResponseWriter, r *http.Request)
 	}
 	User struct {
-		ID          int       `gorm:"primaryKey" json:"id"`
-		Username    string    `json:"username" gorm:"type:varchar(255);not null;unique"`
-		Email       string    `json:"email" gorm:"type:varchar(255);not null;unique"`
-		Password    string    `json:"password" gorm:"type:varchar(255);not null"`
-		Role        string    `json:"role"`
-		Fullname    string    `json:"fullname"`
-		DateOfBirth time.Time `json:"date_of_birth"`
-		Gender      string    `json:"gender"`
-		PhoneNumber string    `json:"phone_number"`
-		Address     string    `json:"address"`
-		Github      string    `json:"github"`
-		Linkedin    string    `json:"linkedin"`
-		PersonalWeb string    `json:"personal_web"`
-		CreatedAt   time.Time `json:"created_at"`
-		UpdatedAt   time.Time `json:"updated_at"`
+		ID             int       `gorm:"primaryKey" json:"id"`
+		Username       string    `json:"username" gorm:"type:varchar(255);not null;unique"`
+		Email          string    `json:"email" gorm:"type:varchar(255);not null;unique"`
+		Password       string    `json:"password" gorm:"type:varchar(255);not null"`
+		Role           string    `json:"role"`
+		Fullname       string    `json:"fullname"`
+		DateOfBirth    time.Time `json:"date_of_birth"`
+		Gender         string    `json:"gender"`
+		PhoneNumber    string    `json:"phone_number"`
+		Address        string    `json:"address"`
+		GithubURL      string    `json:"github_url"`
+		LinkedinURL    string    `json:"linkedin_url"`
+		PersonalWebURL string    `json:"personal_web_url"`
+		CreatedAt      time.Time `json:"created_at"`
+		UpdatedAt      time.Time `json:"updated_at"`
 	}
 
 	UserUpdateProfile struct {
-		Username    string    `json:"username"`
-		Fullname    string    `json:"fullname"`
-		DateOfBirth time.Time `json:"date_of_birth"`
-		Gender      string    `json:"gender"`
-		PhoneNumber string    `json:"phone_number"`
-		Address     string    `json:"address"`
-		Github      string    `json:"github"`
-		Linkedin    string    `json:"linkedin"`
-		PersonalWeb string    `json:"personal_web"`
+		Username       string    `json:"username"`
+		Fullname       string    `json:"fullname"`
+		DateOfBirth    time.Time `json:"date_of_birth"`
+		Gender         string    `json:"gender"`
+		PhoneNumber    string    `json:"phone_number"`
+		Address        string    `json:"address"`
+		GithubURL      string    `json:"github_url"`
+		LinkedinURL    string    `json:"linkedin_url"`
+		PersonalWebURL string    `json:"personal_web_url"`
 	}
 
 	Register struct {
@@ -118,14 +118,14 @@ func RegistToUser(r Register) User {
 
 func UserUpdateProfileToUser(u UserUpdateProfile) User {
 	return User{
-		Username:    u.Username,
-		Fullname:    u.Fullname,
-		DateOfBirth: u.DateOfBirth,
-		Gender:      u.Gender,
-		PhoneNumber: u.PhoneNumber,
-		Address:     u.Address,
-		Github:      u.Github,
-		Linkedin:    u.Linkedin,
-		PersonalWeb: u.PersonalWeb,
+		Username:       u.Username,
+		Fullname:       u.Fullname,
+		DateOfBirth:    u.DateOfBirth,
+		Gender:         u.Gender,
+		PhoneNumber:    u.PhoneNumber,
+		Address:        u.Address,
+		GithubURL:      u.GithubURL,
+		LinkedinURL:    u.LinkedinURL,
+		PersonalWebURL: u.PersonalWebURL,
 	}
 }
