@@ -16,7 +16,7 @@ type EventRepository interface {
 	// GetEvents(ctx context.Context, filter EventFilter) ([]Event, error)
 	CreateEventTag(ctx context.Context, data EventTag) (uint, error)
 	CreateEventSpeaker(ctx context.Context, data EventSpeaker) (uint, error)
-	GetEvents(ctx context.Context, filter EventFilter) (tData int, data []Event, err error)
+	GetEvents(ctx context.Context, filter EventFilter) (tData int, data []EventDTO, err error)
 	CreateEventPay(ctx context.Context, event EventPay) (uint, error)
 	CreateRegistrationEvent(ctx context.Context, event RegistrationEvent) (uint, error)
 	GetEvent(ctx context.Context, eventID uint) (data EventDTO, err error)
@@ -33,7 +33,7 @@ type EventRepository interface {
 type EventUsecase interface {
 	CreateEvent(ctx context.Context, payload CreateEventPayload) error
 	UpdateEvent(ctx context.Context, id uint, payload UpdateEventPayload) error
-	GetEvents(ctx context.Context, filter EventFilter) (data []Event, pagination Pagination, err error)
+	GetEvents(ctx context.Context, filter EventFilter) (data []EventDTO, pagination Pagination, err error)
 	CreateRegistrationEvent(ctx context.Context, payload RegisterEventPayload) (RegisterEventResponse, error)
 	CreateEventPay(ctx context.Context, payload EventPayPayload) error
 	GetEventByID(ctx context.Context, id uint) (resp EventDTO, err error)
@@ -128,7 +128,7 @@ type CreateEventPayload struct {
 	Tags                 []string  `json:"tags"`
 	Speakers             []string  `json:"speakers"`
 	ReservationStartDate null.Time `json:"reservation_start_date"`
-	ReservationEndDate   null.Time `json:"reseveration_end_date"`
+	ReservationEndDate   null.Time `json:"reservation_end_date"`
 	AdditionalLink       string    `json:"additional_link"`
 }
 
@@ -233,16 +233,9 @@ type RegistrationEvent struct {
 	OrderNo           string    `json:"order_no"`
 	EventID           uint      `json:"event_id"` // lock event
 	UserID            string    `json:"user_id"`  // lock user
-	Name              string    `json:"name"`
-	Email             string    `json:"email"`
-	PhoneNumber       string    `json:"phone_number"`
 	ImageProofPayment string    `json:"image_proof_payment"`
 	PaymentDate       null.Time `json:"payment_date"`
 	Status            string    `json:"status"` // register, pay, approve/cancel/decline
-	UpToYou           string    `json:"up_to_you"`
-	CreatedByUserID   int       `json:"created_by_user_id"`
-	UpdatedByUserID   int       `json:"updated_by_user_id"`
-	DeletedByUserID   int       `json:"deleted_by_user_id"`
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         null.Time `json:"updated_at"`
 	DeletedAt         null.Time `json:"deleted_at"`

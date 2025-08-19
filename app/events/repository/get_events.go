@@ -6,8 +6,11 @@ import (
 	"github.com/hammer-code/lms-be/domain"
 )
 
-func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter) (tData int, data []domain.Event, err error) {
-	db := repo.db.DB(ctx).Model(&domain.Event{})
+func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter) (tData int, dataDTO []domain.EventDTO, err error) {
+
+	data := []domain.Event{}
+
+	db := repo.db.DB(ctx).Model(&data)
 
 	var totalData int64
 
@@ -35,11 +38,39 @@ func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter
 
 	err = db.Limit(filter.FilterPagination.GetLimit()).
 		Offset(filter.FilterPagination.GetOffset()).
-		Preload("Tags").Preload("Speakers").Find(&data).Error
+		Preload("Tags").Preload("Speakers").Preload("Author").Find(&data).Error
 	if err != nil {
 		return
 	}
 
-	return int(totalData), data, err
-}
+	if err == nil {
+		for _, d := range data {
+			dataDTO = append(dataDTO, domain.EventDTO{
+				ID:                   d.ID,
+				Title:                d.Title,
+				Description:          d.Description,
+				Slug:                 d.Slug,
+				Image:                d.Image,
+				Date:                 d.Date,
+				Type:                 d.Type,
+				Location:             d.Location,
+				Duration:             d.Duration,
+				Capacity:             d.Capacity,
+				Status:               d.Status,
+				Tags:                 d.Tags,
+				Speakers:             d.Speakers,
+				SessionType:          d.SessionType,
+				RegistrationLink:     d.RegistrationLink,
+				Price:                d.Price,
+				ReservationStartDate: d.ReservationStartDate,
+				ReservationEndDate:   d.ReservationEndDate,
+				Author:               d.Author.Username,
+				CreatedAt:            d.CreatedAt,
+				UpdatedAt:            d.UpdatedAt,
+				DeletedAt:            d.DeletedAt,
+			})
+		}
+	}
 
+	return int(totalData), dataDTO, err
+}
