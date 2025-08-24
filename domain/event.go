@@ -76,14 +76,14 @@ type Event struct {
 	Speakers             []EventSpeaker `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
 	RegistrationLink     string         `json:"registration_link"`
 	Price                float64        `json:"price"` // 0 == free
-	CreatedBy            int            `json:"created_by"`
-	UpdatedBy            int            `json:"updated_by"`
-	DeletedBy            int            `json:"deleted_by"`
+	CreatedBy            int            `json:"-"`
+	UpdatedBy            int            `json:"-"`
+	DeletedBy            int            `json:"-"`
 	ReservationStartDate null.Time      `json:"reservation_start_date"`
 	ReservationEndDate   null.Time      `json:"reservation_end_date"`
 	CreatedAt            time.Time      `json:"created_at"`
-	UpdatedAt            null.Time      `json:"updated_at"`
-	DeletedAt            null.Time      `json:"deleted_at"`
+	UpdatedAt            null.Time      `json:"-"`
+	DeletedAt            null.Time      `json:"-"`
 	AdditionalLink       string         `json:"additional_link"`
 }
 
@@ -228,13 +228,13 @@ type RegistrationEvent struct {
 	ImageProofPayment string    `json:"image_proof_payment"`
 	PaymentDate       null.Time `json:"payment_date"`
 	Status            string    `json:"status"` // register, pay, approve/cancel/decline
-	UpToYou           string    `json:"up_to_you"`
-	CreatedByUserID   int       `json:"created_by_user_id"`
-	UpdatedByUserID   int       `json:"updated_by_user_id"`
-	DeletedByUserID   int       `json:"deleted_by_user_id"`
+	UpToYou           string    `json:"-"`
+	CreatedByUserID   int       `json:"-"`
+	UpdatedByUserID   int       `json:"-"`
+	DeletedByUserID   int       `json:"-"`
 	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         null.Time `json:"updated_at"`
-	DeletedAt         null.Time `json:"deleted_at"`
+	UpdatedAt         null.Time `json:"-"`
+	DeletedAt         null.Time `json:"-"`
 	Event             Event     `json:"event_detail" gorm:"foreignKey:EventID"`
 }
 
