@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/hammer-code/lms-be/constants"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -67,7 +68,7 @@ type Event struct {
 	Author               string         `json:"author"`
 	Image                string         `json:"image"`
 	Date                 null.Time      `json:"date"`
-	Type                 string         `json:"type"`
+	Type                 constants.EventType `json:"type"`
 	Location             string         `json:"location"`
 	Duration             string         `json:"duration"`
 	Capacity             int            `json:"capacity"`
@@ -119,7 +120,7 @@ type CreateEventPayload struct {
 	Slug                 string    `json:"slug" validate:"required"`
 	IsOnline             string    `json:"is_online" validate:"required"`
 	Date                 null.Time `json:"date" validate:"required"`
-	Type                 string    `json:"type" validate:"required"`
+	Type                 constants.EventType `json:"type" validate:"required"`
 	Location             string    `json:"location" validate:"required"`
 	Duration             string    `json:"duration" validate:"required"`
 	Status               string    `json:"status" validate:"required"`
@@ -141,7 +142,7 @@ type UpdateEventPayload struct {
 	Slug                 string    `json:"slug" validate:"required"`
 	IsOnline             string    `json:"is_online" validate:"required"`
 	Date                 null.Time `json:"date" validate:"required"`
-	Type                 string    `json:"type" validate:"required"`
+	Type                 constants.EventType `json:"type" validate:"required"`
 	Location             string    `json:"location" validate:"required"`
 	Duration             string    `json:"duration" validate:"required"`
 	Status               string    `json:"status" validate:"required"`
@@ -162,7 +163,7 @@ type EventDTO struct {
 	Author           string    `json:"author"`
 	ImageEvent       string    `json:"image_event"`
 	DateEvent        null.Time `json:"date_event"`
-	Type             string    `json:"type"`
+	Type             constants.EventType `json:"type"`
 	Location         string    `json:"location"`
 	Duration         string    `json:"duration"`
 	Capacity         int       `json:"capacity"`
@@ -175,7 +176,7 @@ type UpdateEvenPayload struct {
 	Author           string    `json:"author"`
 	ImageEvent       string    `json:"image_event"`
 	DateEvent        null.Time `json:"date_event"`
-	Type             string    `json:"type"`
+	Type             constants.EventType `json:"type"`
 	Location         string    `json:"location"`
 	Duration         string    `json:"duration"`
 	Capacity         int       `json:"capacity"`
