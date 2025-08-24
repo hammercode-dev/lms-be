@@ -72,9 +72,9 @@ type Event struct {
 	Location             string         `json:"location"`
 	Duration             string         `json:"duration"`
 	Capacity             int            `json:"capacity"`
-	Status               string         `json:"status"`                                          // comming soon
-	Tags                 []EventTag     `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
-	Speakers             []EventSpeaker `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
+	Status               string         `json:"status"`                                     
+	Tags                 []EventTag     `json:"tags" gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"`
+	Speakers             []EventSpeaker `json:"speakers" gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"`
 	RegistrationLink     string         `json:"registration_link"`
 	Price                float64        `json:"price"` // 0 == free
 	CreatedBy            int            `json:"-"`
