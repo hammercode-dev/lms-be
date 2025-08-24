@@ -16,6 +16,11 @@ func (repo *repository) ListRegistration(ctx context.Context, filter domain.Even
 		db = db.Where("registration_events.status = ?", filter.Status)
 	}
 
+	if filter.Type != "" {
+		db = db.Joins("JOIN events ON events.id = registration_events.event_id").
+			Where("events.type = ?", filter.Type)
+	}
+
 	if filter.StartDate.Valid {
 		db = db.Where("registration_events.created_at >= ?", filter.StartDate)
 	}

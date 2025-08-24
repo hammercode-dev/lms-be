@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 
+	"github.com/hammer-code/lms-be/constants"
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/pkg/ngelog"
 	"github.com/hammer-code/lms-be/utils"
@@ -20,6 +21,7 @@ import (
 // @Param start_date query string false "string"
 // @Param end_date query string false "string"
 // @Param status query string false "string"
+// @Param type query string false "string"
 // @Failure 400 {object} domain.HttpResponse
 // @Failure 500 {object} domain.HttpResponse
 // @Success 200 {object} []domain.RegistrationEvent
@@ -39,6 +41,7 @@ func (h Handler) ListRegistration(w http.ResponseWriter, r *http.Request) {
 
 	data, pagination, err := h.usecase.ListRegistration(r.Context(), domain.EventFilter{
 		Status:           r.URL.Query().Get("status"),
+		Type:             constants.EventType(r.URL.Query().Get("type")),
 		StartDate:        startDate,
 		EndDate:          endDate,
 		FilterPagination: flterPagination,

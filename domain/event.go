@@ -186,7 +186,7 @@ type UpdateEvenPayload struct {
 type EventFilter struct {
 	ID        uint
 	Title     string
-	Type      string
+	Type      constants.EventType
 	Status    string
 	StartDate null.Time
 	EndDate   null.Time

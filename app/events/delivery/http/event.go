@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/hammer-code/lms-be/constants"
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/pkg/ngelog"
 	"github.com/hammer-code/lms-be/utils"
@@ -268,7 +269,7 @@ func (h Handler) List(w http.ResponseWriter, r *http.Request) {
 
 	data, pagination, err := h.usecase.GetEvents(r.Context(), domain.EventFilter{
 		Title:            r.URL.Query().Get("title"),
-		Type:             r.URL.Query().Get("type"),
+		Type:             constants.EventType(r.URL.Query().Get("type")),
 		Status:           r.URL.Query().Get("status"),
 		StartDate:        startDate,
 		EndDate:          endDate,
@@ -323,7 +324,7 @@ func (h Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
 	endDate, _ := utils.ParseDate(r.URL.Query().Get("end_date"))
 	data, pagination, err := h.usecase.GetEvents(r.Context(), domain.EventFilter{
 		Title:            r.URL.Query().Get("title"),
-		Type:             r.URL.Query().Get("type"),
+		Type:             constants.EventType(r.URL.Query().Get("type")),
 		Status:           r.URL.Query().Get("status"),
 		StartDate:        startDate,
 		EndDate:          endDate,
