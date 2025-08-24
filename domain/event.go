@@ -235,6 +235,7 @@ type RegistrationEvent struct {
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         null.Time `json:"updated_at"`
 	DeletedAt         null.Time `json:"deleted_at"`
+	Event             Event     `json:"event_detail" gorm:"foreignKey:EventID"`
 }
 
 func (RegistrationEvent) TableName() string {
