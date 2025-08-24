@@ -23,6 +23,11 @@ func (uc usecase) ListRegistration(ctx context.Context, filter domain.EventFilte
 
 	for i, data := range datas {
 		datas[i].ImageProofPayment = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, data.ImageProofPayment)
+		
+		// Update event image URL
+		if datas[i].Event.Image != "" {
+			datas[i].Event.Image = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, datas[i].Event.Image)
+		}
 	}
 	
 	return datas, domain.NewPagination(tData, filter.FilterPagination), err
