@@ -17,10 +17,10 @@ type EventRepository interface {
 	// GetEvents(ctx context.Context, filter EventFilter) ([]Event, error)
 	CreateEventTag(ctx context.Context, data EventTag) (uint, error)
 	CreateEventSpeaker(ctx context.Context, data EventSpeaker) (uint, error)
-	GetEvents(ctx context.Context, filter EventFilter) (tData int, data []EventDTO, err error)
+	GetEvents(ctx context.Context, filter EventFilter) (tData int, data []Event, err error)
 	CreateEventPay(ctx context.Context, event EventPay) (uint, error)
 	CreateRegistrationEvent(ctx context.Context, event RegistrationEvent) (uint, error)
-	GetEvent(ctx context.Context, eventID uint) (data EventDTO, err error)
+	GetEvent(ctx context.Context, eventID uint) (data Event, err error)
 	DeleteEvent(ctx context.Context, eventID uint) (err error)
 	GetRegistrationEvent(ctx context.Context, orderNo string) (data RegistrationEvent, err error)
 	ListRegistration(ctx context.Context, filter EventFilter, email string) (tData int, data []RegistrationEvent, err error)
@@ -61,32 +61,32 @@ type EventHandler interface {
 }
 
 type Event struct {
-	ID                   uint           `json:"id" gorm:"primarykey"`
-	Title                string         `json:"title" `
-	Description          string         `json:"description"`
-	Slug                 string         `json:"slug"`
-	AuthorID             int            `json:"author_id"`
-	Author               User           `gorm:"foreignKey:AuthorID;references:ID"` // Ensure foreign key is correctly referenced
-	Image                string         `json:"image"`
-	Date                 null.Time      `json:"date"`
+	ID                   uint                `json:"id" gorm:"primarykey"`
+	Title                string              `json:"title" `
+	Description          string              `json:"description"`
+	Slug                 string              `json:"slug"`
+	AuthorID             int                 `json:"author_id"`
+	Author               User                `gorm:"foreignKey:AuthorID;references:ID"` // Ensure foreign key is correctly referenced
+	Image                string              `json:"image"`
+	Date                 null.Time           `json:"date"`
 	Type                 constants.EventType `json:"type"`
-	Location             string         `json:"location"`
-	Duration             string         `json:"duration"`
-	Capacity             int            `json:"capacity"`
-	Status               string         `json:"status"`                                     
-	Tags                 []EventTag     `json:"tags" gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"`
-	Speakers             []EventSpeaker `json:"speakers" gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"`
-	RegistrationLink     string         `json:"registration_link"`
-	Price                float64        `json:"price"` // 0 == free
-	CreatedBy            int            `json:"-"`
-	UpdatedBy            int            `json:"-"`
-	DeletedBy            int            `json:"-"`
-	ReservationStartDate null.Time      `json:"reservation_start_date"`
-	ReservationEndDate   null.Time      `json:"reservation_end_date"`
-	CreatedAt            time.Time      `json:"created_at"`
-	UpdatedAt            null.Time      `json:"-"`
-	DeletedAt            null.Time      `json:"-"`
-	AdditionalLink       string         `json:"additional_link"`
+	Location             string              `json:"location"`
+	Duration             string              `json:"duration"`
+	Capacity             int                 `json:"capacity"`
+	Status               string              `json:"status"`
+	Tags                 []EventTag          `json:"tags" gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"`
+	Speakers             []EventSpeaker      `json:"speakers" gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"`
+	RegistrationLink     string              `json:"registration_link"`
+	Price                float64             `json:"price"` // 0 == free
+	CreatedBy            int                 `json:"-"`
+	UpdatedBy            int                 `json:"-"`
+	DeletedBy            int                 `json:"-"`
+	ReservationStartDate null.Time           `json:"reservation_start_date"`
+	ReservationEndDate   null.Time           `json:"reservation_end_date"`
+	CreatedAt            time.Time           `json:"created_at"`
+	UpdatedAt            null.Time           `json:"-"`
+	DeletedAt            null.Time           `json:"-"`
+	AdditionalLink       string              `json:"additional_link"`
 }
 
 func (Event) TableName() string {
@@ -114,74 +114,74 @@ func (EventSpeaker) TableName() string {
 }
 
 type CreateEventPayload struct {
-	Title                string    `json:"title" validate:"required"`
-	Description          string    `json:"description" validate:"required"`
-	Author               string    `json:"author" validate:"required"`
-	FileName             string    `json:"file_name" validate:"required"`
-	Slug                 string    `json:"slug" validate:"required"`
-	IsOnline             string    `json:"is_online" validate:"required"`
-	Date                 null.Time `json:"date" validate:"required"`
+	Title                string              `json:"title" validate:"required"`
+	Description          string              `json:"description" validate:"required"`
+	Author               string              `json:"author" validate:"required"`
+	FileName             string              `json:"file_name" validate:"required"`
+	Slug                 string              `json:"slug" validate:"required"`
+	IsOnline             string              `json:"is_online" validate:"required"`
+	Date                 null.Time           `json:"date" validate:"required"`
 	Type                 constants.EventType `json:"type" validate:"required"`
-	Location             string    `json:"location" validate:"required"`
-	Duration             string    `json:"duration" validate:"required"`
-	Status               string    `json:"status" validate:"required"`
-	Capacity             int       `json:"capacity" validate:"required"`
-	Price                float64   `json:"price"`
-	RegistrationLink     string    `json:"registration_link"`
-	Tags                 []string  `json:"tags"`
-	Speakers             []string  `json:"speakers"`
-	ReservationStartDate null.Time `json:"reservation_start_date"`
-	ReservationEndDate   null.Time `json:"reservation_end_date"`
-	AdditionalLink       string    `json:"additional_link"`
+	Location             string              `json:"location" validate:"required"`
+	Duration             string              `json:"duration" validate:"required"`
+	Status               string              `json:"status" validate:"required"`
+	Capacity             int                 `json:"capacity" validate:"required"`
+	Price                float64             `json:"price"`
+	RegistrationLink     string              `json:"registration_link"`
+	Tags                 []string            `json:"tags"`
+	Speakers             []string            `json:"speakers"`
+	ReservationStartDate null.Time           `json:"reservation_start_date"`
+	ReservationEndDate   null.Time           `json:"reservation_end_date"`
+	AdditionalLink       string              `json:"additional_link"`
 }
 
 type UpdateEventPayload struct {
-	Title                string    `json:"title" validate:"required"`
-	Description          string    `json:"description" validate:"required"`
-	Author               string    `json:"author" validate:"required"`
-	FileName             string    `json:"file_name" validate:"required"`
-	Slug                 string    `json:"slug" validate:"required"`
-	IsOnline             string    `json:"is_online" validate:"required"`
-	Date                 null.Time `json:"date" validate:"required"`
+	Title                string              `json:"title" validate:"required"`
+	Description          string              `json:"description" validate:"required"`
+	Author               string              `json:"author" validate:"required"`
+	FileName             string              `json:"file_name" validate:"required"`
+	Slug                 string              `json:"slug" validate:"required"`
+	IsOnline             string              `json:"is_online" validate:"required"`
+	Date                 null.Time           `json:"date" validate:"required"`
 	Type                 constants.EventType `json:"type" validate:"required"`
-	Location             string    `json:"location" validate:"required"`
-	Duration             string    `json:"duration" validate:"required"`
-	Status               string    `json:"status" validate:"required"`
-	Capacity             int       `json:"capacity" validate:"required"`
-	Price                float64   `json:"price"`
-	RegistrationLink     string    `json:"registration_link"`
-	Tags                 []string  `json:"tags"`
-	Speakers             []string  `json:"speakers"`
-	ReservationStartDate null.Time `json:"reservation_start_date"`
-	ReservationEndDate   null.Time `json:"reseveration_end_date"`
-	AdditionalLink       string    `json:"additional_link"`
+	Location             string              `json:"location" validate:"required"`
+	Duration             string              `json:"duration" validate:"required"`
+	Status               string              `json:"status" validate:"required"`
+	Capacity             int                 `json:"capacity" validate:"required"`
+	Price                float64             `json:"price"`
+	RegistrationLink     string              `json:"registration_link"`
+	Tags                 []string            `json:"tags"`
+	Speakers             []string            `json:"speakers"`
+	ReservationStartDate null.Time           `json:"reservation_start_date"`
+	ReservationEndDate   null.Time           `json:"reseveration_end_date"`
+	AdditionalLink       string              `json:"additional_link"`
 }
 
 type EventDTO struct {
-	ID               int       `json:"id"`
-	Title            string    `json:"title"`
-	Description      string    `json:"description"`
-	Author           string    `json:"author"`
-	ImageEvent       string    `json:"image_event"`
-	DateEvent        null.Time `json:"date_event"`
+	ID               int                 `json:"id"`
+	Title            string              `json:"title"`
+	Description      string              `json:"description"`
+	Author           string              `json:"author"`
+	ImageEvent       string              `json:"image_event"`
+	DateEvent        null.Time           `json:"date_event"`
 	Type             constants.EventType `json:"type"`
-	Location         string    `json:"location"`
-	Duration         string    `json:"duration"`
-	Capacity         int       `json:"capacity"`
-	RegistrationLink string    `json:"registration_link"`
+	Location         string              `json:"location"`
+	Duration         string              `json:"duration"`
+	Capacity         int                 `json:"capacity"`
+	RegistrationLink string              `json:"registration_link"`
 }
 
 type UpdateEvenPayload struct {
-	Title            string    `json:"title"`
-	Description      string    `json:"description"`
-	Author           string    `json:"author"`
-	ImageEvent       string    `json:"image_event"`
-	DateEvent        null.Time `json:"date_event"`
+	Title            string              `json:"title"`
+	Description      string              `json:"description"`
+	Author           string              `json:"author"`
+	ImageEvent       string              `json:"image_event"`
+	DateEvent        null.Time           `json:"date_event"`
 	Type             constants.EventType `json:"type"`
-	Location         string    `json:"location"`
-	Duration         string    `json:"duration"`
-	Capacity         int       `json:"capacity"`
-	RegistrationLink string    `json:"registration_link"`
+	Location         string              `json:"location"`
+	Duration         string              `json:"duration"`
+	Capacity         int                 `json:"capacity"`
+	RegistrationLink string              `json:"registration_link"`
 }
 
 type EventFilter struct {
@@ -264,4 +264,23 @@ type PayProcessPayload struct {
 	OrderNo string `json:"order_no"`
 	Status  string `json:"status"`
 	Note    string `json:"note"`
+}
+
+func (e Event) ToDTO() EventDTO {
+	// processing data
+	id := int(e.ID)
+
+	return EventDTO{
+		ID:               id,
+		Title:            e.Title,
+		Description:      e.Description,
+		Author:           e.Author.Username,
+		ImageEvent:       e.Image,
+		DateEvent:        e.Date,
+		Type:             e.Type,
+		Location:         e.Location,
+		Duration:         e.Duration,
+		Capacity:         e.Capacity,
+		RegistrationLink: e.RegistrationLink,
+	}
 }

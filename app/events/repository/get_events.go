@@ -6,9 +6,7 @@ import (
 	"github.com/hammer-code/lms-be/domain"
 )
 
-func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter) (tData int, dataDTO []domain.EventDTO, err error) {
-
-	data := []domain.Event{}
+func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter) (tData int, data []domain.Event, err error) {
 
 	db := repo.db.DB(ctx).Model(&data)
 
@@ -43,34 +41,5 @@ func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter
 		return
 	}
 
-	if err == nil {
-		for _, d := range data {
-			dataDTO = append(dataDTO, domain.EventDTO{
-				ID:                   d.ID,
-				Title:                d.Title,
-				Description:          d.Description,
-				Slug:                 d.Slug,
-				Image:                d.Image,
-				Date:                 d.Date,
-				Type:                 d.Type,
-				Location:             d.Location,
-				Duration:             d.Duration,
-				Capacity:             d.Capacity,
-				Status:               d.Status,
-				Tags:                 d.Tags,
-				Speakers:             d.Speakers,
-				SessionType:          d.SessionType,
-				RegistrationLink:     d.RegistrationLink,
-				Price:                d.Price,
-				ReservationStartDate: d.ReservationStartDate,
-				ReservationEndDate:   d.ReservationEndDate,
-				Author:               d.Author.Username,
-				CreatedAt:            d.CreatedAt,
-				UpdatedAt:            d.UpdatedAt,
-				DeletedAt:            d.DeletedAt,
-			})
-		}
-	}
-
-	return int(totalData), dataDTO, err
+	return int(totalData), data, err
 }

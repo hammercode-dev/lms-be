@@ -10,9 +10,19 @@ BEGIN
         SELECT 1 FROM information_schema.columns 
         WHERE table_name='events' AND column_name='author_id'
     ) THEN
-        -- Rename and change type to INT if needed
-        ALTER TABLE events RENAME COLUMN author TO author_id;
-        ALTER TABLE events ALTER COLUMN author_id TYPE INT USING (author_id::integer);
+        -- Add the new author_id column first
+        ALTER TABLE events ADD COLUMN author_id INT;
+        
+        -- You'll need to populate author_id based on your business logic
+        -- For example, if you have a users table:
+        -- UPDATE events SET author_id = users.id FROM users WHERE events.author = users.name;
+        
+        -- Or set a default value for now:
+        -- UPDATE events SET author_id = 1 WHERE author_id IS NULL;
+        
+        -- Drop the old author column after migration
+        -- ALTER TABLE events DROP COLUMN author;
+        
     ELSIF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
         WHERE table_name='events' AND column_name='author_id'
@@ -33,6 +43,21 @@ END $$;
 
 -- +goose Down
 -- +goose StatementBegin
-ALTER TABLE events RENAME COLUMN author_id TO author;
-ALTER TABLE events DROP COLUMN IF EXISTS session_type;
+DO $$
+BEGIN
+    -- Add back the author column if it doesn't exist
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name='events' AND column_name='author'
+    ) THEN
+        ALTER TABLE events ADD COLUMN author TEXT;
+        
+        -- You might want to populate it from a users table:
+        -- UPDATE events SET author = users.name FROM users WHERE events.author_id = users.id;
+    END IF;
+    
+    -- Drop the columns we added
+    ALTER TABLE events DROP COLUMN IF EXISTS author_id;
+    ALTER TABLE events DROP COLUMN IF EXISTS session_type;
+END $$;
 -- +goose StatementEnd

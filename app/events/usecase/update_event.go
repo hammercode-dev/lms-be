@@ -17,6 +17,8 @@ func (uc usecase) UpdateEvent(ctx context.Context, id uint, payload domain.Updat
 		return utils.NewBadRequestError(ctx, "Sorry, invalid event type", errors.New("event type is not valid"))
 	}
 
+	userData := ctx.Value(contextkey.UserKey).(domain.User)
+
 	err := uc.repository.UpdateEvent(ctx, domain.Event{
 		ID:                   id,
 		Title:                payload.Title,

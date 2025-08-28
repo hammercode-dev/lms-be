@@ -9,14 +9,14 @@ import (
 	"github.com/hammer-code/lms-be/utils"
 )
 
-func (uc usecase) GetEventByID(ctx context.Context, id uint) (domain.EventDTO, error) {
-	resp, err := uc.repository.GetEvent(ctx, id)
+func (uc usecase) GetEventByID(ctx context.Context, id uint) (resp domain.EventDTO, err error) {
+	event, err := uc.repository.GetEvent(ctx, id)
 	if err != nil {
 		err = utils.NewInternalServerError(ctx, err)
 		return resp, err
 	}
 	baseURL := config.GetConfig().BaseURL
 
-	resp.Image = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, resp.Image)
+	event.Image = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, event.Image)
 	return resp, err
 }
