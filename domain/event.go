@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/hammer-code/lms-be/constants"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -68,21 +69,23 @@ type Event struct {
 	Author               User           `gorm:"foreignKey:AuthorID;references:ID"` // Ensure foreign key is correctly referenced
 	Image                string         `json:"image"`
 	Date                 null.Time      `json:"date"`
-	Type                 string         `json:"type"`
+	Type                 constants.EventType `json:"type"`
 	Location             string         `json:"location"`
 	Duration             string         `json:"duration"`
 	Capacity             int            `json:"capacity"`
-	Status               string         `json:"status"`                                          // Conference, Tech Talk, Workshop, Webinar, etc.
-	Tags                 []EventTag     `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
-	Speakers             []EventSpeaker `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
-	SessionType          string         `json:"session_type"`                                    // online, offline, hybrid
+	Status               string         `json:"status"`                                     
+	Tags                 []EventTag     `json:"tags" gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"`
+	Speakers             []EventSpeaker `json:"speakers" gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"`
 	RegistrationLink     string         `json:"registration_link"`
 	Price                float64        `json:"price"` // 0 == free
+	CreatedBy            int            `json:"-"`
+	UpdatedBy            int            `json:"-"`
+	DeletedBy            int            `json:"-"`
 	ReservationStartDate null.Time      `json:"reservation_start_date"`
 	ReservationEndDate   null.Time      `json:"reservation_end_date"`
 	CreatedAt            time.Time      `json:"created_at"`
-	UpdatedAt            null.Time      `json:"updated_at"`
-	DeletedAt            null.Time      `json:"deleted_at"`
+	UpdatedAt            null.Time      `json:"-"`
+	DeletedAt            null.Time      `json:"-"`
 	AdditionalLink       string         `json:"additional_link"`
 }
 
@@ -118,7 +121,7 @@ type CreateEventPayload struct {
 	Slug                 string    `json:"slug" validate:"required"`
 	IsOnline             string    `json:"is_online" validate:"required"`
 	Date                 null.Time `json:"date" validate:"required"`
-	Type                 string    `json:"type" validate:"required"`
+	Type                 constants.EventType `json:"type" validate:"required"`
 	Location             string    `json:"location" validate:"required"`
 	Duration             string    `json:"duration" validate:"required"`
 	Status               string    `json:"status" validate:"required"`
@@ -140,7 +143,7 @@ type UpdateEventPayload struct {
 	Slug                 string    `json:"slug" validate:"required"`
 	IsOnline             string    `json:"is_online" validate:"required"`
 	Date                 null.Time `json:"date" validate:"required"`
-	Type                 string    `json:"type" validate:"required"`
+	Type                 constants.EventType `json:"type" validate:"required"`
 	Location             string    `json:"location" validate:"required"`
 	Duration             string    `json:"duration" validate:"required"`
 	Status               string    `json:"status" validate:"required"`
@@ -155,29 +158,17 @@ type UpdateEventPayload struct {
 }
 
 type EventDTO struct {
-	ID                   uint           `json:"id" gorm:"primarykey"`
-	Title                string         `json:"title" `
-	Description          string         `json:"description"`
-	Slug                 string         `json:"slug"`
-	Author               string         `json:"author"`
-	Image                string         `json:"image"`
-	Date                 null.Time      `json:"date"`
-	Type                 string         `json:"type"`
-	Location             string         `json:"location"`
-	Duration             string         `json:"duration"`
-	Capacity             int            `json:"capacity"`
-	Status               string         `json:"status"`                                          // Conference, Tech Talk, Workshop, Webinar, etc.
-	Tags                 []EventTag     `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
-	Speakers             []EventSpeaker `gorm:"foreignKey:EventID;constraint:OnDelete:CASCADE;"` // Ensure foreign key is correctly referenced
-	SessionType          string         `json:"session_type"`                                    // online, offline, hybrid
-	RegistrationLink     string         `json:"registration_link"`
-	Price                float64        `json:"price"` // 0 == free
-	ReservationStartDate null.Time      `json:"reservation_start_date"`
-	ReservationEndDate   null.Time      `json:"reservation_end_date"`
-	CreatedAt            time.Time      `json:"created_at"`
-	UpdatedAt            null.Time      `json:"updated_at"`
-	DeletedAt            null.Time      `json:"deleted_at"`
-	AdditionalLink       string         `json:"additional_link"`
+	ID               int       `json:"id"`
+	Title            string    `json:"title"`
+	Description      string    `json:"description"`
+	Author           string    `json:"author"`
+	ImageEvent       string    `json:"image_event"`
+	DateEvent        null.Time `json:"date_event"`
+	Type             constants.EventType `json:"type"`
+	Location         string    `json:"location"`
+	Duration         string    `json:"duration"`
+	Capacity         int       `json:"capacity"`
+	RegistrationLink string    `json:"registration_link"`
 }
 
 type UpdateEvenPayload struct {
@@ -186,7 +177,7 @@ type UpdateEvenPayload struct {
 	Author           string    `json:"author"`
 	ImageEvent       string    `json:"image_event"`
 	DateEvent        null.Time `json:"date_event"`
-	Type             string    `json:"type"`
+	Type             constants.EventType `json:"type"`
 	Location         string    `json:"location"`
 	Duration         string    `json:"duration"`
 	Capacity         int       `json:"capacity"`
@@ -196,7 +187,7 @@ type UpdateEvenPayload struct {
 type EventFilter struct {
 	ID        uint
 	Title     string
-	Type      string
+	Type      constants.EventType
 	Status    string
 	StartDate null.Time
 	EndDate   null.Time
@@ -236,9 +227,14 @@ type RegistrationEvent struct {
 	ImageProofPayment string    `json:"image_proof_payment"`
 	PaymentDate       null.Time `json:"payment_date"`
 	Status            string    `json:"status"` // register, pay, approve/cancel/decline
+	UpToYou           string    `json:"-"`
+	CreatedByUserID   int       `json:"-"`
+	UpdatedByUserID   int       `json:"-"`
+	DeletedByUserID   int       `json:"-"`
 	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         null.Time `json:"updated_at"`
-	DeletedAt         null.Time `json:"deleted_at"`
+	UpdatedAt         null.Time `json:"-"`
+	DeletedAt         null.Time `json:"-"`
+	Event             Event     `json:"event_detail" gorm:"foreignKey:EventID"`
 }
 
 func (RegistrationEvent) TableName() string {

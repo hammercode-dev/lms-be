@@ -4,12 +4,17 @@ import (
 	"context"
 	"errors"
 
+	"github.com/hammer-code/lms-be/constants"
 	"github.com/hammer-code/lms-be/domain"
 	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
 	"github.com/hammer-code/lms-be/utils"
 )
 
 func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPayload) error {
+	if !constants.IsValidEventType(payload.Type) {
+		return utils.NewBadRequestError(ctx, "Sorry, invalid event type", errors.New("event type is not valid"))
+	}
+
 	dataImage, err := uc.imageRepository.GetImage(ctx, payload.FileName)
 	if err != nil {
 		err = utils.NewInternalServerError(ctx, err)

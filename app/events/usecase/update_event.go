@@ -2,8 +2,10 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/hammer-code/lms-be/constants"
 	"github.com/hammer-code/lms-be/domain"
 	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
 	"github.com/hammer-code/lms-be/utils"
@@ -11,8 +13,9 @@ import (
 )
 
 func (uc usecase) UpdateEvent(ctx context.Context, id uint, payload domain.UpdateEventPayload) error {
-
-	userData := ctx.Value(contextkey.UserKey).(domain.User)
+	if !constants.IsValidEventType(payload.Type) {
+		return utils.NewBadRequestError(ctx, "Sorry, invalid event type", errors.New("event type is not valid"))
+	}
 
 	err := uc.repository.UpdateEvent(ctx, domain.Event{
 		ID:                   id,
