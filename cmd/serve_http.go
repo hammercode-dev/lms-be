@@ -191,8 +191,9 @@ func registerHandler(app app.App) *mux.Router {
 
 	// Admin Route
 	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.GetEvents).Methods(http.MethodGet)
-	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.CreateEvent).Methods(http.MethodPost)
+	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.UpdateEvent).Methods(http.MethodPut)
 	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.DeleteEvent).Methods(http.MethodDelete)
+	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.CreateEvent).Methods(http.MethodPost)
 	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.GetDetail).Methods(http.MethodGet)
 	protectedV1AdminRoute.HandleFunc("/users", app.UserHandler.GetUsers).Methods(http.MethodGet)
 

@@ -58,6 +58,7 @@ type EventHandler interface {
 	ListRegistration(w http.ResponseWriter, r *http.Request)
 	ListEventPay(w http.ResponseWriter, r *http.Request)
 	PayProcess(w http.ResponseWriter, r *http.Request)
+	UpdateEvent(w http.ResponseWriter, r *http.Request)
 }
 
 type Event struct {
@@ -87,6 +88,7 @@ type Event struct {
 	UpdatedAt            null.Time           `json:"-"`
 	DeletedAt            null.Time           `json:"-"`
 	AdditionalLink       string              `json:"additional_link"`
+	SessionType          string              `json:"session_type"`
 }
 
 func (Event) TableName() string {
@@ -133,6 +135,7 @@ type CreateEventPayload struct {
 	ReservationStartDate null.Time           `json:"reservation_start_date"`
 	ReservationEndDate   null.Time           `json:"reservation_end_date"`
 	AdditionalLink       string              `json:"additional_link"`
+	SessionType          string              `json:"session_type"`
 }
 
 type UpdateEventPayload struct {
@@ -155,6 +158,7 @@ type UpdateEventPayload struct {
 	ReservationStartDate null.Time           `json:"reservation_start_date"`
 	ReservationEndDate   null.Time           `json:"reseveration_end_date"`
 	AdditionalLink       string              `json:"additional_link"`
+	SessionType					 string							 `json:"session_type"`
 }
 
 type EventDTO struct {
@@ -169,6 +173,7 @@ type EventDTO struct {
 	Duration         string              `json:"duration"`
 	Capacity         int                 `json:"capacity"`
 	RegistrationLink string              `json:"registration_link"`
+	SessionType      string              `json:"session_type"`
 }
 
 type UpdateEvenPayload struct {
@@ -282,5 +287,6 @@ func (e Event) ToDTO() EventDTO {
 		Duration:         e.Duration,
 		Capacity:         e.Capacity,
 		RegistrationLink: e.RegistrationLink,
+		SessionType:      e.SessionType,
 	}
 }
