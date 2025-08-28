@@ -7,6 +7,7 @@ import (
 
 	"github.com/hammer-code/lms-be/constants"
 	"github.com/hammer-code/lms-be/domain"
+	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
 	"github.com/hammer-code/lms-be/utils"
 	"gopkg.in/guregu/null.v4"
 )
@@ -16,12 +17,14 @@ func (uc usecase) UpdateEvent(ctx context.Context, id uint, payload domain.Updat
 		return utils.NewBadRequestError(ctx, "Sorry, invalid event type", errors.New("event type is not valid"))
 	}
 
+	userData := ctx.Value(contextkey.UserKey).(domain.User)
+
 	err := uc.repository.UpdateEvent(ctx, domain.Event{
 		ID:                   id,
 		Title:                payload.Title,
 		Description:          payload.Description,
 		Slug:                 payload.Slug,
-		Author:               payload.Author,
+		AuthorID:             userData.ID,
 		Image:                payload.FileName,
 		Date:                 payload.Date,
 		Type:                 payload.Type,

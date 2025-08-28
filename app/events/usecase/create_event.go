@@ -6,6 +6,7 @@ import (
 
 	"github.com/hammer-code/lms-be/constants"
 	"github.com/hammer-code/lms-be/domain"
+	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
 	"github.com/hammer-code/lms-be/utils"
 )
 
@@ -25,11 +26,13 @@ func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPay
 		return err
 	}
 
+	userData := ctx.Value(contextkey.UserKey).(domain.User)
+
 	err = uc.dbTX.StartTransaction(ctx, func(txCtx context.Context) error {
 		data := domain.Event{
 			Title:                payload.Title,
 			Description:          payload.Description,
-			Author:               payload.Author,
+			AuthorID:             userData.ID,
 			Image:                dataImage.FileName,
 			Date:                 payload.Date,
 			Slug:                 payload.Slug,
@@ -42,7 +45,7 @@ func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPay
 			ReservationEndDate:   payload.ReservationEndDate,
 			Price:                payload.Price,
 			Status:               payload.Status,
-			AdditionalLink: 	  payload.AdditionalLink,
+			AdditionalLink:       payload.AdditionalLink,
 		}
 
 		eventID, err := uc.repository.CreateEvent(txCtx, data)

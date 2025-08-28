@@ -7,7 +7,8 @@ import (
 )
 
 func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter) (tData int, data []domain.Event, err error) {
-	db := repo.db.DB(ctx).Model(&domain.Event{})
+
+	db := repo.db.DB(ctx).Model(&data)
 
 	var totalData int64
 
@@ -35,7 +36,7 @@ func (repo *repository) GetEvents(ctx context.Context, filter domain.EventFilter
 
 	err = db.Limit(filter.FilterPagination.GetLimit()).
 		Offset(filter.FilterPagination.GetOffset()).
-		Preload("Tags").Preload("Speakers").Find(&data).Error
+		Preload("Tags").Preload("Speakers").Preload("Author").Find(&data).Error
 	if err != nil {
 		return
 	}

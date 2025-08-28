@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/hammer-code/lms-be/domain"
+	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
 	"github.com/hammer-code/lms-be/pkg/email"
 	"github.com/hammer-code/lms-be/utils"
 	"github.com/sirupsen/logrus"
@@ -21,7 +22,8 @@ func (uc usecase) PayProcess(ctx context.Context, payload domain.PayProcessPaylo
 		return err
 	}
 
-	logrus.Info("registration event: ", rEvent)
+	userData := ctx.Value(contextkey.UserKey).(domain.User)
+
 	if rEvent.ID == 0 {
 		err = utils.NewNotFoundError(ctx, "registration order not found", errors.New("registration order not found"))
 		return err
@@ -48,7 +50,6 @@ func (uc usecase) PayProcess(ctx context.Context, payload domain.PayProcessPaylo
 
 	eventPay.Status = payload.Status
 	rEvent.Status = payload.Status
-	rEvent.UpToYou = payload.Note
 
 	err = uc.dbTX.StartTransaction(ctx, func(txCtx context.Context) error {
 		err = uc.repository.UpdateEventPay(txCtx, eventPay)
@@ -117,12 +118,12 @@ func (uc usecase) PayProcess(ctx context.Context, payload domain.PayProcessPaylo
 		if err := emailPayload.AddReceiver(
 			ctx,
 			email.Receiver{
-				Email: rEvent.Email,
+				Email: userData.Email,
 				Data: map[string]interface{}{
-					"name":     rEvent.Name,
+					"name":     userData.Username,
 					"title":    event.Title,
 					"price":    event.Price,
-					"email":    rEvent.Email,
+					"email":    userData.Email,
 					"order_no": rEvent.OrderNo,
 					"status":   payload.Status,
 					"note":     payload.Note,

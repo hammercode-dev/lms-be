@@ -52,7 +52,7 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 			err = utils.NewInternalServerError(ctx, err)
 			return domain.RegisterEventResponse{}, err
 		}
-	
+
 		if dataImage.IsUsed {
 			err = utils.NewNotFoundError(ctx, "image not exists", errors.New("image not exists"))
 			return domain.RegisterEventResponse{}, err
@@ -125,10 +125,8 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 
 	// is free event or not
 	status := "SUCCESS"
-	upToYou := "registration success"
 	if event.Price != 0.0 {
 		status = "PENDING"
-		upToYou = "new register"
 		emailPayload.SendEmail(ctx)
 	} else {
 		logrus.Info("free event, send email registration success")
@@ -151,19 +149,14 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 	}
 
 	err = uc.dbTX.StartTransaction(ctx, func(txCtx context.Context) error {
-		
 
 		rId, err := uc.repository.CreateRegistrationEvent(txCtx, domain.RegistrationEvent{
-			OrderNo:     orderNo,
-			UserID: 	 strconv.Itoa(userData.ID),
-			EventID:     event.ID,
-			Name:        userData.Username,
-			Email:       userData.Email,
-			PhoneNumber: payload.PhoneNumber,
-			Status:      status,
-			UpToYou:     upToYou,
+			OrderNo:           orderNo,
+			UserID:            strconv.Itoa(userData.ID),
+			EventID:           event.ID,
+			Status:            status,
 			ImageProofPayment: dataImage.FileName,
-			PaymentDate: null.NewTime(time.Now(), true),
+			PaymentDate:       null.NewTime(time.Now(), true),
 		})
 
 		if err != nil {
@@ -175,7 +168,7 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 			_, err = uc.repository.CreateEventPay(txCtx, domain.EventPay{
 				RegistrationEventID: rId,
 				EventID:             event.ID,
-				OrderNO: 		     orderNo,
+				OrderNO:             orderNo,
 				ImageProofPayment:   dataImage.FileName,
 				NetAmount:           payload.NetAmount,
 			})
