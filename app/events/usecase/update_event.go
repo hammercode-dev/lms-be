@@ -36,6 +36,7 @@ func (uc usecase) UpdateEvent(ctx context.Context, id uint, payload domain.Updat
 		Price:                payload.Price,
 		ReservationStartDate: payload.ReservationStartDate,
 		ReservationEndDate:   payload.ReservationEndDate,
+		SessionType:          payload.SessionType,
 		UpdatedAt:            null.TimeFrom(time.Now()),
 	})
 	if err != nil {
