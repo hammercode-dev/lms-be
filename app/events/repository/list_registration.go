@@ -29,10 +29,6 @@ func (repo *repository) ListRegistration(ctx context.Context, filter domain.Even
 		db = db.Where("registration_events.created_at <= ?", filter.EndDate)
 	}
 
-	if email != "" {
-		db = db.Where("registration_events.email = ?", email)
-	}
-
 	var totalData int64
 	db.Count(&totalData)
 
