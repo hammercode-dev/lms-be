@@ -175,6 +175,7 @@ type EventDTO struct {
 	Capacity         int                 `json:"capacity"`
 	RegistrationLink string              `json:"registration_link"`
 	SessionType      string              `json:"session_type"`
+	Status           string              `json:"status"`
 }
 
 type UpdateEvenPayload struct {
@@ -284,6 +285,7 @@ func (e Event) ToDTO() EventDTO {
 		ImageEvent:       e.Image,
 		DateEvent:        e.Date,
 		Type:             e.Type,
+		Status:           e.Status,
 		Location:         e.Location,
 		Duration:         e.Duration,
 		Capacity:         e.Capacity,
