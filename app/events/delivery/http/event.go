@@ -181,7 +181,7 @@ func (h Handler) GetDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := h.usecase.GetEventByID(r.Context(), uint(id))
+	data, err := h.usecase.GetEventByIDAdmin(r.Context(), uint(id))
 	if err != nil {
 		ngelog.Error(r.Context(), "failed to get event by id", err)
 		resp := utils.CustomErrorResponse(err)

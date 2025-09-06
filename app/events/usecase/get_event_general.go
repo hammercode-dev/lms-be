@@ -21,3 +21,16 @@ func (uc usecase) GetEventByID(ctx context.Context, id uint) (resp domain.EventD
 	
 	return event.ToDTO(), err
 }
+
+func (uc usecase) GetEventByIDAdmin(ctx context.Context, id uint) (resp domain.EventAdminDTO, err error) {
+	event, err := uc.repository.GetEvent(ctx, id)
+	if err != nil {
+		err = utils.NewInternalServerError(ctx, err)
+		return resp, err
+	}
+	baseURL := config.GetConfig().BaseURL
+
+	event.Image = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, event.Image)
+
+	return event.ToAdminDTO(), err
+}
