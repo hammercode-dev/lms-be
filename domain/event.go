@@ -38,6 +38,7 @@ type EventUsecase interface {
 	CreateRegistrationEvent(ctx context.Context, payload RegisterEventPayload) (RegisterEventResponse, error)
 	CreateEventPay(ctx context.Context, payload EventPayPayload) error
 	GetEventByID(ctx context.Context, id uint) (resp EventDTO, err error)
+	GetEventByIDAdmin(ctx context.Context, id uint) (resp EventAdminDTO, err error)
 	DeleteEvent(ctx context.Context, id uint) (err error)
 	RegistrationStatus(ctx context.Context, orderNo string) (resp RegisterStatusResponse, err error)
 	ListRegistration(ctx context.Context, filter EventFilter) (resp []RegistrationEvent, pagination Pagination, err error)
@@ -121,7 +122,6 @@ type CreateEventPayload struct {
 	Author               string              `json:"author" validate:"required"`
 	FileName             string              `json:"file_name" validate:"required"`
 	Slug                 string              `json:"slug" validate:"required"`
-	IsOnline             string              `json:"is_online" validate:"required"`
 	Date                 null.Time           `json:"date" validate:"required"`
 	Type                 constants.EventType `json:"type" validate:"required"`
 	Location             string              `json:"location" validate:"required"`
@@ -135,7 +135,7 @@ type CreateEventPayload struct {
 	ReservationStartDate null.Time           `json:"reservation_start_date"`
 	ReservationEndDate   null.Time           `json:"reservation_end_date"`
 	AdditionalLink       string              `json:"additional_link"`
-	SessionType          string              `json:"session_type"`
+	SessionType          string              `json:"session_type" validate:"required"`
 }
 
 type UpdateEventPayload struct {
@@ -144,7 +144,6 @@ type UpdateEventPayload struct {
 	Author               string              `json:"author" validate:"required"`
 	FileName             string              `json:"file_name" validate:"required"`
 	Slug                 string              `json:"slug" validate:"required"`
-	IsOnline             string              `json:"is_online" validate:"required"`
 	Date                 null.Time           `json:"date" validate:"required"`
 	Type                 constants.EventType `json:"type" validate:"required"`
 	Location             string              `json:"location" validate:"required"`
@@ -158,7 +157,7 @@ type UpdateEventPayload struct {
 	ReservationStartDate null.Time           `json:"reservation_start_date"`
 	ReservationEndDate   null.Time           `json:"reseveration_end_date"`
 	AdditionalLink       string              `json:"additional_link"`
-	SessionType          string              `json:"session_type"`
+	SessionType          string              `json:"session_type" validate:"required"`
 }
 
 type EventDTO struct {
@@ -176,6 +175,29 @@ type EventDTO struct {
 	RegistrationLink string              `json:"registration_link"`
 	SessionType      string              `json:"session_type"`
 	Status           string              `json:"status"`
+}
+
+type EventAdminDTO struct {
+	ID                   int                 `json:"id"`
+	Title                string              `json:"title"`
+	Description          string              `json:"description"`
+	Author               string              `json:"author"`
+	FileName             string              `json:"file_name"`
+	Slug                 string              `json:"slug"`
+	Date                 null.Time           `json:"date"`
+	Type                 constants.EventType `json:"type"`
+	Location             string              `json:"location"`
+	Duration             string              `json:"duration"`
+	Status               string              `json:"status"`
+	Capacity             int                 `json:"capacity"`
+	Price                float64             `json:"price"`
+	RegistrationLink     string              `json:"registration_link"`
+	Tags                 []string            `json:"tags"`
+	Speakers             []string            `json:"speakers"`
+	ReservationStartDate null.Time           `json:"reservation_start_date"`
+	ReservationEndDate   null.Time           `json:"reservation_end_date"`
+	// AdditionalLink       string              `json:"additional_link"`
+	SessionType          string              `json:"session_type"`
 }
 
 type UpdateEvenPayload struct {
@@ -292,5 +314,42 @@ func (e Event) ToDTO() EventDTO {
 		Price:            e.Price,
 		RegistrationLink: e.RegistrationLink,
 		SessionType:      e.SessionType,
+	}
+}
+
+func (e Event) ToAdminDTO() EventAdminDTO {
+	id := int(e.ID)
+	
+	tags := make([]string, len(e.Tags))
+	for i, tag := range e.Tags {
+		tags[i] = tag.Tag
+	}
+	
+	speakers := make([]string, len(e.Speakers))
+	for i, speaker := range e.Speakers {
+		speakers[i] = speaker.Name
+	}
+
+	return EventAdminDTO{
+		ID:                   id,
+		Title:                e.Title,
+		Description:          e.Description,
+		Author:               e.Author.Username,
+		FileName:             e.Image,
+		Slug:                 e.Slug,
+		Date:                 e.Date,
+		Type:                 e.Type,
+		Location:             e.Location,
+		Duration:             e.Duration,
+		Status:               e.Status,
+		Capacity:             e.Capacity,
+		Price:                e.Price,
+		RegistrationLink:     e.RegistrationLink,
+		Tags:                 tags,
+		Speakers:             speakers,
+		ReservationStartDate: e.ReservationStartDate,
+		ReservationEndDate:   e.ReservationEndDate,
+		// AdditionalLink:       e.AdditionalLink,
+		SessionType:          e.SessionType,
 	}
 }
