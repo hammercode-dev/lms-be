@@ -198,7 +198,7 @@ func registerHandler(app app.App) *mux.Router {
 	protectedV1AdminRoute.HandleFunc("/users", app.UserHandler.GetUsers).Methods(http.MethodGet)
 
 	protectedV1AdminRoute.HandleFunc("/images", app.ImageHandler.UploadImage).Methods(http.MethodPost)
-	protectedV1AdminRoute.HandleFunc("/images/{id}", app.ImageHandler.UpdateImage).Methods(http.MethodPut)
+	protectedV1AdminRoute.HandleFunc("/images/{fileName}", app.ImageHandler.UpdateImage).Methods(http.MethodPut)
 
 	return router
 }

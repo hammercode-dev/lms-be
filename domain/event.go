@@ -155,7 +155,7 @@ type UpdateEventPayload struct {
 	Tags                 []string            `json:"tags"`
 	Speakers             []string            `json:"speakers"`
 	ReservationStartDate null.Time           `json:"reservation_start_date"`
-	ReservationEndDate   null.Time           `json:"reseveration_end_date"`
+	ReservationEndDate   null.Time           `json:"reservation_end_date"`
 	AdditionalLink       string              `json:"additional_link"`
 	SessionType          string              `json:"session_type" validate:"required"`
 }

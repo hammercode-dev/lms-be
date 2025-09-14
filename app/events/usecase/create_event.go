@@ -46,6 +46,7 @@ func (uc usecase) CreateEvent(ctx context.Context, payload domain.CreateEventPay
 			Price:                payload.Price,
 			Status:               payload.Status,
 			AdditionalLink:       payload.AdditionalLink,
+			SessionType: 					payload.SessionType,
 		}
 
 		eventID, err := uc.repository.CreateEvent(txCtx, data)
