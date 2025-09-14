@@ -2,7 +2,6 @@ package http
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -11,26 +10,18 @@ import (
 )
 
 func (h Handler) UpdateImage(w http.ResponseWriter, r *http.Request) {
-	// Parse image ID from query or URL (misal: /images/{id})
-	idStr := mux.Vars(r)["id"]
-	if idStr == "" {
+	// Parse image fileName from URL (misal: /images/{fileName})
+	fileName := mux.Vars(r)["fileName"]
+	if fileName == "" {
 		utils.Response(domain.HttpResponse{
 			Code:    http.StatusBadRequest,
-			Message: "missing image id",
-		}, w)
-		return
-	}
-	id, err := strconv.ParseUint(idStr, 10, 64)
-	if err != nil {
-		utils.Response(domain.HttpResponse{
-			Code:    http.StatusBadRequest,
-			Message: "invalid image id",
+			Message: "missing image file name",
 		}, w)
 		return
 	}
 
 	// Parse multipart form
-	err = r.ParseMultipartForm(10 << 20) // 10MB
+	err := r.ParseMultipartForm(10 << 20) // 10MB
 	if err != nil {
 		utils.Response(domain.HttpResponse{
 			Code:    http.StatusBadRequest,
@@ -66,7 +57,7 @@ func (h Handler) UpdateImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	err = h.usecase.UpdateImage(ctx, upload, uint(id))
+	response, err := h.usecase.UpdateImage(ctx, upload, fileName)
 	if err != nil {
 		utils.Response(domain.HttpResponse{
 			Code:    http.StatusInternalServerError,
@@ -78,6 +69,7 @@ func (h Handler) UpdateImage(w http.ResponseWriter, r *http.Request) {
 	utils.Response(domain.HttpResponse{
 		Code:    200,
 		Message: "Image updated successfully",
+		Data:    response,
 	}, w)
 }
 

@@ -18,7 +18,7 @@ type ImageRepository interface {
 
 type ImageUsecase interface {
 	UploadImage(context.Context, UploadImage) (UploadImageResponse, error)
-	UpdateImage(ctx context.Context, file UploadImage, id uint) error
+	UpdateImage(ctx context.Context, file UploadImage, fileName string) (UploadImageResponse, error)
 	UpdateUseImage(context.Context, uint) error
 	GetStorage(ctx context.Context, fileName string) (filePath string, err error)
 }
