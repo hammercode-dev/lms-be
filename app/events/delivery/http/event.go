@@ -11,6 +11,7 @@ import (
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/pkg/ngelog"
 	"github.com/hammer-code/lms-be/utils"
+	"github.com/sirupsen/logrus"
 )
 
 // @Summary Create Event
@@ -343,5 +344,84 @@ func (h Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
 		Message:    "success",
 		Data:       data,
 		Pagination: &pagination,
+	}, w)
+}
+
+func (h Handler) ListRegistrationByEvent(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idString := vars["id"]
+
+	id, err := strconv.ParseUint(idString, 10, 32)
+	if err != nil {
+		ngelog.Error(r.Context(), "failed to convert string to uint", err)
+		utils.Response(domain.HttpResponse{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}, w)
+		return
+	}
+
+	pagination, err := domain.GetPaginationFromCtx(r)
+	if err != nil {
+		logrus.Error("failed to parse pagination parameters: ", err)
+		utils.Response(domain.HttpResponse{
+			Code:    http.StatusBadRequest,
+			Message: "Invalid pagination parameters",
+		}, w)
+		return
+	}
+
+	data, paginationResp, err := h.usecase.ListRegistrationByEvent(r.Context(), uint(id), pagination)
+	if err != nil {
+		ngelog.Error(r.Context(), "failed to get event by id", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
+		return
+	}
+
+	utils.Response(domain.HttpResponse{
+		Code:       http.StatusOK,
+		Message:    "success",
+		Data:       data,
+		Pagination: &paginationResp,
+	}, w)
+}
+
+func (h Handler) UpdateRegistrationStatus(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idString := vars["id"]
+
+	id, err := strconv.ParseUint(idString, 10, 32)
+	if err != nil {
+		ngelog.Error(r.Context(), "failed to convert string to uint", err)
+		utils.Response(domain.HttpResponse{
+			Code:    http.StatusBadRequest,
+			Message: "invalid registration id",
+		}, w)
+		return
+	}
+
+	// Parse payload
+	var req domain.UpdateRegistrationStatusRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.Response(domain.HttpResponse{
+			Code:    http.StatusBadRequest,
+			Message: "invalid request body",
+		}, w)
+		return
+	}
+
+	// Call usecase with new status
+	err = h.usecase.UpdateRegistrationStatus(r.Context(), uint(id), req)
+	if err != nil {
+		ngelog.Error(r.Context(), "failed to update registration status", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
+		return
+	}
+
+	utils.Response(domain.HttpResponse{
+		Code:    http.StatusOK,
+		Message: "status updated successfully",
 	}, w)
 }

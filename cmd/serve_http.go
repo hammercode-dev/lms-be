@@ -190,11 +190,15 @@ func registerHandler(app app.App) *mux.Router {
 	protectedV1Route.HandleFunc("/blogs/{id}", app.BlogPostHandler.DeleteBlogPost).Methods(http.MethodDelete)
 
 	// Admin Route
+	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.CreateEvent).Methods(http.MethodPost)
 	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.GetEvents).Methods(http.MethodGet)
+	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.GetDetail).Methods(http.MethodGet)
 	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.UpdateEvent).Methods(http.MethodPut)
 	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.DeleteEvent).Methods(http.MethodDelete)
-	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.CreateEvent).Methods(http.MethodPost)
-	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.GetDetail).Methods(http.MethodGet)
+	protectedV1AdminRoute.HandleFunc("/events/{id}/registration", app.EventHandler.ListRegistrationByEvent).Methods(http.MethodGet)
+	protectedV1AdminRoute.HandleFunc("/events/registration/{id}/status", app.EventHandler.UpdateRegistrationStatus).Methods(http.MethodPatch)
+
+	// users
 	protectedV1AdminRoute.HandleFunc("/users", app.UserHandler.GetUsers).Methods(http.MethodGet)
 
 	protectedV1AdminRoute.HandleFunc("/images", app.ImageHandler.UploadImage).Methods(http.MethodPost)

@@ -29,6 +29,8 @@ type EventRepository interface {
 	GetEventPay(ctx context.Context, orderNo string) (data EventPay, err error)
 	UpdateRegistrationEvent(ctx context.Context, event RegistrationEvent) error
 	UpdateEvent(ctx context.Context, event Event) error
+	ListRegistrationByEvent(ctx context.Context, eventID uint, pagination FilterPagination) (data []RegistrationEvent, totalCount int64, err error)
+	GetRegistrationEventByID(ctx context.Context, id uint) (data RegistrationEvent, err error)
 }
 
 type EventUsecase interface {
@@ -44,6 +46,8 @@ type EventUsecase interface {
 	ListRegistration(ctx context.Context, filter EventFilter) (resp []RegistrationEvent, pagination Pagination, err error)
 	ListEventPay(ctx context.Context, filter EventFilter) (data []EventPay, pagination Pagination, err error)
 	PayProcess(ctx context.Context, payload PayProcessPayload) error
+	ListRegistrationByEvent(ctx context.Context, eventID uint, filterPagination FilterPagination) (data []EventRegistrationDTO, pagination Pagination, err error)
+	UpdateRegistrationStatus(ctx context.Context, registrationID uint, payload UpdateRegistrationStatusRequest) error
 }
 
 type EventHandler interface {
@@ -60,6 +64,8 @@ type EventHandler interface {
 	ListEventPay(w http.ResponseWriter, r *http.Request)
 	PayProcess(w http.ResponseWriter, r *http.Request)
 	UpdateEvent(w http.ResponseWriter, r *http.Request)
+	ListRegistrationByEvent(w http.ResponseWriter, r *http.Request)
+	UpdateRegistrationStatus(w http.ResponseWriter, r *http.Request)
 }
 
 type Event struct {
@@ -197,7 +203,7 @@ type EventAdminDTO struct {
 	ReservationStartDate null.Time           `json:"reservation_start_date"`
 	ReservationEndDate   null.Time           `json:"reservation_end_date"`
 	// AdditionalLink       string              `json:"additional_link"`
-	SessionType          string              `json:"session_type"`
+	SessionType string `json:"session_type"`
 }
 
 type UpdateEvenPayload struct {
@@ -238,55 +244,10 @@ func (EventPay) TableName() string {
 	return "event_pays"
 }
 
-type RegisterEventPayload struct {
-	EventID           uint    `json:"event_id"`
-	UserID            string  `json:"user_id"`
-	Name              string  `json:"name"`
-	Email             string  `json:"email"`
-	PhoneNumber       string  `json:"phone_number"`
-	ImageProofPayment string  `json:"image_proof_payment"`
-	NetAmount         float64 `json:"net_amount"`
-}
-
-type RegistrationEvent struct {
-	ID                uint      `json:"id" gorm:"primarykey"`
-	OrderNo           string    `json:"order_no"`
-	EventID           uint      `json:"event_id"` // lock event
-	UserID            string    `json:"user_id"`  // lock user
-	ImageProofPayment string    `json:"image_proof_payment"`
-	PaymentDate       null.Time `json:"payment_date"`
-	Status            string    `json:"status"` // register, pay, approve/cancel/decline
-	UpToYou           string    `json:"-"`
-	CreatedByUserID   int       `json:"-"`
-	UpdatedByUserID   int       `json:"-"`
-	DeletedByUserID   int       `json:"-"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         null.Time `json:"-"`
-	DeletedAt         null.Time `json:"-"`
-	Event             Event     `json:"event_detail" gorm:"foreignKey:EventID"`
-}
-
-func (RegistrationEvent) TableName() string {
-	return "registration_events"
-}
-
-type RegistrationEventDTO struct {
-	OrderNo string `json:"order_no"`
-}
-
-type RegisterEventResponse struct {
-	OrderNo string `json:"order_no"`
-}
-
 type EventPayPayload struct {
 	OrderNo           string  `json:"order_no"`
 	ImageProofPayment string  `json:"image_proof_payment"`
 	NetAmount         float64 `json:"net_amount"`
-}
-
-type RegisterStatusResponse struct {
-	OrderNo string `json:"order_no"`
-	Status  string `json:"string"`
 }
 
 type PayProcessPayload struct {
@@ -319,12 +280,12 @@ func (e Event) ToDTO() EventDTO {
 
 func (e Event) ToAdminDTO() EventAdminDTO {
 	id := int(e.ID)
-	
+
 	tags := make([]string, len(e.Tags))
 	for i, tag := range e.Tags {
 		tags[i] = tag.Tag
 	}
-	
+
 	speakers := make([]string, len(e.Speakers))
 	for i, speaker := range e.Speakers {
 		speakers[i] = speaker.Name
@@ -350,6 +311,6 @@ func (e Event) ToAdminDTO() EventAdminDTO {
 		ReservationStartDate: e.ReservationStartDate,
 		ReservationEndDate:   e.ReservationEndDate,
 		// AdditionalLink:       e.AdditionalLink,
-		SessionType:          e.SessionType,
+		SessionType: e.SessionType,
 	}
 }
