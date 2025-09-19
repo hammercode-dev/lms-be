@@ -8,7 +8,7 @@ import (
 )
 
 func (repo *repository) ListRegistrationByEvent(ctx context.Context, eventID uint, filterPagination domain.FilterPagination) (data []domain.RegistrationEvent, totalCount int64, err error) {
-	if err := repo.db.DB(ctx).Model(&domain.RegistrationEvent{}).Count(&totalCount).Error; err != nil {
+	if err := repo.db.DB(ctx).Model(&domain.RegistrationEvent{}).Where("event_id = ?", eventID).Count(&totalCount).Error; err != nil {
 		logrus.Error("failed to count blog posts: ", err)
 		return nil, 0, err
 	}
