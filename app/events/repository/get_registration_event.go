@@ -27,3 +27,14 @@ func (repo *repository) GetRegistrationEventByID(ctx context.Context, id uint) (
 
 	return data, err
 }
+
+func (repo *repository) GetRegistrationEventUserByStatus(ctx context.Context, eventID uint, userID uint, statuses []string) (data []domain.RegistrationEvent, err error) {
+	db := repo.db.DB(ctx).Model(&domain.RegistrationEvent{})
+
+	err = db.Where("event_id = ?", eventID).Where("user_id = ?", userID).Where("status IN (?)", statuses).Find(&data).Error
+	if err != nil {
+		return
+	}
+
+	return data, err
+}

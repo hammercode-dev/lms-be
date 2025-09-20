@@ -31,6 +31,7 @@ type EventRepository interface {
 	UpdateEvent(ctx context.Context, event Event) error
 	ListRegistrationByEvent(ctx context.Context, eventID uint, pagination FilterPagination) (data []RegistrationEvent, totalCount int64, err error)
 	GetRegistrationEventByID(ctx context.Context, id uint) (data RegistrationEvent, err error)
+	GetRegistrationEventUserByStatus(ctx context.Context, eventID uint, userID uint, statuses []string) (data []RegistrationEvent, err error)
 }
 
 type EventUsecase interface {

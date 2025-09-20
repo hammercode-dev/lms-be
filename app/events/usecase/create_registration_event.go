@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/hammer-code/lms-be/constants"
 	"github.com/hammer-code/lms-be/domain"
 	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
 	"github.com/hammer-code/lms-be/pkg/email"
@@ -19,6 +20,20 @@ import (
 )
 
 func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.RegisterEventPayload) (domain.RegisterEventResponse, error) {
+	// get user data from context
+	userData := ctx.Value(contextkey.UserKey).(domain.User)
+
+	registrations, err := uc.repository.GetRegistrationEventUserByStatus(ctx, payload.EventID, uint(userData.ID), []string{constants.PENDING, constants.SUCCESS})
+	if err != nil {
+		err = utils.NewInternalServerError(ctx, err)
+		return domain.RegisterEventResponse{}, err
+	}
+
+	if len(registrations) != 0 {
+		err = utils.NewBadRequestError(ctx, "you have already registered", errors.New("you have already registered"))
+		return domain.RegisterEventResponse{}, err
+	}
+
 	event, err := uc.repository.GetEvent(ctx, payload.EventID)
 	if err != nil {
 		err = utils.NewInternalServerError(ctx, err)
@@ -58,9 +73,6 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 			return domain.RegisterEventResponse{}, err
 		}
 	}
-
-	// get user data from context
-	userData := ctx.Value(contextkey.UserKey).(domain.User)
 
 	// generate order number
 	// format: TXE-<event_id>-<year><month><day><hash
@@ -124,9 +136,9 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 	}
 
 	// is free event or not
-	status := "SUCCESS"
+	status := constants.SUCCESS
 	if event.Price != 0.0 {
-		status = "PENDING"
+		status = constants.PENDING
 		emailPayload.SendEmail(ctx)
 	} else {
 		logrus.Info("free event, send email registration success")

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/hammer-code/lms-be/constants"
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/utils"
 )
@@ -37,7 +38,7 @@ func (uc usecase) CreateEventPay(ctx context.Context, payload domain.EventPayPay
 			EventID:             rEvent.EventID,
 			ImageProofPayment:   payload.ImageProofPayment,
 			NetAmount:           payload.NetAmount,
-			Status:              "PENDING",
+			Status:              constants.PENDING,
 			OrderNO:             rEvent.OrderNo,
 		})
 
