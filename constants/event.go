@@ -13,8 +13,10 @@ const (
 	EventTypeTechTalk   EventType = "Tech Talk"
 	EventTypeNgobar     EventType = "Ngobar"
 
-	PENDING = "PENDING"
-	SUCCESS = "SUCCESS"
+	PENDING   = "PENDING"
+	SUCCESS   = "SUCCESS"
+	REJECTED  = "REJECTED"
+	CANCELLED = "CANCELLED"
 )
 
 func GetValidEventTypes() []EventType {
