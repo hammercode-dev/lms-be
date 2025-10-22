@@ -156,6 +156,11 @@ func registerHandler(app app.App) *mux.Router {
 	public.HandleFunc("/blogs", app.BlogPostHandler.GetAllBlogPosts).Methods(http.MethodGet)
 	public.HandleFunc("/blogs/{slug}", app.BlogPostHandler.GetDetailBlogPost).Methods(http.MethodGet)
 
+	public.HandleFunc("/payments", app.TestingTransactionHandler.CreatePayment).Methods(http.MethodPost)
+	public.HandleFunc("/payments", app.TestingTransactionHandler.GetAllPayments).Methods(http.MethodGet)
+	public.HandleFunc("/payments/{order_no}", app.TestingTransactionHandler.GetPayment).Methods(http.MethodGet)
+	// public.HandleFunc("/webhooks/xendit", app.TestingTransactionHandler.XenditWebhook).Methods(http.MethodPost)
+
 	protectedV1Route := v1.NewRoute().Subrouter()
 	protectedV1Route.Use(app.Middleware.AuthMiddleware(constants.RoleUser))
 
