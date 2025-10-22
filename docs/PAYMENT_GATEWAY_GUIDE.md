@@ -2,12 +2,6 @@
 
 Integrasi sederhana Xendit Payment Gateway untuk memahami cara kerja payment gateway.
 
-## 📋 Konsep Payment Gateway
-
-```
-User → Backend → Xendit → User Bayar → Webhook → Backend Update Status
-```
-
 ## 🏗️ Struktur Project
 
 ```
@@ -46,14 +40,11 @@ XENDIT_FAILURE_REDIRECT="http://localhost:3000/payment/failed"
 
 ### 4. Run Migration
 ```bash
-make migration-up
-make seed-up
+go run main.go migrate:up
 ```
 
 ### 5. Start Server
 ```bash
-make run-http
-# atau
 go run main.go http
 ```
 
@@ -203,16 +194,6 @@ curl -X POST http://localhost:8000/api/v1/public/payments \
 curl http://localhost:8000/api/v1/public/payments/ORDER-1234567890
 ```
 
-### Test Webhook di Local
-
-Karena Xendit tidak bisa hit localhost, gunakan salah satu tools:
-- **ngrok**: `ngrok http 8000`
-- **localtunnel**: `lt --port 8000`
-
-Lalu set webhook URL di Xendit dashboard ke:
-```
-https://your-ngrok-url.ngrok.io/api/v1/public/webhooks/xendit
-```
 
 ## 📊 Database Structure
 
@@ -230,37 +211,3 @@ CREATE TABLE testing_transaction (
     updated_at TIMESTAMP
 );
 ```
-
-## 🎯 Key Points
-
-1. **Simple & Clear**: Code dibuat sesederhana mungkin untuk mudah dipahami
-2. **Official SDK**: Menggunakan `xendit-go` official SDK, bukan custom HTTP client
-3. **Webhook Important**: Webhook adalah cara Xendit memberitahu kita kalau payment berhasil
-4. **Async Process**: Payment adalah proses async - user bayar diluar sistem kita
-5. **Test Mode**: Gunakan test API key untuk development (tidak ada biaya)
-
-## 🔐 Security Notes
-
-- Jangan commit API key ke git
-- Gunakan `.env` untuk menyimpan credentials
-- Di production, validate webhook signature dari Xendit
-- Gunakan HTTPS untuk webhook endpoint
-
-## 📚 Resources
-
-- [Xendit API Documentation](https://developers.xendit.co/api-reference/)
-- [Xendit Go SDK](https://github.com/xendit/xendit-go)
-- [Xendit Dashboard](https://dashboard.xendit.co)
-
-## ✅ Next Steps
-
-Setelah memahami basic flow, bisa develop:
-1. Integrate dengan event registration yang sudah ada
-2. Tambah email notification setelah payment success
-3. Implementasi refund/cancellation
-4. Add pagination untuk list payments
-5. Export payment report
-
----
-
-**Happy Coding! 🚀**
