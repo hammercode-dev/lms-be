@@ -10,7 +10,15 @@ func (repo *repository) ListRegistration(ctx context.Context, filter domain.Even
 	db := repo.db.DB(ctx).Model(&domain.RegistrationEvent{}).
 		Preload("Event").
 		Preload("Event.Tags").
-		Preload("Event.Speakers")
+		Preload("Event.Speakers").
+		Preload("User").
+		Preload("Transaction")
+
+	// Filter by user email (only show registrations for the logged-in user)
+	if email != "" {
+		db = db.Joins("JOIN users ON users.id = CAST(registration_events.user_id AS INTEGER)").
+			Where("users.email = ?", email)
+	}
 
 	if filter.Status != "" {
 		db = db.Where("registration_events.status = ?", filter.Status)

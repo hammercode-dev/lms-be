@@ -9,7 +9,7 @@ import (
 func (repo *repository) GetRegistrationEvent(ctx context.Context, orderNo string) (data domain.RegistrationEvent, err error) {
 	db := repo.db.DB(ctx).Model(&domain.RegistrationEvent{})
 
-	err = db.Where("order_no = ?", orderNo).Find(&data).Error
+	err = db.Preload("User").Where("order_no = ?", orderNo).Find(&data).Error
 	if err != nil {
 		return
 	}
@@ -20,7 +20,7 @@ func (repo *repository) GetRegistrationEvent(ctx context.Context, orderNo string
 func (repo *repository) GetRegistrationEventByID(ctx context.Context, id uint) (data domain.RegistrationEvent, err error) {
 	db := repo.db.DB(ctx).Model(&domain.RegistrationEvent{})
 
-	err = db.Where("id = ?", id).Find(&data).Error
+	err = db.Preload("User").Where("id = ?", id).Find(&data).Error
 	if err != nil {
 		return
 	}
@@ -28,7 +28,7 @@ func (repo *repository) GetRegistrationEventByID(ctx context.Context, id uint) (
 	return data, err
 }
 
-func (repo *repository) GetRegistrationEventUserByStatus(ctx context.Context, eventID uint, userID uint, statuses []string) (data []domain.RegistrationEvent, err error) {
+func (repo *repository) GetRegistrationEventUserByStatus(ctx context.Context, eventID uint, userID string, statuses []string) (data []domain.RegistrationEvent, err error) {
 	db := repo.db.DB(ctx).Model(&domain.RegistrationEvent{})
 
 	err = db.Where("event_id = ?", eventID).Where("user_id = ?", userID).Where("status IN (?)", statuses).Find(&data).Error

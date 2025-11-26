@@ -156,11 +156,6 @@ func registerHandler(app app.App) *mux.Router {
 	public.HandleFunc("/blogs", app.BlogPostHandler.GetAllBlogPosts).Methods(http.MethodGet)
 	public.HandleFunc("/blogs/{slug}", app.BlogPostHandler.GetDetailBlogPost).Methods(http.MethodGet)
 
-	public.HandleFunc("/payments", app.TestingTransactionHandler.CreatePayment).Methods(http.MethodPost)
-	public.HandleFunc("/payments", app.TestingTransactionHandler.GetAllPayments).Methods(http.MethodGet)
-	public.HandleFunc("/payments/{order_no}", app.TestingTransactionHandler.GetPayment).Methods(http.MethodGet)
-	public.HandleFunc("/webhooks/xendit", app.TestingTransactionHandler.XenditWebhook).Methods(http.MethodPost)
-
 	protectedV1Route := v1.NewRoute().Subrouter()
 	protectedV1Route.Use(app.Middleware.AuthMiddleware(constants.RoleUser))
 
@@ -184,6 +179,15 @@ func registerHandler(app app.App) *mux.Router {
 	protectedV1Route.HandleFunc("/events/{id}", app.EventHandler.GetEventByID).Methods(http.MethodGet)
 	protectedV1Route.HandleFunc("/events/registrations", app.EventHandler.RegisterEvent).Methods(http.MethodPost)
 
+	// Transaction Events (Payment Gateway)
+	protectedV1Route.HandleFunc("/transactions", app.TransactionEventHandler.CreateTransaction).Methods(http.MethodPost)
+	protectedV1Route.HandleFunc("/transactions/{transaction_no}/status", app.TransactionEventHandler.CheckPaymentStatus).Methods(http.MethodGet)
+	protectedV1Route.HandleFunc("/orders/{order_no}", app.TransactionEventHandler.GetOrderDetail).Methods(http.MethodGet)
+
+	// Webhook Routes (no auth required)
+	webhooks := router.PathPrefix("/webhooks").Subrouter()
+	webhooks.HandleFunc("/xendit", app.TransactionEventHandler.XenditWebhook).Methods(http.MethodPost)
+
 	protectedV1Route.HandleFunc("/images", app.ImageHandler.UploadImage).Methods(http.MethodPost)
 	protectedV1Route.HandleFunc("/images/{id}", app.ImageHandler.UpdateImage).Methods(http.MethodPut)
 
@@ -196,11 +200,11 @@ func registerHandler(app app.App) *mux.Router {
 	// Admin Route
 	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.CreateEvent).Methods(http.MethodPost)
 	protectedV1AdminRoute.HandleFunc("/events", app.EventHandler.GetEvents).Methods(http.MethodGet)
+	protectedV1AdminRoute.HandleFunc("/events/registrations/{id}/status", app.EventHandler.UpdateRegistrationStatus).Methods(http.MethodPatch)
 	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.GetDetail).Methods(http.MethodGet)
 	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.UpdateEvent).Methods(http.MethodPut)
 	protectedV1AdminRoute.HandleFunc("/events/{id}", app.EventHandler.DeleteEvent).Methods(http.MethodDelete)
 	protectedV1AdminRoute.HandleFunc("/events/{id}/registrations", app.EventHandler.ListRegistrationByEvent).Methods(http.MethodGet)
-	protectedV1AdminRoute.HandleFunc("/events/registrations/{id}/status", app.EventHandler.UpdateRegistrationStatus).Methods(http.MethodPatch)
 
 	// users
 	protectedV1AdminRoute.HandleFunc("/users", app.UserHandler.GetUsers).Methods(http.MethodGet)

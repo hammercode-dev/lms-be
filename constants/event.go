@@ -17,6 +17,7 @@ const (
 	SUCCESS   = "SUCCESS"
 	REJECTED  = "REJECTED"
 	CANCELLED = "CANCELLED"
+	EXPIRED   = "EXPIRED"
 )
 
 func GetValidEventTypes() []EventType {

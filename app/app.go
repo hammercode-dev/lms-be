@@ -4,9 +4,9 @@ import (
 	blogPost "github.com/hammer-code/lms-be/app/blog_post"
 	"github.com/hammer-code/lms-be/app/middlewares"
 	newsletters "github.com/hammer-code/lms-be/app/newsletters"
-	testingTransaction "github.com/hammer-code/lms-be/app/testing_transaction/delivery/http"
-	testingTransactionRepo "github.com/hammer-code/lms-be/app/testing_transaction/repository"
-	testingTransactionUC "github.com/hammer-code/lms-be/app/testing_transaction/usecase"
+	transactionEvent "github.com/hammer-code/lms-be/app/transaction_events/delivery/http"
+	transactionEventRepo "github.com/hammer-code/lms-be/app/transaction_events/repository"
+	transactionEventUC "github.com/hammer-code/lms-be/app/transaction_events/usecase"
 	users "github.com/hammer-code/lms-be/app/users"
 	"github.com/hammer-code/lms-be/config"
 	"github.com/hammer-code/lms-be/domain"
@@ -20,13 +20,13 @@ import (
 )
 
 type App struct {
-	Middleware                 domain.Middleware
-	UserHandler                domain.UserHandler
-	NewLetterHandler           domain.NewslettterHandler
-	EventHandler               domain.EventHandler
-	ImageHandler               domain.ImageHandler
-	BlogPostHandler            domain.BlogPostHandler
-	TestingTransactionHandler  domain.TestingTransactionHandler
+	Middleware              domain.Middleware
+	UserHandler             domain.UserHandler
+	NewLetterHandler        domain.NewslettterHandler
+	EventHandler            domain.EventHandler
+	ImageHandler            domain.ImageHandler
+	BlogPostHandler         domain.BlogPostHandler
+	TransactionEventHandler domain.TransactionEventHandler
 }
 
 func InitApp(
@@ -50,7 +50,7 @@ func InitApp(
 	eventRepo := events.InitRepository(dbTx)
 	imgRepo := images.InitRepository(dbTx)
 	blogPostRepo := blogPost.InitRepository(dbTx)
-	testingTransactionRepository := testingTransactionRepo.NewRepository(db)
+	transactionEventRepository := transactionEventRepo.NewRepository(db)
 
 	// Middlewares
 	middleware := middlewares.InitMiddleware(jwtInstance, userRepo)
@@ -61,7 +61,7 @@ func InitApp(
 	eventUC := events.InitUsecase(cfg, eventRepo, imgRepo, dbTx)
 	imgUc := images.InitUsecase(imgRepo, dbTx)
 	blogPostUc := blogPost.InitUseCase(blogPostRepo, jwtInstance)
-	testingTransactionUsecase := testingTransactionUC.NewUsecase(testingTransactionRepository, xenditClient)
+	transactionEventUsecase := transactionEventUC.NewUsecase(transactionEventRepository, eventRepo, xenditClient, cfg)
 
 	// handler
 	userHandler := users.InitHandler(userUsecase)
@@ -69,15 +69,15 @@ func InitApp(
 	eventHandler := events.InitHandler(eventUC)
 	ImageHandler := images.InitHandler(imgUc)
 	blogPostHandler := blogPost.InitHandler(blogPostUc)
-	testingTransactionHandler := testingTransaction.NewHandler(testingTransactionUsecase)
+	transactionEventHandler := transactionEvent.NewHandler(transactionEventUsecase, cfg)
 
 	return App{
-		UserHandler:               userHandler,
-		NewLetterHandler:          newsletterHandler,
-		Middleware:                middleware,
-		EventHandler:              eventHandler,
-		ImageHandler:              ImageHandler,
-		BlogPostHandler:           blogPostHandler,
-		TestingTransactionHandler: testingTransactionHandler,
+		UserHandler:             userHandler,
+		NewLetterHandler:        newsletterHandler,
+		Middleware:              middleware,
+		EventHandler:            eventHandler,
+		ImageHandler:            ImageHandler,
+		BlogPostHandler:         blogPostHandler,
+		TransactionEventHandler: transactionEventHandler,
 	}
 }
