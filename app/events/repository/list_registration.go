@@ -16,8 +16,10 @@ func (repo *repository) ListRegistration(ctx context.Context, filter domain.Even
 
 	// Filter by user email (only show registrations for the logged-in user)
 	if email != "" {
-		db = db.Joins("JOIN users ON users.id = CAST(registration_events.user_id AS INTEGER)").
-			Where("users.email = ?", email)
+		db = db.Joins(`
+			JOIN users
+			ON users.id = CAST(NULLIF(registration_events.user_id, '') AS INTEGER)
+		`).Where("users.email = ?", email)
 	}
 
 	if filter.Status != "" {
@@ -38,7 +40,10 @@ func (repo *repository) ListRegistration(ctx context.Context, filter domain.Even
 	}
 
 	var totalData int64
-	db.Count(&totalData)
+	// Count after all filters
+	if err := db.Count(&totalData).Error; err != nil {
+		return 0, nil, err
+	}
 
 	err = db.Limit(filter.FilterPagination.GetLimit()).
 		Offset(filter.FilterPagination.GetOffset()).
@@ -47,6 +52,5 @@ func (repo *repository) ListRegistration(ctx context.Context, filter domain.Even
 		return
 	}
 
-	return int(totalData), data, err
+	return int(totalData), data, nil
 }
-
