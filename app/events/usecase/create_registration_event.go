@@ -23,7 +23,7 @@ func (uc usecase) CreateRegistrationEvent(ctx context.Context, payload domain.Re
 	// get user data from context
 	userData := ctx.Value(contextkey.UserKey).(domain.User)
 
-	registrations, err := uc.repository.GetRegistrationEventUserByStatus(ctx, payload.EventID, uint(userData.ID), []string{constants.PENDING, constants.SUCCESS})
+	registrations, err := uc.repository.GetRegistrationEventUserByStatus(ctx, payload.EventID, strconv.Itoa(userData.ID), []string{constants.PENDING, constants.SUCCESS})
 	if err != nil {
 		err = utils.NewInternalServerError(ctx, err)
 		return domain.RegisterEventResponse{}, err

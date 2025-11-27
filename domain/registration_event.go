@@ -17,22 +17,25 @@ type RegisterEventPayload struct {
 }
 
 type RegistrationEvent struct {
-	ID                uint      `json:"id" gorm:"primarykey"`
-	OrderNo           string    `json:"order_no"`
-	EventID           uint      `json:"event_id"` // lock event
-	UserID            string    `json:"user_id"`  // lock user
-	ImageProofPayment string    `json:"image_proof_payment"`
-	PaymentDate       null.Time `json:"payment_date"`
-	Status            string    `json:"status"` // register, pay, approve/cancel/decline
-	UpToYou           string    `json:"-"`
-	CreatedByUserID   int       `json:"-"`
-	UpdatedByUserID   int       `json:"-"`
-	DeletedByUserID   int       `json:"-"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         null.Time `json:"-"`
-	DeletedAt         null.Time `json:"-"`
-	Event             Event     `json:"event_detail" gorm:"foreignKey:EventID"`
-	User              User      `json:"user_detail" gorm:"foreignKey:UserID"`
+	ID                uint              `json:"id" gorm:"primarykey"`
+	OrderNo           string            `json:"order_no"`
+	EventID           uint              `json:"event_id"`
+	UserID            string            `json:"user_id"`
+	ImageProofPayment string            `json:"image_proof_payment"`
+	PaymentDate       null.Time         `json:"payment_date"`
+	Status            string            `json:"status"` // register, pay, approve/cancel/decline
+	PaymentURL        string            `json:"payment_url" gorm:"-"`
+	TransactionNo     string            `json:"transaction_no" gorm:"-"`
+	UpToYou           string            `json:"-"`
+	CreatedByUserID   int               `json:"-"`
+	UpdatedByUserID   int               `json:"-"`
+	DeletedByUserID   int               `json:"-"`
+	CreatedAt         time.Time         `json:"created_at"`
+	UpdatedAt         null.Time         `json:"-"`
+	DeletedAt         null.Time         `json:"-"`
+	Event             Event             `json:"event_detail" gorm:"foreignKey:EventID"`
+	User              User              `json:"user_detail" gorm:"foreignKey:UserID"`
+	Transaction       *TransactionEvent `json:"-" gorm:"foreignKey:RegistrationID;references:ID"`
 }
 
 func (RegistrationEvent) TableName() string {

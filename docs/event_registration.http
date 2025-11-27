@@ -1,0 +1,119 @@
+### Event Registration & Payment API Testing
+### Base URL
+@baseUrl = http://localhost:8000/api/v1
+
+@tokenUser = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJtcHNhbHVuZ2dnIiwiZW1haWwiOiJwdXRyYXNhdHJpYTg5M0BnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImV4cCI6MTc2MzkwODY4MX0.2F4j9BfZy6pskS8g22qfSmLWVfztjnyEwxGTo3YN3Ww
+
+# @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJtcHNhZG1pbiIsImVtYWlsIjoibXBzYWRtaW5AZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzYyNTk0NjA5fQ.C_csw4acm7RoDExTQYTEBKnlovMm3AW3vZtyCz3kVSo
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJtcHNhbHVuZ2dnIiwiZW1haWwiOiJwdXRyYXNhdHJpYTg5M0BnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImV4cCI6MTc2MzkxMjMwM30.adFn_Num-Uw3Y_FKn_xnlbLf2WIuDM4gnmbLtr7covY
+@transactionNo = TRX-20251108154819-25
+
+###############################################
+# 1. AUTHENTICATION
+###############################################
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+###############################################
+# 2. EVENT MANAGEMENT
+###############################################
+
+### Get Events List (Public)
+GET {{baseUrl}}/public/events
+Content-Type: application/json
+
+### Get Events List with Pagination
+GET {{baseUrl}}/public/events?page=1&limit=10
+Content-Type: application/json
+
+### Get Events List with Filter
+GET {{baseUrl}}/public/events?type=Tech Talk&status=soon
+Content-Type: application/json
+
+### Get Event Detail
+GET {{baseUrl}}/public/events/6
+Content-Type: application/json
+
+###############################################
+# 3. TRANSACTION & REGISTRATION
+###############################################
+
+### Create Transaction & Register Event
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "event_id": 7
+}
+
+### Check Payment Status
+GET {{baseUrl}}/transactions/{{transactionNo}}/status
+Authorization: Bearer {{tokenUser}}
+
+###############################################
+# 4. REGISTRATION LIST (User)
+###############################################
+
+### Get User Registration List
+GET {{baseUrl}}/events/registrations
+Authorization: Bearer {{tokenUser}}
+
+### Get User Registration List with Pagination
+GET {{baseUrl}}/events/registrations?page=1&limit=10
+Authorization: Bearer {{token}}
+
+
+### Simulate Xendit Webhook - Payment Success
+POST {{baseUrl}}/public/webhooks/xendit
+Content-Type: application/json
+x-callback-token: your-xendit-webhook-token
+
+{
+  "external_id": "TRX-1730987654",
+  "status": "PAID",
+  "payment_method": "CREDIT_CARD",
+  "paid_at": "2025-11-07T15:30:00Z"
+}
+
+###
+### Simulate Xendit Webhook - Payment Failed
+POST {{baseUrl}}/public/webhooks/xendit
+Content-Type: application/json
+x-callback-token: your-xendit-webhook-token
+
+{
+  "external_id": "TRX-1730987654",
+  "status": "FAILED",
+  "payment_method": "CREDIT_CARD",
+  "paid_at": null
+}
+
+###
+### Simulate Xendit Webhook - Payment Expired
+POST {{baseUrl}}/public/webhooks/xendit
+Content-Type: application/json
+x-callback-token: your-xendit-webhook-token
+
+{
+  "external_id": "TRX-1730987654",
+  "status": "EXPIRED",
+  "payment_method": null,
+  "paid_at": null
+}
+
+###############################################
+# 9. ADMIN - REGISTRATION MANAGEMENT
+###############################################
+
+### Get Registrations by Event (Admin)
+GET {{baseUrl}}/admin/events/6/registrations?page=1&limit=10
+Authorization: Bearer {{token}}
+
