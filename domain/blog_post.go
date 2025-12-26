@@ -16,7 +16,7 @@ type BlogPostHandler interface {
 }
 
 type BlogPostUsecase interface {
-	CreateBlogPost(ctx context.Context, data BlogPost, token string) error
+	CreateBlogPost(ctx context.Context, data BlogPost, user User) error
 	UpdateBlogPost(ctx context.Context, data BlogPost, id uint) error
 	DeleteBlogPost(ctx context.Context, id uint) error
 	GetAllBlogPosts(ctx context.Context, pagination FilterPagination) ([]BlogPost, Pagination, error)
@@ -24,11 +24,18 @@ type BlogPostUsecase interface {
 }
 
 type BlogPostRepository interface {
-	CreateBlogPost(ctx context.Context, data BlogPost) error
+	CreateBlogPost(ctx context.Context, data BlogPost) (BlogPost, error)
 	UpdateBlogPost(ctx context.Context, data BlogPost, id uint) error
 	DeleteBlogPost(ctx context.Context, id uint) error
 	GetAllBlogPosts(ctx context.Context, pagination FilterPagination) ([]BlogPost, int, error)
-	GetDetailBlogPost(ctx context.Context, slug, typeFind string, id uint) (BlogPost, error)
+	FindById(ctx context.Context, id uint) (BlogPost, error)
+	FindBySlug(ctx context.Context, slug string) (BlogPost, error)
+	GetTagsByBlogPostIDs(ctx context.Context, blogPostIDs []int) ([]BlogPostTag, error)
+	DeleteTagsByBlogPostID(ctx context.Context, blogPostID uint) error
+	FindAuthorByUserID(ctx context.Context, userID uint) (Author, error)
+	CreateAuthor(ctx context.Context, data Author) error
+	CreateTags(ctx context.Context, tag []BlogPostTag) error
+	UpdateAuthorAvatar(ctx context.Context, userID uint, avatar string) error
 }
 
 type BlogPost struct {
@@ -46,6 +53,12 @@ type BlogPost struct {
 	UpdatedAt   *time.Time `json:"updated_at"`
 	CreatedAt   *time.Time `json:"created_at"`
 	IsDeleted   bool       `json:"-"`
+}
+
+type BlogPostTag struct {
+	Id         int    `json:"id" gorm:"primaryKey"`
+	BlogPostId int    `json:"blog_post_id"`
+	Tag        string `json:"tag"`
 }
 
 type Author struct {

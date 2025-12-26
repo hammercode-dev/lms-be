@@ -6,15 +6,14 @@ import (
 	blog_post_usecase "github.com/hammer-code/lms-be/app/blog_post/usecase"
 	"github.com/hammer-code/lms-be/domain"
 	"github.com/hammer-code/lms-be/pkg/db"
-	"github.com/hammer-code/lms-be/pkg/jwt"
 )
 
 func InitRepository(db db.DatabaseTransaction) domain.BlogPostRepository {
 	return blog_post_repo.NewRepository(db)
 }
 
-func InitUseCase(repository domain.BlogPostRepository, jwt jwt.JWT) domain.BlogPostUsecase {
-	return blog_post_usecase.NewUsecase(repository, jwt)
+func InitUseCase(repository domain.BlogPostRepository, db db.DatabaseTransaction) domain.BlogPostUsecase {
+	return blog_post_usecase.NewUsecase(repository, db)
 }
 
 func InitHandler(usecase domain.BlogPostUsecase) domain.BlogPostHandler {

@@ -60,7 +60,7 @@ func InitApp(
 	newsletterUC := newsletters.InitUsecase(cfg, newsletterRepo, dbTx, jwt.NewJwt(cfg.JWT_SECRET_KEY))
 	eventUC := events.InitUsecase(cfg, eventRepo, imgRepo, dbTx)
 	imgUc := images.InitUsecase(imgRepo, dbTx)
-	blogPostUc := blogPost.InitUseCase(blogPostRepo, jwtInstance)
+	blogPostUc := blogPost.InitUseCase(blogPostRepo, dbTx)
 	transactionEventUsecase := transactionEventUC.NewUsecase(transactionEventRepository, eventRepo, xenditClient, cfg)
 
 	// handler
