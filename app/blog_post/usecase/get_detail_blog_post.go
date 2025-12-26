@@ -27,13 +27,15 @@ func (uc *usecase) GetDetailBlogPost(ctx context.Context, slug string, id uint) 
 		}
 	}
 
-	tags, err := uc.repo.GetTagsByBlogPostID(ctx, uint(data.Id))
+	rawTags, err := uc.repo.GetTagsByBlogPostIDs(ctx, []int{data.Id})
 	if err != nil {
 		logrus.Error("failed to get tags for blog post ID ", data.Id, ": ", err)
 		return domain.BlogPost{}, err
 	}
 
-	data.Tags = tags
+	for _, t := range rawTags {
+		data.Tags = append(data.Tags, t.Tag)
+	}
 
 	return data, nil
 }

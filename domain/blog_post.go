@@ -30,10 +30,12 @@ type BlogPostRepository interface {
 	GetAllBlogPosts(ctx context.Context, pagination FilterPagination) ([]BlogPost, int, error)
 	FindById(ctx context.Context, id uint) (BlogPost, error)
 	FindBySlug(ctx context.Context, slug string) (BlogPost, error)
-	GetTagsByBlogPostID(ctx context.Context, blogPostID uint) (tags []string, err error)
+	GetTagsByBlogPostIDs(ctx context.Context, blogPostIDs []int) ([]BlogPostTag, error)
+	DeleteTagsByBlogPostID(ctx context.Context, blogPostID uint) error
 	FindAuthorByUserID(ctx context.Context, userID uint) (Author, error)
 	CreateAuthor(ctx context.Context, data Author) error
 	CreateTags(ctx context.Context, tag []BlogPostTag) error
+	UpdateAuthorAvatar(ctx context.Context, userID uint, avatar string) error
 }
 
 type BlogPost struct {
