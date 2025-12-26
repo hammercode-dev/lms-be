@@ -12,16 +12,19 @@ import (
 type ImageRepository interface {
 	Store(context.Context, Image) (uint, error)
 	GetImage(ctx context.Context, fileName string) (Image, error)
+	UpdateImage(ctx context.Context, file Image) error
 	UpdateUseImage(ctx context.Context, id uint) error
 }
 
 type ImageUsecase interface {
 	UploadImage(context.Context, UploadImage) (UploadImageResponse, error)
+	UpdateImage(ctx context.Context, file UploadImage, fileName string) (UploadImageResponse, error)
 	UpdateUseImage(context.Context, uint) error
 	GetStorage(ctx context.Context, fileName string) (filePath string, err error)
 }
 
 type ImageHandler interface {
+	UpdateImage(w http.ResponseWriter, r *http.Request)
 	UploadImage(w http.ResponseWriter, r *http.Request)
 	GetStorage(w http.ResponseWriter, r *http.Request)
 }

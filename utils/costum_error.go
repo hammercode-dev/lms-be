@@ -47,6 +47,15 @@ func NewUnauthorizedError(ctx context.Context, msg string, err error) *CustomHtt
 	}
 }
 
+func NewNotFoundError(ctx context.Context, msg string, err error) *CustomHttpError {
+	ngelog.Error(ctx, msg, err)
+	return &CustomHttpError{
+		Code:    http.StatusNotFound,
+		Message: msg,
+		OriginError: err,
+	}
+}
+
 func NewInternalServerError(ctx context.Context, err error) *CustomHttpError {
 	ngelog.Error(ctx, "Internal server error", err)
 	return &CustomHttpError{

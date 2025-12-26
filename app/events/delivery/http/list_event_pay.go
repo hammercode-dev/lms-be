@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/hammer-code/lms-be/domain"
+	"github.com/hammer-code/lms-be/pkg/ngelog"
 	"github.com/hammer-code/lms-be/utils"
-	"github.com/sirupsen/logrus"
 )
 
 // ListEventPay
@@ -28,9 +28,9 @@ import (
 func (h Handler) ListEventPay(w http.ResponseWriter, r *http.Request) {
 	flterPagination, err := domain.GetPaginationFromCtx(r)
 	if err != nil {
-		logrus.Error("failed to get pagination : ", err)
+		ngelog.Error(r.Context(), "failed to get pagination", err)
 		utils.Response(domain.HttpResponse{
-			Code:    500,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}, w)
 		return
@@ -44,9 +44,9 @@ func (h Handler) ListEventPay(w http.ResponseWriter, r *http.Request) {
 	if eventIDs != "" {
 		eventIDU, err := strconv.ParseUint(eventIDs, 10, 32)
 		if err != nil {
-			logrus.Error("failed to convert string to uint: ", err)
+			ngelog.Error(r.Context(), "failed to convert string to uint", err)
 			utils.Response(domain.HttpResponse{
-				Code:    500,
+				Code:    http.StatusInternalServerError,
 				Message: err.Error(),
 			}, w)
 			return
@@ -63,18 +63,16 @@ func (h Handler) ListEventPay(w http.ResponseWriter, r *http.Request) {
 		FilterPagination: flterPagination,
 	})
 	if err != nil {
-		logrus.Error("failed to list event : ", err)
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
+		ngelog.Error(r.Context(), "failed to list event pay", err)
+		resp := utils.CustomErrorResponse(err)
+		utils.Response(resp, w)
 		return
 	}
 
 	utils.Response(domain.HttpResponse{
-		Code:       200,
+		Code:       http.StatusOK,
 		Message:    "success",
 		Data:       data,
-		Pagination: pagination,
+		Pagination: &pagination,
 	}, w)
 }

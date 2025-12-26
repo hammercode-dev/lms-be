@@ -1,5 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
+TRUNCATE TABLE "public"."events" RESTART IDENTITY CASCADE;
+
 INSERT INTO "public"."events" (
     "id", "title", "description", "author", "image", "date",
     "reservation_start_date", "reservation_end_date", "type", 
@@ -23,6 +25,8 @@ INSERT INTO "public"."events" (
     '2025-07-01 00:00:00', '2025-08-05 23:59:59', 'hackathon',
     'Innovation Labs', '48 hours', 'upcoming', 50.00, 100,
     'https://example.com/register/app-hackathon', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+SELECT setval('events_id_seq', (SELECT MAX(id) FROM events), true);
 -- +goose StatementEnd
 
 -- +goose Down

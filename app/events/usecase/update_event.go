@@ -2,31 +2,30 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/hammer-code/lms-be/constants"
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
+	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
+	"github.com/hammer-code/lms-be/utils"
 	"gopkg.in/guregu/null.v4"
 )
 
-func (uc usecase) DeleteEvent(ctx context.Context, id uint) error {
-	err := uc.repository.DeleteEvent(ctx, id)
-	if err != nil {
-		logrus.Error("failed to delete event by id: ", err)
-		return err
+func (uc usecase) UpdateEvent(ctx context.Context, id uint, payload domain.UpdateEventPayload) error {
+	if !constants.IsValidEventType(payload.Type) {
+		return utils.NewBadRequestError(ctx, "Sorry, invalid event type", errors.New("event type is not valid"))
 	}
 
-	return err
-}
+	userData := ctx.Value(contextkey.UserKey).(domain.User)
 
-func (uc usecase) UpdateEvent(ctx context.Context, id uint, payload domain.UpdateEventPayload) error {
 	err := uc.repository.UpdateEvent(ctx, domain.Event{
 		ID:                   id,
 		Title:                payload.Title,
 		Description:          payload.Description,
 		Slug:                 payload.Slug,
-		Author:               payload.Author,
-		ImageEvent:           payload.FileName,
+		AuthorID:             userData.ID,
+		Image:                payload.FileName,
 		Date:                 payload.Date,
 		Type:                 payload.Type,
 		Location:             payload.Location,
@@ -37,10 +36,11 @@ func (uc usecase) UpdateEvent(ctx context.Context, id uint, payload domain.Updat
 		Price:                payload.Price,
 		ReservationStartDate: payload.ReservationStartDate,
 		ReservationEndDate:   payload.ReservationEndDate,
+		SessionType:          payload.SessionType,
 		UpdatedAt:            null.TimeFrom(time.Now()),
 	})
 	if err != nil {
-		logrus.Error("failed to update event by id: ", err)
+		err = utils.NewInternalServerError(ctx, err)
 		return err
 	}
 

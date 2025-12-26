@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/hammer-code/lms-be/config"
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/hammer-code/lms-be/pkg/jwt"
+	contextkey "github.com/hammer-code/lms-be/pkg/context_key"
 	"github.com/hammer-code/lms-be/utils"
 	"github.com/sirupsen/logrus"
 )
@@ -103,25 +102,9 @@ func (h Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} domain.User
 // @Router /api/v1/users [get]
 func (h Handler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
-	authorizationHeader := r.Header.Get("Authorization")
-	if authorizationHeader == "" {
-		utils.Response(domain.HttpResponse{
-			Code:    401,
-			Message: "Not permission",
-		}, w)
-		return
-	}
+	userData := r.Context().Value(contextkey.UserKey).(domain.User)
 
-	claims, err := jwt.ParseToken(authorizationHeader, config.GetConfig().JWT_SECRET_KEY)
-	if err != nil {
-		utils.Response(domain.HttpResponse{
-			Code:    500,
-			Message: err.Error(),
-		}, w)
-		return
-	}
-
-	user, err := h.usecase.GetUserById(r.Context(), int8(claims.ID))
+	user, err := h.usecase.GetUserById(r.Context(), int8(userData.ID))
 
 	if err != nil {
 		logrus.Error("userUsecase: failed to get user")

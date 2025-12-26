@@ -31,6 +31,12 @@ type (
 
 		BaseURL     string
 		BASE_URL_FE string
+
+		// Xendit Configuration
+		XENDIT_API_KEY          string
+		XENDIT_WEBHOOK_TOKEN    string
+		XENDIT_SUCCESS_REDIRECT string
+		XENDIT_FAILURE_REDIRECT string
 	}
 )
 
@@ -48,7 +54,7 @@ func GetConfig() Config {
 
 	if c == nil {
 		// default cors
-		origins := []string{"*"}
+		origins := []string{"http://localhost:3000", "https://stg.hammercode.org", "https://hammercode.org"}
 		methods := []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
 		headers := []string{"Accept", "Authorization", "Content-Type"}
 
@@ -82,6 +88,10 @@ func GetConfig() Config {
 			CORS_ALLOWED_HEADERS: headers,
 			BaseURL:              viper.GetString("BASE_URL"),
 			BASE_URL_FE:          viper.GetString("BASE_URL_FE"),
+			XENDIT_API_KEY:          viper.GetString("XENDIT_API_KEY"),
+			XENDIT_WEBHOOK_TOKEN:    viper.GetString("XENDIT_WEBHOOK_TOKEN"),
+			XENDIT_SUCCESS_REDIRECT: viper.GetString("XENDIT_SUCCESS_REDIRECT"),
+			XENDIT_FAILURE_REDIRECT: viper.GetString("XENDIT_FAILURE_REDIRECT"),
 		}
 	}
 

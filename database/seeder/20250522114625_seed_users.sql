@@ -1,18 +1,34 @@
+-- +goose NO TRANSACTION
 -- +goose Up
 -- +goose StatementBegin
-INSERT INTO "public"."users" (
-    "username", "email", "password", "role", "fullname", 
-    "date_of_birth", "gender", "phone_number", "address",
-    "github", "linkedin", "personal_web", "created_at", "updated_at"
+TRUNCATE TABLE "public"."events" RESTART IDENTITY CASCADE;
+INSERT INTO "public"."events" (
+    "id", "title", "description", "author_id", "image", "date",
+    "reservation_start_date", "reservation_end_date", "type", 
+    "location", "duration", "status", "price", "capacity",
+    "registration_link", "session_type", "created_at", "updated_at"
 ) VALUES 
- -- password : passowrd 
-    ('admin', 'admin@example.com', '$2a$10$zzJJ6MKKBgJT0CfT7rjnWeCAfSRIG6VhBdoqSIWi1VjwBfsp6XcT.', 'admin', 'Admin User', 
-     '1990-01-01', 'Male', '123456789', '123 Admin St',
-     'github.com/admin', 'linkedin.com/in/admin', 'admin.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-     
+    (1, 'Web Development Workshop', 'Learn modern web development techniques', 
+    1, 'workshop_banner.jpg', '2025-06-15 09:00:00',
+    '2025-05-15 00:00:00', '2025-06-14 23:59:59', 'workshop',
+    'Tech Hub, Floor 3', '8 hours', 'upcoming', 150.00, 30,
+    'https://example.com/register/web-dev', 'offline', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    
+    (2, 'Data Science Conference', 'Annual conference for data scientists', 
+    1, 'conference_logo.png', '2025-07-20 08:30:00',
+    '2025-06-01 00:00:00', '2025-07-15 23:59:59', 'conference',
+    'Convention Center', '3 days', 'upcoming', 299.99, 200,
+    'https://example.com/register/data-conf', 'hybrid', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    
+    (3, 'Mobile App Hackathon', '48-hour app building competition', 
+    1, 'hackathon_poster.jpg', '2025-08-10 10:00:00',
+    '2025-07-01 00:00:00', '2025-08-05 23:59:59', 'hackathon',
+    'Innovation Labs', '48 hours', 'upcoming', 50.00, 100,
+    'https://example.com/register/app-hackathon', 'online', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+SELECT setval('events_id_seq', (SELECT MAX(id) FROM events), true);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-DELETE FROM "public"."users" WHERE "username" IN ('admin', 'johndoe', 'janedoe');
+TRUNCATE TABLE "public"."events" RESTART IDENTITY CASCADE;
 -- +goose StatementEnd

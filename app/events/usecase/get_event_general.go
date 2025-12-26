@@ -6,17 +6,31 @@ import (
 
 	"github.com/hammer-code/lms-be/config"
 	"github.com/hammer-code/lms-be/domain"
-	"github.com/sirupsen/logrus"
+	"github.com/hammer-code/lms-be/utils"
 )
 
-func (uc usecase) GetEventByID(ctx context.Context, id uint) (domain.Event, error) {
-	resp, err := uc.repository.GetEvent(ctx, id)
+func (uc usecase) GetEventByID(ctx context.Context, id uint) (resp domain.EventDTO, err error) {
+	event, err := uc.repository.GetEvent(ctx, id)
 	if err != nil {
-		logrus.Error("failed to get event by id: ", err)
+		err = utils.NewInternalServerError(ctx, err)
 		return resp, err
 	}
 	baseURL := config.GetConfig().BaseURL
 
-	resp.ImageEvent = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, resp.ImageEvent)
-	return resp, err
+	event.Image = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, event.Image)
+	
+	return event.ToDTO(), err
+}
+
+func (uc usecase) GetEventByIDAdmin(ctx context.Context, id uint) (resp domain.EventAdminDTO, err error) {
+	event, err := uc.repository.GetEvent(ctx, id)
+	if err != nil {
+		err = utils.NewInternalServerError(ctx, err)
+		return resp, err
+	}
+	baseURL := config.GetConfig().BaseURL
+
+	event.Image = fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, event.Image)
+
+	return event.ToAdminDTO(), err
 }

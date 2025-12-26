@@ -1,5 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
+Truncate Table "public"."event_tags" Restart Identity Cascade;
 INSERT INTO "public"."event_tags" (
     "event_id", "tag"
 ) VALUES 
