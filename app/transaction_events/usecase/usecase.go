@@ -414,11 +414,16 @@ func (u *usecase) GetOrderDetail(ctx context.Context, orderNo string) (domain.Ge
 		paymentDate = &registration.PaymentDate.Time
 	}
 
+	baseURL := u.cfg.BaseURL
+	imageURL := fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, event.Image)
+
 	response := domain.GetOrderDetailResponse{
 		OrderNo:       registration.OrderNo,
 		TransactionNo: transactionNo,
 		PaymentDate:   paymentDate,
 		Status:        registration.Status,
+		PaymentURL:    *transaction.InvoiceURL,
+		CreatedAt:     transaction.CreatedAt,
 		EventDetail: domain.OrderEventDetail{
 			Title:       event.Title,
 			Date:        eventDate,
@@ -427,6 +432,7 @@ func (u *usecase) GetOrderDetail(ctx context.Context, orderNo string) (domain.Ge
 			Duration:    event.Duration,
 			Price:       event.Price,
 			SessionType: event.SessionType,
+			Image:       imageURL,
 		},
 		UserDetail: domain.OrderUserDetail{
 			Fullname:    registration.User.Fullname,
