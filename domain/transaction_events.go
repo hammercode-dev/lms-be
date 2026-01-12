@@ -53,6 +53,8 @@ type GetOrderDetailResponse struct {
     TransactionNo string              `json:"transaction_no"`
     PaymentDate   *time.Time          `json:"payment_date"`
     Status        string              `json:"status"`
+    PaymentURL    string              `json:"payment_url"`
+    CreatedAt     time.Time           `json:"created_at"`
     EventDetail   OrderEventDetail    `json:"event_detail"`
     UserDetail    OrderUserDetail     `json:"user_detail"`
 }
@@ -65,6 +67,7 @@ type OrderEventDetail struct {
     Duration    string    `json:"duration"`
     Price       float64   `json:"price"`
     SessionType string    `json:"session_type"`
+    Image       string    `json:"image"`
 }
 
 type OrderUserDetail struct {

@@ -23,10 +23,10 @@ CREATE TABLE IF NOT EXISTS "public"."transaction_events" (
 );
 
 -- Create indexes for performance
-CREATE INDEX idx_trx_no ON transaction_events(transaction_no);
-CREATE INDEX idx_trx_registration ON transaction_events(registration_id);
-CREATE INDEX idx_trx_status ON transaction_events(status);
-CREATE INDEX idx_trx_external_id ON transaction_events(external_id);
+CREATE INDEX IF NOT EXISTS idx_trx_no ON transaction_events(transaction_no);
+CREATE INDEX IF NOT EXISTS idx_trx_registration ON transaction_events(registration_id);
+CREATE INDEX IF NOT EXISTS idx_trx_status ON transaction_events(status);
+CREATE INDEX IF NOT EXISTS idx_trx_external_id ON transaction_events(external_id);
 
 COMMENT ON TABLE "public"."transaction_events" IS 'Payment transactions for event registrations';
 COMMENT ON COLUMN "public"."transaction_events"."status" IS 'pending, paid, expired';
