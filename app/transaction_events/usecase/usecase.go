@@ -414,8 +414,7 @@ func (u *usecase) GetOrderDetail(ctx context.Context, orderNo string) (domain.Ge
 		paymentDate = &registration.PaymentDate.Time
 	}
 
-	baseURL := u.cfg.BaseURL
-	imageURL := fmt.Sprintf("%s/api/v1/public/storage/images/%s", baseURL, event.Image)
+	imageURL := fmt.Sprintf("%s/api/v1/public/storage/images/%s", u.cfg.BaseURL, event.Image)
 
 	response := domain.GetOrderDetailResponse{
 		OrderNo:       registration.OrderNo,
